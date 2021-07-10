@@ -68,8 +68,8 @@ public class Board extends Composite {
 		int monitorH=getShell().getMonitor().getBounds().height;
 		float resRatio=(monitorW/monitorH);
 		
-		boxW=(int) resRatio*130;
-		boxH=(int) resRatio*150;
+		boxW=(int) resRatio*monitorW/10;
+		boxH=(int) monitorH/6;
 		
 		int approxBWidth=boxW*6;
 		setLayout(new GridLayout());

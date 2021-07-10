@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import gui.qGang.Qbox;
 import orgObjects.Category;
 import orgObjects.Question;
 
@@ -240,7 +241,7 @@ public class ViewBoard {
 		Composite sad = new Composite(shell, SWT.NONE);
 		sad.setLayout(new FillLayout());
 		Label owoSticker = new Label(sad, SWT.NONE);
-		Image bigOwo = new Image(Display.getDefault(), "images\\MEDowo.png");
+		Image bigOwo =SWTResourceManager.getImage(ViewBoard.class,"MEDowo.png");
 		owoSticker.setImage(bigOwo);
 		owoSticker.setBounds(bigOwo.getBounds());
 		// owoSticker.setText("Plz stop breaking me");
