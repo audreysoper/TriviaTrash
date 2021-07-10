@@ -24,8 +24,8 @@ public class Qbox extends Composite {
 	 * @param style
 	 * @param question
 	 */
-	public int height=130;
-	public int width=130;
+	public int height;
+	public int width;
 	public final int infoHeight=15;
 	final public String qNumber;
 	protected Board boardFather;
