@@ -64,8 +64,12 @@ public class Board extends Composite {
 
 	private void populateBoard(Category[] catObjs) {
 		
-		boxW=(getShell().getDisplay().getBounds().width)/20;
-		boxH=(getShell().getDisplay().getBounds().height)/7;
+		int monitorW=getShell().getMonitor().getBounds().width;
+		int monitorH=getShell().getMonitor().getBounds().height;
+		float resRatio=(monitorW/monitorH);
+		
+		boxW=(int) resRatio*130;
+		boxH=(int) resRatio*150;
 		
 		int approxBWidth=boxW*6;
 		setLayout(new GridLayout());
