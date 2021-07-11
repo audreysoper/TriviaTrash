@@ -175,22 +175,23 @@ public class ViewBoard {
 						if (answer.endsWith("^^^^")) {
 							answer = answer.substring(0, answer.indexOf('^'));
 						}
-					}catch (Exception e1) {
-							// TODO Auto-generated catch block
-							Composite sad = getSad();
-							shell.open();
-							MessageBox ope = new MessageBox(shell, SWT.OK);
-							ope.setMessage("Hmmmmm.... This file doesn't look quite like I was expecting it to. "
-									+ "\n You sure this is a trivia file that's formatted properly?"
-									+ "\n If so please send it to Audrey to figure out why I can't read it");
-							ope.setText("File Read Error");
-							ope.open();
-							// e.printStackTrace();
-							return null;
-						}
+					
 					
 						questions[qNum] = new Question(text, answer, dd.charAt(0), currentCat.getType(), format, qNum);
 						qNum++;
+					}catch (Exception e1) {
+						// TODO Auto-generated catch block
+						Composite sad = getSad();
+						shell.open();
+						MessageBox ope = new MessageBox(shell, SWT.OK);
+						ope.setMessage("Hmmmmm.... This file doesn't look quite like I was expecting it to. "
+								+ "\n You sure this is a trivia file that's formatted properly?"
+								+ "\n If so please send it to Audrey to figure out why I can't read it");
+						ope.setText("File Read Error");
+						ope.open();
+						// e.printStackTrace();
+						return null;
+					}
 						// if we've got all out questions, change back to category start
 						if (qNum > 4) {
 							currentCat.addQuestions(questions);
