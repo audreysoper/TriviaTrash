@@ -15,6 +15,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -64,14 +66,6 @@ public class Board extends Composite {
 
 	private void populateBoard(Category[] catObjs) {
 		
-		int monitorW=getShell().getMonitor().getBounds().width;
-		int monitorH=getShell().getMonitor().getBounds().height;
-		float resRatio=(monitorW/monitorH);
-		
-		boxW=(int) resRatio*monitorW/10;
-		boxH=(int) monitorH/6;
-		
-		int approxBWidth=boxW*6;
 		setLayout(new GridLayout());
 		
 		Label title=new Label(this,SWT.NONE);
@@ -98,12 +92,12 @@ public class Board extends Composite {
 		
 		//add stuff to topHeader Group
 		Label headerInstructions=new Label(topHeader,SWT.NONE);
-		headerInstructions.setLayoutData(new RowData(approxBWidth/5,50));
+		headerInstructions.setLayoutData(new RowData(SWT.DEFAULT,50));
 		headerInstructions.setText("Options:");
 		headerInstructions.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		
 		Button ufnButton=new Button(topHeader,SWT.CHECK|SWT.WRAP);
-		ufnButton.setLayoutData(new RowData(approxBWidth/5,50));
+		ufnButton.setLayoutData(new RowData(SWT.DEFAULT,50));
 		//ufnButton.setBounds(0, 0, 120, 50);
 		ufnButton.setText("Use file names as answers?");
 		ufnButton.addSelectionListener(new SelectionAdapter() {
@@ -122,7 +116,7 @@ public class Board extends Composite {
 		if(currentOpenDoc != null) {
 			title.setText(title.getText()+" - "+currentOpenDoc.getName());
 			Button save= new Button(topHeader,SWT.PUSH);
-			save.setLayoutData(new RowData(approxBWidth/7,40));
+			save.setLayoutData(new RowData(SWT.DEFAULT,40));
 			save.setText("SAVE - "+currentOpenDoc.getName());
 			save.addSelectionListener(new SelectionAdapter() {
 				@Override
@@ -134,7 +128,7 @@ public class Board extends Composite {
 		
 		//Save Button
 		Button saveAS= new Button(topHeader,SWT.PUSH);
-		saveAS.setLayoutData(new RowData(approxBWidth/7,40));
+		saveAS.setLayoutData(new RowData(SWT.DEFAULT,40));
 		saveAS.setText("SAVE AS...");
 		saveAS.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -167,7 +161,7 @@ public class Board extends Composite {
 		//Open Button
 		Button open= new Button(topHeader,SWT.PUSH);
 		//open.setBounds(100, 0, 120, 50);
-		open.setLayoutData(new RowData(approxBWidth/7,40));
+		open.setLayoutData(new RowData(SWT.DEFAULT,40));
 		open.setText("OPEN");
 		open.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -195,12 +189,12 @@ public class Board extends Composite {
 		//New button
 		Button newBoard= new Button(topHeader,SWT.PUSH);
 		//new.setBounds(100, 0, 120, 50);
-		newBoard.setLayoutData(new RowData(approxBWidth/7,40));
+		newBoard.setLayoutData(new RowData(SWT.DEFAULT,40));
 		newBoard.setText("NEW BOARD");
 		newBoard.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					// TODO Auto-generated method stub
+					// 
 					
 					ViewBoard newWindow= new ViewBoard();
 					newWindow.openBlank();
@@ -214,10 +208,10 @@ public class Board extends Composite {
 		
 		ScrolledComposite scrollContainer= new ScrolledComposite(this,SWT.V_SCROLL| SWT.BORDER);
 		scrollContainer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
-		GridLayout boardLayout=new GridLayout(6,true);
+		
 		
 		Composite dummyContainer = new Composite(scrollContainer,SWT.NONE);
-		dummyContainer.setLayout(boardLayout);
+		dummyContainer.setLayout(new GridLayout(6,true));
 		
 		
 		scrollContainer.setContent(dummyContainer);
@@ -234,17 +228,17 @@ public class Board extends Composite {
 		
 		//BEGIN PUTTING THINGS IN CAT GROUPS
 		for(int i =0;i<catObjs.length;i++) {
-			catGroups[i]= new Group(dummyContainer, SWT.NONE);
+			catGroups[i]= new Group(dummyContainer, SWT.SHADOW_ETCHED_IN);
 			catGroups[i].setText("Category "+(i+1));
-			catGroups[i].setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			catGroups[i].setLayoutData(new GridData(GridData.BEGINNING));
 			RowLayout catLayout=new RowLayout(SWT.HORIZONTAL|SWT.WRAP);
 			//catLayout.spacing=1;
 			catLayout.justify=true;
-			catLayout.center=true;
-			catLayout.marginWidth=10;
+			//catLayout.center=true;
+			catLayout.marginWidth=5;
 			catLayout.fill=true;
 			catGroups[i].setLayout(catLayout);
-			catGroups[i].setSize(boxW, boxH*5+40); //6 is because 5 questions + category title box
+			 
 			
 			
 			
@@ -252,14 +246,15 @@ public class Board extends Composite {
 			titles[i]= new Text(catGroups[i], SWT.MULTI|SWT.WRAP|SWT.BORDER|SWT.V_SCROLL);
 			titles[i].setFont(SWTResourceManager.getFont("Segoe UI", 13, SWT.NORMAL));
 			titles[i].setText(catObjs[i].getName().toUpperCase());
-			titles[i].setLayoutData(new RowData(boxW, 50));
+			//WE SET TILE SIZE LATER AFTER GRABBING THE BOXES
 			
 			
 			//Category types
 			catType[i]= new Combo(catGroups[i],SWT.DROP_DOWN|SWT.READ_ONLY);
 			catType[i].setItems(typeNames);
 			//catType[i].setSize(boxW, 15);
-			catType[i].setLayoutData(new RowData(boxW, 30));
+			//catType[i].setLayoutData(new RowData(boxW, 30));
+			//catType[i].setLayoutData(new RowData(SWT.DEFAULT, 30));
 			catType[i].setText(catObjs[i].getType());
 			catType[i].addModifyListener(new ModifyListener() {
 			
@@ -277,13 +272,17 @@ public class Board extends Composite {
 			
 			//add all the questions
 			Question[] qs=catObjs[i].getQuestions();
-			makeQuestionGroup(catGroups[i],qs);	
-			
+			Qbox[] boxes=makeQuestionGroup(catGroups[i],qs);	
+			titles[i].setLayoutData(new RowData(boxes[0].width, (catType[i].getBounds().height)*2));
 		}
 		
-		
+		dummyContainer.layout();
 		dummyContainer.pack();
-	
+		scrollContainer.pack();
+		
+		pack();
+		
+		
 	}
 	
 	protected void setAllMediaAnswersToFileName() {
@@ -305,25 +304,27 @@ public class Board extends Composite {
 	}
 
 
-	private void makeQuestionGroup(Composite parentCatGroup,Question[]qs) {
-		Qbox[] qGroup;
+	private Qbox[] makeQuestionGroup(Composite parentCatGroup,Question[]qs) {
+		Qbox[] qGroup=null;
 		if(qs[0].getCategory().getType().contains("text")) {
 			qGroup= new QEdit[5];
 			for(int j =0;j<qs.length;j++) {
 				qGroup[j]= new QEdit(parentCatGroup, SWT.NONE,qs[j]);
 				//qGroup[j].setSize(boxW, boxH);//adding extra boxH to the starting position because of title
-				qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
+				//qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
 			}
 		}else if((qs[0].getCategory().getType().contains("audio")) || (qs[0].getCategory().getType().contains("picture"))){
 			qGroup= new QMedia[5];
 			for(int j =0;j<qs.length;j++) {
 				qGroup[j]= new QMedia(parentCatGroup, SWT.NONE,qs[j]);
 				//qGroup[j].setSize(boxW, boxH);//adding extra boxH to the starting position because of title
-				qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
+				//qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
 			}
 			
 		}
-		
+		parentCatGroup.layout();
+		parentCatGroup.pack();
+		return qGroup;
 	}
 	
 	
@@ -347,6 +348,7 @@ public class Board extends Composite {
 		c.changeType(newType);//change the type at category level
 		makeQuestionGroup(catGroupParent,qs);
 		catGroupParent.layout();
+		//catGroupParent.pack();
 		
 	}
 

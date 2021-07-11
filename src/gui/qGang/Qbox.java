@@ -35,20 +35,19 @@ public class Qbox extends Composite {
 	protected Button qDD;
 	protected Button openButton;
 	protected Combo swapPosition;
-	
+	protected final int vSpace=3;
 	
 	
 	public Qbox(Composite parent, int style, Question q) {
 		super(parent, style);
 		boardFather=((Board)parent.getParent().getParent().getParent());
 		this.q=q;
-		height=boardFather.boxH;
-		width=boardFather.boxW;
+
 		this.qNumber=q.getLevel();
 		//this.setBackground(ViewBoard.listBG);
 		GridLayout gridLayout = new GridLayout(3,false);
 		gridLayout.marginWidth=0;
-		gridLayout.verticalSpacing=3;
+		gridLayout.verticalSpacing=vSpace;
 		setLayout(gridLayout);
 		
 		Label qNumLbl = new Label(this, SWT.NONE);
@@ -57,10 +56,12 @@ public class Qbox extends Composite {
 		qNumLbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		qNumLbl.setText("Question ");
 		
+		
 		swapPosition = new Combo(this, SWT.DROP_DOWN|SWT.READ_ONLY);
 		swapPosition.setItems(new String[] {"1","2","3","4","5"});
 		swapPosition.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		swapPosition.setText(this.qNumber);
+		
 		swapPosition.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
@@ -77,27 +78,32 @@ public class Qbox extends Composite {
 		qDD.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		qDD.setText("DD?");
 		qDD.setSelection(q.getDD());
-		
 		qDD.setGrayed(true);
+		
 		
 		openButton = new Button(this, SWT.NONE);
 		openButton.setImage(SWTResourceManager.getImage(Qbox.class, "/javax/swing/plaf/metal/icons/ocean/newFolder.gif"));
 		openButton.setVisible(false);
 		openButton.setLayoutData(new GridData(1,1));
 		
+		height=computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+		width=computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		
 		qEdit = new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER);
-		GridData qEditLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,true,3,1);
-		qEditLayoutDetails.heightHint=this.height*2/5;
-		//qEditLayoutDetails.widthHint=this.width;
+		GridData qEditLayoutDetails=new GridData(GridData.FILL,GridData.FILL,false,false,3,1);
+		qEditLayoutDetails.heightHint=qEdit.getLineHeight()*5;
+		//qEditLayoutDetails.heightHint=this.height*2/5;
+		qEditLayoutDetails.widthHint=this.width;
 		qEdit.setLayoutData(qEditLayoutDetails);
 		qEdit.setMessage("Question");
 		qEdit.setText(q.getQuestion());
 		qEdit.setEditable(false);
 		
 		qAnswer = new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER);
-		GridData qAnswerLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,false,3,1);
-		qAnswerLayoutDetails.heightHint=this.height*1/5;
-		//qAnswerLayoutDetails.widthHint=this.width;
+		GridData qAnswerLayoutDetails=new GridData(GridData.FILL,GridData.FILL,false,false,3,1);
+		//qAnswerLayoutDetails.heightHint=this.height*1/5;
+		qAnswerLayoutDetails.widthHint=this.width;
+		qAnswerLayoutDetails.heightHint=qEdit.getLineHeight()*3;
 		qAnswer.setMessage("Answer");
 		qAnswer.setLayoutData(qAnswerLayoutDetails);
 		qAnswer.setText(q.getAnswer());

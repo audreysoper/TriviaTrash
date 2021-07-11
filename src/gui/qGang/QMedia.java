@@ -40,15 +40,24 @@ public class QMedia extends Qbox {
 		
 		qDD.setGrayed(false);
 		
-		qEdit.setEditable(true);
-		//qEdit.setLayoutData(new GridData(this.width,this.height*3/5-15));
-		
 		qAnswer.setEditable(true);
 		
 		openButton.setVisible(true);
 		openButton.setText("Select Media File");
-		openButton.setLayoutData(new GridData(GridData.FILL,GridData.FILL,false,false,3,1));
+		
+		GridData openLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,false,3,1);
+		openLayoutDetails.widthHint=this.width;
+		openButton.setLayoutData(openLayoutDetails);
+		this.pack();
+		
+		qEdit.setEditable(true);
+		GridData qEditLayoutDetails=new GridData(GridData.FILL,GridData.FILL,false,false,3,1);
+		qEditLayoutDetails.heightHint=qEdit.getBounds().height-(openButton.getBounds().height+vSpace);
+		qEditLayoutDetails.widthHint=width;
+		qEdit.setLayoutData(qEditLayoutDetails);
+		
 		this.layout(true);
+		this.pack();
 		openButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {

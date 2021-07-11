@@ -18,6 +18,7 @@ import java.util.Scanner;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 
@@ -53,12 +54,14 @@ public class ViewBoard {
 
 		Display display = Display.getDefault();
 		boxH = (display.getBounds().height) / 7;
+		int shellW = (display.getBounds().width) / 3;
 
 		createContents(createBlank(), null);
 		shell.open();
-		shell.layout();
-		shell.pack();
-		shell.setSize(shell.getSize().x, boxH * 4);
+		// shell.layout();
+		// shell.pack();
+		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		shell.setSize(size.x, size.y / 3 * 2);
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -82,10 +85,9 @@ public class ViewBoard {
 		if (cats != null) {
 			Board openBoard = createContents(cats, source);
 			shell.open();
-			shell.layout();
-			shell.pack();
+			Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			shell.setSize(size.x, size.y / 3 * 2);
 
-			shell.setSize(shell.getSize().x, boxH * 4);
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch()) {
 					display.sleep();
@@ -173,17 +175,31 @@ public class ViewBoard {
 						if (answer.endsWith("^^^^")) {
 							answer = answer.substring(0, answer.indexOf('^'));
 						}
+					}catch (Exception e1) {
+							// TODO Auto-generated catch block
+							Composite sad = getSad();
+							shell.open();
+							MessageBox ope = new MessageBox(shell, SWT.OK);
+							ope.setMessage("Hmmmmm.... This file doesn't look quite like I was expecting it to. "
+									+ "\n You sure this is a trivia file that's formatted properly?"
+									+ "\n If so please send it to Audrey to figure out why I can't read it");
+							ope.setText("File Read Error");
+							ope.open();
+							// e.printStackTrace();
+							return null;
+						}
+					
 						questions[qNum] = new Question(text, answer, dd.charAt(0), currentCat.getType(), format, qNum);
 						qNum++;
 						// if we've got all out questions, change back to category start
 						if (qNum > 4) {
 							currentCat.addQuestions(questions);
-						}
-
-						if (text.length() < 4) {
+							
+	
+							 if (text.length() < 4) {
 							currentCat.changeType("text");
-						} else {
-							switch (text.substring(text.length() - 3)) {
+							 } else {
+								 switch (text.substring(text.length() - 3)) {
 							case "jpg":
 								currentCat.changeType("picture");
 								break;
@@ -200,22 +216,10 @@ public class ViewBoard {
 							qNum = 0;
 							position = "newCat";
 							questions = new Question[5];
-						}
+							 }
 						break;
-
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						Composite sad = getSad();
-						shell.open();
-						MessageBox ope = new MessageBox(shell, SWT.OK);
-						ope.setMessage("Hmmmmm.... This file doesn't look quite like I was expecting it to. "
-								+ "\n You sure this is a trivia file that's formatted properly?"
-								+ "\n If so please send it to Audrey to figure out why I can't read it");
-						ope.setText("File Read Error");
-						ope.open();
-						// e.printStackTrace();
-						return null;
-					}
+						}
+					
 
 				case "answer":
 
@@ -227,21 +231,20 @@ public class ViewBoard {
 				}
 			}
 			scanner.close();
-		} catch (
-
-		FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}catch(Exception e)
+		{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 		}
 
-		return cats;
+	return cats;
 	}
 
 	public Composite getSad() {
 		Composite sad = new Composite(shell, SWT.NONE);
 		sad.setLayout(new FillLayout());
 		Label owoSticker = new Label(sad, SWT.NONE);
-		Image bigOwo =SWTResourceManager.getImage(ViewBoard.class,"MEDowo.png");
+		Image bigOwo = SWTResourceManager.getImage(ViewBoard.class, "MEDowo.png");
 		owoSticker.setImage(bigOwo);
 		owoSticker.setBounds(bigOwo.getBounds());
 		// owoSticker.setText("Plz stop breaking me");
