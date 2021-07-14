@@ -158,22 +158,27 @@ public class ViewBoard {
 			while (catNum < 6 && scanner.hasNextLine()) {
 				text = scanner.nextLine();
 				switch (position) {
-
+				
+				//WHEN POSITION IS A NEW CATEGORY
 				case "newCat":
 					if (text.length() > 0) {
 						currentCat = new Category(text, catNum);
 						position = "question";
-
 					}
 					break;
 
+					
+					
+				//WHEN POSITION IS A NEW QUESTION	
 				case "question":
 					try {
 						answer = scanner.nextLine();
 						dd = scanner.nextLine();
 						format = scanner.nextLine();
-						if (answer.endsWith("^^^^")) {
+						if (answer.endsWith("^^^^") && answer.length()>4) {
 							answer = answer.substring(0, answer.indexOf('^'));
+						}else if(answer.length()==4){
+							answer=" ";
 						}
 					
 					
@@ -196,36 +201,35 @@ public class ViewBoard {
 						if (qNum > 4) {
 							currentCat.addQuestions(questions);
 							
-	
+							//set the type of the current category
 							 if (text.length() < 4) {
 							currentCat.changeType("text");
 							 } else {
+								 //if the text is more than 4 characters THEN its safe to do the switch statement
 								 switch (text.substring(text.length() - 3)) {
-							case "jpg":
-								currentCat.changeType("picture");
-								break;
-							case "mp3":
-								currentCat.changeType("audio");
-								break;
-							default:
-								currentCat.changeType("text");
-								break;
+								 	case "jpg":
+								 		currentCat.changeType("picture");
+								 		break;
+								 	case "mp3":
+								 		currentCat.changeType("audio");
+								 		break;
+								 	default:
+								 		currentCat.changeType("text");
+								 		break;
+								 }
+							 
 							}
-
+							 
+							//ELSE needs to end BEFORE these statements	
 							cats[catNum] = currentCat;
 							catNum++;
 							qNum = 0;
 							position = "newCat";
 							questions = new Question[5];
-							 }
-						break;
 						}
+						break;
+						
 					
-
-				case "answer":
-
-					break;
-
 				default:
 					System.out.println("Umm something might be wrong? I recieved: " + position);
 					break;

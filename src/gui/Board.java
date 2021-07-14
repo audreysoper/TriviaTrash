@@ -70,7 +70,7 @@ public class Board extends Composite {
 		
 		Label title=new Label(this,SWT.NONE);
 		title.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
-		title.setText("Audrey's Fancy Question Editor");
+		title.setText("The Fancy Question Editor");
 		title.setAlignment(SWT.CENTER);
 		title.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
 		
