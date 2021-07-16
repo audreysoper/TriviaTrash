@@ -161,8 +161,11 @@ public class ViewBoard {
 				
 				//WHEN POSITION IS A NEW CATEGORY
 				case "newCat":
-					if (text.length() > 0) {
-						currentCat = new Category(text, catNum);
+					if (text.length() > 1) {
+						currentCat = new Category(text.trim(), catNum);
+						position = "question";
+					}else if(text.length() > 0) {
+						currentCat = new Category(" ", catNum);
 						position = "question";
 					}
 					break;
@@ -177,12 +180,12 @@ public class ViewBoard {
 						format = scanner.nextLine();
 						if (answer.endsWith("^^^^") && answer.length()>4) {
 							answer = answer.substring(0, answer.indexOf('^'));
-						}else if(answer.length()==4){
+						}else if(answer.length()<=4){
 							answer=" ";
 						}
 					
 					
-						questions[qNum] = new Question(text, answer, dd.charAt(0), currentCat.getType(), format, qNum);
+						questions[qNum] = new Question(text.trim(), answer.trim(), dd.charAt(0), currentCat.getType(), format, qNum);
 						qNum++;
 					}catch (Exception e1) {
 						// TODO Auto-generated catch block

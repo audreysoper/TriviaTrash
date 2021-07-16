@@ -356,7 +356,8 @@ public class Board extends Composite {
 	
 	
 	protected void exportToFile(File output) {
-		
+		int ddCount=0;
+		char outputDD;
 		try {
 			PrintWriter fileOut= new PrintWriter(output);
 			
@@ -364,16 +365,32 @@ public class Board extends Composite {
 				
 				Control[] children= catGroups[i].getChildren();
 				Text title=(Text) children[0];
-				fileOut.println(title.getText());
+				fileOut.println(title.getText()+" ");
 				for(int j =qIndexInGroup;j<children.length;j++) { //start at 2 because skip the category title+type
 					Qbox qEd=(Qbox)children[j];
-					fileOut.println(qEd.getText());
-					fileOut.println(qEd.getAnswer()+"^^^^");
-					fileOut.println(qEd.getDD());
+					outputDD=qEd.getDD();
+					
+					//doing this to make sure there's at least 2 daily doubles
+					if(outputDD=='Y') {
+						ddCount ++;
+					}else if(i==5) { //if its the last category (6)
+						if((j-ddCount==3+qIndexInGroup) && (j>2+qIndexInGroup)) {//and we don't have enough DDs
+							outputDD='Y';
+							ddCount++;
+						}
+					}
+					
+					
+					fileOut.println(qEd.getText()+" ");
+					fileOut.println(" "+qEd.getAnswer()+"^^^^");
+					fileOut.println(outputDD);
 					fileOut.println(qEd.getTypeDetails());
 					}
 			}
 			fileOut.close();
+			if(ddCount<2) {
+				System.out.println("You fucked up the DDs bro");
+			}
 			
 		} catch (IOException err) {
 			// TODO Auto-generated catch block
