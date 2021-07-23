@@ -62,6 +62,7 @@ public class ViewBoard {
 		// shell.pack();
 		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		shell.setSize(size.x, size.y / 3 * 2);
+		
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {

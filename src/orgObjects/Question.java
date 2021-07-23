@@ -26,8 +26,10 @@ public class Question {
 		
 	}
 	public String getLevel() {
+
 		return this.level;
 	}
+
 	public String getQuestion() {
 		return this.q;
 		

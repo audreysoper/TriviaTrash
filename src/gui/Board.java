@@ -15,6 +15,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.FillLayout;
@@ -44,12 +45,14 @@ public class Board extends Composite {
 	public int boxW;
 	public int boxH;
 	public File currentOpenDoc;
-	
+	public final static Color lilac= SWTResourceManager.getColor(226, 213, 255);
+	public final static Color darkerLilac= SWTResourceManager.getColor(182, 151, 255);
 	/**
 	 * Create the composite.
 	 * @param parent
 	 * @param style
 	 * @param categories
+	 * @wbp.parser.constructor
 	 */
 	public Board(Composite parent, int style,Category[] catObjs) {
 		super(parent, style);
@@ -66,9 +69,12 @@ public class Board extends Composite {
 
 	private void populateBoard(Category[] catObjs) {
 		
+		setBackground(darkerLilac);
 		setLayout(new GridLayout());
 		
 		Label title=new Label(this,SWT.NONE);
+		
+		//title.setForeground(SWTResourceManager.getColor(204, 153, 255));
 		title.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
 		title.setText("The Fancy Question Editor");
 		title.setAlignment(SWT.CENTER);
@@ -78,8 +84,7 @@ public class Board extends Composite {
 		
 		//create group Top Header that buttons live in
 		Group topHeader= new Group(this, SWT.BORDER);
-		GridData topHeaderLayout= new GridData(GridData.FILL_HORIZONTAL|GridData.CENTER);
-		topHeader.setLayoutData(topHeaderLayout);
+		topHeader.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.CENTER));
 		
 		//now set the actual layout that Top header is employing
 		RowLayout headerInnerLayout= new RowLayout();
@@ -212,7 +217,7 @@ public class Board extends Composite {
 		
 		Composite dummyContainer = new Composite(scrollContainer,SWT.NONE);
 		dummyContainer.setLayout(new GridLayout(6,true));
-		
+		dummyContainer.setBackground(darkerLilac);
 		
 		scrollContainer.setContent(dummyContainer);
 		catGroups = new Group[6];
@@ -231,6 +236,7 @@ public class Board extends Composite {
 			catGroups[i]= new Group(dummyContainer, SWT.SHADOW_ETCHED_IN);
 			catGroups[i].setText("Category "+(i+1));
 			catGroups[i].setLayoutData(new GridData(GridData.BEGINNING));
+			catGroups[i].setBackground(lilac);
 			RowLayout catLayout=new RowLayout(SWT.HORIZONTAL|SWT.WRAP);
 			//catLayout.spacing=1;
 			catLayout.justify=true;
@@ -246,6 +252,7 @@ public class Board extends Composite {
 			titles[i]= new Text(catGroups[i], SWT.MULTI|SWT.WRAP|SWT.BORDER|SWT.V_SCROLL);
 			titles[i].setFont(SWTResourceManager.getFont("Segoe UI", 13, SWT.NORMAL));
 			titles[i].setText(catObjs[i].getName().toUpperCase());
+			
 			//WE SET TILE SIZE LATER AFTER GRABBING THE BOXES
 			
 			
