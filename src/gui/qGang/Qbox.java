@@ -49,14 +49,14 @@ public class Qbox extends Composite {
 		gridLayout.marginWidth=0;
 		gridLayout.verticalSpacing=vSpace;
 		setLayout(gridLayout);
-		setBackground(Board.lilac);
+		//setBackground(Board.lilac);
 		
 		Label qNumLbl = new Label(this, SWT.NONE);
 		qNumLbl.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
 		qNumLbl.setAlignment(SWT.CENTER);
 		qNumLbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		qNumLbl.setText("Question ");
-		qNumLbl.setBackground(Board.lilac);
+		//qNumLbl.setBackground(Board.lilac);
 		
 		
 		
@@ -82,7 +82,7 @@ public class Qbox extends Composite {
 		qDD.setText("DD?");
 		qDD.setSelection(q.getDD());
 		qDD.setGrayed(true);
-		qDD.setBackground(Board.lilac);
+		//qDD.setBackground(Board.lilac);
 		
 		
 		openButton = new Button(this, SWT.NONE);

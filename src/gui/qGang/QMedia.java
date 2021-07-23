@@ -30,7 +30,7 @@ public class QMedia extends Qbox {
 		
 		if(q.getTypeDetails().contains("P")) {
 			fileExtension=".jpg";
-		}else if(q.getTypeDetails().contains("A")){
+		}else if(q.getTypeDetails().contains("S")){
 			fileExtension=".mp3";
 		}else {
 			fileExtension=".*";

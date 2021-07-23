@@ -63,7 +63,7 @@ public class Question {
 			this.format="P";
 			break;
 		case "audio":
-			this.format="A";
+			this.format="S";
 			break;
 		default:
 			this.format="";
