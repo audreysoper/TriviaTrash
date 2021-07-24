@@ -125,7 +125,7 @@ public class ViewBoard {
 	}
 
 	private Category[] createBlank() {
-		Category[] cats = new Category[6];
+		Category[] cats = new Category[7];
 		Question[] qs;
 		for (int i = 0; i < cats.length; i++) {
 			qs = new Question[5];
@@ -144,7 +144,7 @@ public class ViewBoard {
 	}
 
 	public Category[] parseBoard(File source) {
-		Category[] cats = new Category[6];
+		Category[] cats = new Category[7];
 		try {
 			Scanner scanner = new Scanner(source);
 			String position = "newCat";
@@ -239,6 +239,21 @@ public class ViewBoard {
 					System.out.println("Umm something might be wrong? I recieved: " + position);
 					break;
 				}
+			}
+			try {
+			text = scanner.nextLine();
+			answer = scanner.nextLine();
+			if (answer.endsWith("^^^^") && answer.length()>4) {
+				answer = answer.substring(0, answer.indexOf('^'));
+			}else if(answer.length()<=4){
+				answer=" ";
+			}
+			
+			Question finQ= new Question(text.trim(), answer.trim(), 'N', "text", "", 0);
+			cats[catNum]=new Category("final",new Question[]{finQ},7);
+			}catch(Exception e1) {
+				System.out.println("I couln't make the Final Question");
+				e1.printStackTrace();
 			}
 			scanner.close();
 		}catch(Exception e)

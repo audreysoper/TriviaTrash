@@ -11,8 +11,8 @@ public class Category {
 	// hi!
 	public Category(String name, Question[] questions,int catGroupIndex) throws Exception {
 		this.catGroupIndex=catGroupIndex;
-		if(questions.length!=5) {
-			throw new Exception("Categories need to be exactly 5 questions");
+		if(questions.length!=5 && questions.length!=1 ) {
+			throw new Exception("Categories need to be exactly 5 questions, or 1 question");
 		}
 		for(int i=0;i<questions.length;i++) {
 			if(questions[i].getLvlIndex() != i) {
@@ -34,10 +34,10 @@ public class Category {
 		this.name=name;
 	}
 	
-	public String getName() {
-		return this.name;
-	}
 	
+	
+	
+	//ADD QUESTIONS
 	public void addQuestions (Question[] questions) throws Exception{
 		if(questions.length!=5) {
 			throw new Exception("Categories need to be exactly 5 questions");
@@ -77,7 +77,10 @@ public class Category {
 		this.questions[position]=newQ;
 	}
 */
-
+	public String getName() {
+		return this.name;
+	}
+	
 	public String getType() {
 		// TODO Auto-generated method stub
 		return this.type;

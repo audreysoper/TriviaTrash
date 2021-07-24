@@ -221,16 +221,19 @@ public class Board extends Composite {
 		//Group finalQSection= new Group(topHeader, SWT.NONE);
 		//finalQSection.setLayout(new RowLayout(SWT.VERTICAL));
 		//finalQSection.setText("Final Question");
+		Question finalQ=catObjs[6].getQuestions()[0];
 		Group finalQTextSec= new Group(topHeader, SWT.NONE);
 		finalQTextSec.setText("Question");
 		finalQTextSec.setLayout(new RowLayout());
 		fQtext= new Text(finalQTextSec,SWT.MULTI);
+		fQtext.setText(finalQ.getQuestion());
 		fQtext.setLayoutData(new RowData(200,40));
 		
 		Group finalQAnsSec= new Group(topHeader, SWT.NONE);
 		finalQAnsSec.setText("Answer");
 		finalQAnsSec.setLayout(new RowLayout());
 		fQanswer= new Text(finalQAnsSec,SWT.MULTI);
+		fQanswer.setText(finalQ.getAnswer());
 		fQanswer.setLayoutData(new RowData(200,40));
 		
 		
@@ -258,7 +261,7 @@ public class Board extends Composite {
 		
 		
 		//BEGIN PUTTING THINGS IN CAT GROUPS
-		for(int i =0;i<catObjs.length;i++) {
+		for(int i =0;i<catObjs.length-1;i++) {
 			catGroups[i]= new Group(dummyContainer, SWT.SHADOW_ETCHED_IN);
 			catGroups[i].setText("Category "+(i+1));
 			catGroups[i].setLayoutData(new GridData(GridData.BEGINNING));
