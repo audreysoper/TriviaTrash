@@ -7,19 +7,15 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import gui.qGang.Qbox;
 import orgObjects.Category;
 import orgObjects.Question;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 
 public class ViewBoard {
@@ -40,6 +36,7 @@ public class ViewBoard {
 			window.openBlank();
 		} catch (Exception e) {
 			e.printStackTrace();
+			
 		}
 	}
 
