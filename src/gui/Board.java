@@ -177,14 +177,14 @@ public class Board extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				FileDialog chooser= new FileDialog(((Control) e.widget).getShell());
+				FileDialog chooser= new FileDialog(((Control) e.widget).getShell(),SWT.SAVE);
 				try {
 				chooser.setFilterExtensions(new String[] {"*.txt"});
 				chooser.open();
 				
 					if(chooser.getFileName().length()>1) {
 						File source= new File(chooser.getFilterPath()+"\\"+chooser.getFileName());
-						ViewBoard newWindow= new ViewBoard();
+						AppBoard newWindow= new AppBoard();
 						newWindow.openFile(source);
 					}
 				}catch(Exception err) {
@@ -203,7 +203,7 @@ public class Board extends Composite {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					// 
-					ViewBoard newWindow= new ViewBoard();
+					AppBoard newWindow= new AppBoard();
 					newWindow.openBlank();
 				}
 			});
@@ -222,16 +222,16 @@ public class Board extends Composite {
 		Group finalQTextSec= new Group(topHeader, SWT.NONE);
 		finalQTextSec.setText("Question");
 		finalQTextSec.setLayout(new RowLayout());
-		fQtext= new Text(finalQTextSec,SWT.MULTI);
+		fQtext= new Text(finalQTextSec,SWT.MULTI|SWT.WRAP);
 		fQtext.setText(finalQ.getQuestion());
-		fQtext.setLayoutData(new RowData(200,40));
+		fQtext.setLayoutData(new RowData(SWT.MIN *2,60));
 		
 		Group finalQAnsSec= new Group(topHeader, SWT.NONE);
 		finalQAnsSec.setText("Answer");
 		finalQAnsSec.setLayout(new RowLayout());
-		fQanswer= new Text(finalQAnsSec,SWT.MULTI);
+		fQanswer= new Text(finalQAnsSec,SWT.MULTI|SWT.WRAP);
 		fQanswer.setText(finalQ.getAnswer());
-		fQanswer.setLayoutData(new RowData(200,40));
+		fQanswer.setLayoutData(new RowData(SWT.MIN *2,60));
 		
 		
 		
@@ -412,8 +412,8 @@ public class Board extends Composite {
 			for(int i =0;i<catGroups.length;i++) {
 				
 				Control[] children= catGroups[i].getChildren();
-				Text title=(Text) children[0];
-				fileOut.println(title.getText()+" ");
+				String title=((Text)children[0]).getText().replaceAll("\n", " ");
+				fileOut.println(title+" ");
 				for(int j =qIndexInGroup;j<children.length;j++) { //start at 2 because skip the category title+type
 					Qbox qEd=(Qbox)children[j];
 					outputDD=qEd.getDD();
@@ -429,15 +429,15 @@ public class Board extends Composite {
 					}
 					
 					
-					fileOut.println(qEd.getText()+" ");
-					fileOut.println(" "+qEd.getAnswer()+"^^^^");
+					fileOut.println(qEd.getText().replaceAll("\n", " ")+" ");
+					fileOut.println(" "+qEd.getAnswer().replaceAll("\n", " ")+"^^^^");
 					fileOut.println(outputDD);
 					fileOut.println(qEd.getTypeDetails());
 					}
 			}
 			//after all the loops are done at the very end add the FINAL QUESTION
-			fileOut.println(fQtext.getText()+" ");
-			fileOut.println(" "+fQanswer.getText()+"^^^^");
+			fileOut.println(fQtext.getText().replaceAll("\n", " ")+" ");
+			fileOut.println(" "+fQanswer.getText().replaceAll("\n", " ")+"^^^^");
 			
 			fileOut.close();
 			if(ddCount<2) {

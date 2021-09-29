@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 
-public class ViewBoard {
+public class AppBoard {
 
 	protected Shell shell;
 	private int boxH;
@@ -31,7 +31,7 @@ public class ViewBoard {
 	public static void main(String[] args) {
 
 		try {
-			ViewBoard window = new ViewBoard();
+			AppBoard window = new AppBoard();
 
 			window.openBlank();
 		} catch (Exception e) {
@@ -162,11 +162,10 @@ public class ViewBoard {
 				case "newCat":
 					if (text.length() > 1) {
 						currentCat = new Category(text.trim(), catNum);
-						position = "question";
 					}else if(text.length() > 0) {
 						currentCat = new Category(" ", catNum);
-						position = "question";
 					}
+					position = "question";
 					break;
 
 					
@@ -204,15 +203,13 @@ public class ViewBoard {
 							currentCat.addQuestions(questions);
 							
 							//set the type of the current category
-							 if (text.length() < 4) {
-							currentCat.changeType("text");
-							 } else {
+							 
 								 //if the text is more than 4 characters THEN its safe to do the switch statement
-								 switch (text.substring(text.length() - 3)) {
-								 	case "jpg":
+								 switch (format.charAt(0)) {
+								 	case 'P':
 								 		currentCat.changeType("picture");
 								 		break;
-								 	case "mp3":
+								 	case 'S':
 								 		currentCat.changeType("audio");
 								 		break;
 								 	default:
@@ -220,7 +217,7 @@ public class ViewBoard {
 								 		break;
 								 }
 							 
-							}
+							
 							 
 							//ELSE needs to end BEFORE these statements	
 							cats[catNum] = currentCat;
@@ -266,7 +263,7 @@ public class ViewBoard {
 		Composite sad = new Composite(shell, SWT.NONE);
 		sad.setLayout(new FillLayout());
 		Label owoSticker = new Label(sad, SWT.NONE);
-		Image bigOwo = SWTResourceManager.getImage(ViewBoard.class, "MEDowo.png");
+		Image bigOwo = SWTResourceManager.getImage(AppBoard.class, "MEDowo.png");
 		owoSticker.setImage(bigOwo);
 		owoSticker.setBounds(bigOwo.getBounds());
 		// owoSticker.setText("Plz stop breaking me");
