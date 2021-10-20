@@ -36,7 +36,7 @@ public class AppBoard {
 			window.openBlank();
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 		}
 	}
 
@@ -59,7 +59,6 @@ public class AppBoard {
 		// shell.pack();
 		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		shell.setSize(size.x, size.y / 3 * 2);
-		
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -85,7 +84,6 @@ public class AppBoard {
 			shell.open();
 			Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 			shell.setSize(size.x, size.y / 3 * 2);
-			
 
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch()) {
@@ -153,39 +151,42 @@ public class AppBoard {
 			String answer;
 			String dd;
 			String format;
+			boolean sameType = true;
 
 			while (catNum < 6 && scanner.hasNextLine()) {
 				text = scanner.nextLine();
 				switch (position) {
-				
-				//WHEN POSITION IS A NEW CATEGORY
+
+				// WHEN POSITION IS A NEW CATEGORY
 				case "newCat":
 					if (text.length() > 1) {
 						currentCat = new Category(text.trim(), catNum);
-					}else if(text.length() > 0) {
+					} else if (text.length() > 0) {
 						currentCat = new Category(" ", catNum);
 					}
 					position = "question";
 					break;
 
-					
-					
-				//WHEN POSITION IS A NEW QUESTION	
+				// WHEN POSITION IS A NEW QUESTION
 				case "question":
 					try {
 						answer = scanner.nextLine();
 						dd = scanner.nextLine();
 						format = scanner.nextLine();
-						if (answer.endsWith("^^^^") && answer.length()>4) {
+						if (answer.endsWith("^^^^") && answer.length() > 4) {
 							answer = answer.substring(0, answer.indexOf('^'));
-						}else if(answer.length()<=4){
-							answer=" ";
+						} else if (answer.length() <= 4) {
+							answer = " ";
 						}
-					
-					
-						questions[qNum] = new Question(text.trim(), answer.trim(), dd.charAt(0), currentCat.getType(), format, qNum);
+						
+						if (qNum > 0 && sameType) {
+							sameType = questions[qNum - 1].getTypeDetails().contains(format);
+						}
+
+						questions[qNum] = new Question(text.trim(), answer.trim(), dd.charAt(0), "", format, qNum);
+
 						qNum++;
-					}catch (Exception e1) {
+					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						Composite sad = getSad();
 						shell.open();
@@ -198,65 +199,67 @@ public class AppBoard {
 						// e.printStackTrace();
 						return null;
 					}
-						// if we've got all out questions, change back to category start
-						if (qNum > 4) {
-							currentCat.addQuestions(questions);
-							
-							//set the type of the current category
-							 
-								 //if the text is more than 4 characters THEN its safe to do the switch statement
-								 switch (format.charAt(0)) {
-								 	case 'P':
-								 		currentCat.changeType("picture");
-								 		break;
-								 	case 'S':
-								 		currentCat.changeType("audio");
-								 		break;
-								 	default:
-								 		currentCat.changeType("text");
-								 		break;
-								 }
-							 
-							
-							 
-							//ELSE needs to end BEFORE these statements	
-							cats[catNum] = currentCat;
-							catNum++;
-							qNum = 0;
-							position = "newCat";
-							questions = new Question[5];
+					// if we've got all out questions, change back to category start
+					if (qNum > 4) {
+						currentCat.addQuestions(questions);
+
+						// set the type of the current category
+
+						// if the text is more than 4 characters THEN its safe to do the switch
+						// statement
+						if (sameType) {
+							switch (format.charAt(0)) {
+							case 'P':
+								currentCat.changeType("picture");
+								break;
+							case 'S':
+								currentCat.changeType("audio");
+								break;
+							default:
+								currentCat.changeType("text");
+								break;
+							}
+						} else {
+							currentCat.changeType("mixed");
 						}
-						break;
-						
-					
+
+						// ELSE needs to end BEFORE these statements
+						cats[catNum] = currentCat;
+						catNum++;
+						qNum = 0;
+						position = "newCat";
+						questions = new Question[5];
+						sameType = true;
+					}
+					break;
+
 				default:
 					System.out.println("Umm something might be wrong? I recieved: " + position);
 					break;
 				}
 			}
 			try {
-			text = scanner.nextLine();
-			answer = scanner.nextLine();
-			if (answer.endsWith("^^^^") && answer.length()>4) {
-				answer = answer.substring(0, answer.indexOf('^'));
-			}else if(answer.length()<=4){
-				answer=" ";
-			}
-			
-			Question finQ= new Question(text.trim(), answer.trim(), 'N', "text", "", 0);
-			cats[catNum]=new Category("final",new Question[]{finQ},7);
-			}catch(Exception e1) {
+				text = scanner.nextLine();
+				answer = scanner.nextLine();
+				if (answer.endsWith("^^^^") && answer.length() > 4) {
+					answer = answer.substring(0, answer.indexOf('^'));
+				} else if (answer.length() <= 4) {
+					answer = " ";
+				}
+
+				Question finQ = new Question(text.trim(), answer.trim(), 'N', "text", "", 0);
+				cats[catNum] = new Category("final", new Question[] { finQ }, 7);
+			} catch (Exception e1) {
 				System.out.println("I couln't make the Final Question");
 				e1.printStackTrace();
 			}
 			scanner.close();
-		}catch(Exception e)
-		{
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
-	return cats;
+		return cats;
 	}
 
 	public Composite getSad() {

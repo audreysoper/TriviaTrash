@@ -28,6 +28,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import gui.qGang.QEdit;
 import gui.qGang.QMedia;
+import gui.qGang.QMixed;
 import gui.qGang.Qbox;
 import orgObjects.Category;
 import orgObjects.Question;
@@ -38,7 +39,7 @@ public class Board extends Composite {
 	public boolean useFileNames;
 	private Group[] catGroups;
 	private Text[] titles;
-	private String[] typeNames=new String[]{"text","picture","audio"};
+	public final static String[] typeNames=new String[]{"text","picture","audio","mixed"};
 	private Text fQtext;
 	private Text fQanswer;
 	public int boxW;
@@ -46,7 +47,7 @@ public class Board extends Composite {
 	public File currentOpenDoc;
 	public final static Color audioBG= SWTResourceManager.getColor(255, 229, 249);//light pink
 	public final static Color picBG= SWTResourceManager.getColor(230, 249, 255);//light blue
-	//public final static Color lilac= SWTResourceManager.getColor(226, 213, 255);
+	public final static Color mixedBG= SWTResourceManager.getColor(255, 248, 212);//yellow
 	public final static Color lilac= SWTResourceManager.getColor(238, 230, 255);
 	public final static Color bgColor= SWTResourceManager.getColor(243, 233, 210);
 	//public final static Color bgColor= SWTResourceManager.getColor(249, 238, 210);
@@ -266,6 +267,7 @@ public class Board extends Composite {
 			switch(catObjs[i].getType()) {
 			case "audio": catGroups[i].setBackground(audioBG);
 			case "picture":catGroups[i].setBackground(picBG);
+			case "mixed":catGroups[i].setBackground(mixedBG);
 			case "text":catGroups[i].setBackground(lilac);
 			}
 			catGroups[i].setBackgroundMode(SWT.INHERIT_DEFAULT);
@@ -356,11 +358,14 @@ public class Board extends Composite {
 				//qGroup[j].setSize(boxW, boxH);//adding extra boxH to the starting position because of title
 				//qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
 			}
-		}else if((newType.contains("audio")) || (newType.contains("picture"))){
+		}else if((newType.contains("audio")) || (newType.contains("picture")) ){
 			qGroup= new QMedia[5];
 			if(newType.contains("picture")){
 				parentCatGroup.setBackground(picBG);
-			}else {parentCatGroup.setBackground(audioBG);}
+			}else if(newType.contains("mixed")){
+				parentCatGroup.setBackground(mixedBG);
+			}
+			else {parentCatGroup.setBackground(audioBG);}
 			
 			for(int j =0;j<qs.length;j++) {
 				qGroup[j]= new QMedia(parentCatGroup, SWT.NONE,qs[j]);
@@ -368,6 +373,12 @@ public class Board extends Composite {
 				//qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
 			}
 			
+		}else if((newType.contains("mixed"))) {
+			qGroup= new QMixed[5];
+			parentCatGroup.setBackground(mixedBG);
+			for(int j =0;j<qs.length;j++) {
+				qGroup[j]= new QMixed(parentCatGroup, SWT.NONE,qs[j]);
+			}
 		}
 		parentCatGroup.layout();
 		parentCatGroup.pack();
@@ -380,7 +391,6 @@ public class Board extends Composite {
 	protected void setType(Composite catGroupParent,Combo typeSelect) {
 		
 		int index= Integer.parseInt(((Group)catGroupParent).getText().substring(9))-1;
-		Group test=catGroups[index];
 		Qbox[] qBoxGroup= new Qbox[5];
 		Question[] qs=new Question[5];
 	
@@ -429,7 +439,7 @@ public class Board extends Composite {
 					}
 					
 					
-					fileOut.println(qEd.getText().replaceAll("\n", " ")+" ");
+					fileOut.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
 					fileOut.println(" "+qEd.getAnswer().replaceAll("\n", " ")+"^^^^");
 					fileOut.println(outputDD);
 					fileOut.println(qEd.getTypeDetails());
