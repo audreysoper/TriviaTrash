@@ -28,6 +28,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import gui.qGang.QEdit;
 import gui.qGang.QMedia;
+import gui.qGang.QMixed;
 import gui.qGang.Qbox;
 import orgObjects.Category;
 import orgObjects.Question;
@@ -38,7 +39,7 @@ public class Board extends Composite {
 	public boolean useFileNames;
 	private Group[] catGroups;
 	private Text[] titles;
-	private String[] typeNames=new String[]{"text","picture","audio"};
+	public final static String[] typeNames=new String[]{"text","picture","audio","mixed"};
 	private Text fQtext;
 	private Text fQanswer;
 	public int boxW;
@@ -46,7 +47,7 @@ public class Board extends Composite {
 	public File currentOpenDoc;
 	public final static Color audioBG= SWTResourceManager.getColor(255, 229, 249);//light pink
 	public final static Color picBG= SWTResourceManager.getColor(230, 249, 255);//light blue
-	//public final static Color lilac= SWTResourceManager.getColor(226, 213, 255);
+	public final static Color mixedBG= SWTResourceManager.getColor(255, 248, 212);//yellow
 	public final static Color lilac= SWTResourceManager.getColor(238, 230, 255);
 	public final static Color bgColor= SWTResourceManager.getColor(243, 233, 210);
 	//public final static Color bgColor= SWTResourceManager.getColor(249, 238, 210);
@@ -177,14 +178,14 @@ public class Board extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				FileDialog chooser= new FileDialog(((Control) e.widget).getShell());
+				FileDialog chooser= new FileDialog(((Control) e.widget).getShell(),SWT.SAVE);
 				try {
 				chooser.setFilterExtensions(new String[] {"*.txt"});
 				chooser.open();
 				
 					if(chooser.getFileName().length()>1) {
 						File source= new File(chooser.getFilterPath()+"\\"+chooser.getFileName());
-						ViewBoard newWindow= new ViewBoard();
+						AppBoard newWindow= new AppBoard();
 						newWindow.openFile(source);
 					}
 				}catch(Exception err) {
@@ -203,7 +204,7 @@ public class Board extends Composite {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					// 
-					ViewBoard newWindow= new ViewBoard();
+					AppBoard newWindow= new AppBoard();
 					newWindow.openBlank();
 				}
 			});
@@ -222,16 +223,16 @@ public class Board extends Composite {
 		Group finalQTextSec= new Group(topHeader, SWT.NONE);
 		finalQTextSec.setText("Question");
 		finalQTextSec.setLayout(new RowLayout());
-		fQtext= new Text(finalQTextSec,SWT.MULTI);
+		fQtext= new Text(finalQTextSec,SWT.MULTI|SWT.WRAP);
 		fQtext.setText(finalQ.getQuestion());
-		fQtext.setLayoutData(new RowData(200,40));
+		fQtext.setLayoutData(new RowData(SWT.MIN *2,60));
 		
 		Group finalQAnsSec= new Group(topHeader, SWT.NONE);
 		finalQAnsSec.setText("Answer");
 		finalQAnsSec.setLayout(new RowLayout());
-		fQanswer= new Text(finalQAnsSec,SWT.MULTI);
+		fQanswer= new Text(finalQAnsSec,SWT.MULTI|SWT.WRAP);
 		fQanswer.setText(finalQ.getAnswer());
-		fQanswer.setLayoutData(new RowData(200,40));
+		fQanswer.setLayoutData(new RowData(SWT.MIN *2,60));
 		
 		
 		
@@ -266,6 +267,7 @@ public class Board extends Composite {
 			switch(catObjs[i].getType()) {
 			case "audio": catGroups[i].setBackground(audioBG);
 			case "picture":catGroups[i].setBackground(picBG);
+			case "mixed":catGroups[i].setBackground(mixedBG);
 			case "text":catGroups[i].setBackground(lilac);
 			}
 			catGroups[i].setBackgroundMode(SWT.INHERIT_DEFAULT);
@@ -356,11 +358,14 @@ public class Board extends Composite {
 				//qGroup[j].setSize(boxW, boxH);//adding extra boxH to the starting position because of title
 				//qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
 			}
-		}else if((newType.contains("audio")) || (newType.contains("picture"))){
+		}else if((newType.contains("audio")) || (newType.contains("picture")) ){
 			qGroup= new QMedia[5];
 			if(newType.contains("picture")){
 				parentCatGroup.setBackground(picBG);
-			}else {parentCatGroup.setBackground(audioBG);}
+			}else if(newType.contains("mixed")){
+				parentCatGroup.setBackground(mixedBG);
+			}
+			else {parentCatGroup.setBackground(audioBG);}
 			
 			for(int j =0;j<qs.length;j++) {
 				qGroup[j]= new QMedia(parentCatGroup, SWT.NONE,qs[j]);
@@ -368,6 +373,12 @@ public class Board extends Composite {
 				//qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
 			}
 			
+		}else if((newType.contains("mixed"))) {
+			qGroup= new QMixed[5];
+			parentCatGroup.setBackground(mixedBG);
+			for(int j =0;j<qs.length;j++) {
+				qGroup[j]= new QMixed(parentCatGroup, SWT.NONE,qs[j]);
+			}
 		}
 		parentCatGroup.layout();
 		parentCatGroup.pack();
@@ -380,7 +391,6 @@ public class Board extends Composite {
 	protected void setType(Composite catGroupParent,Combo typeSelect) {
 		
 		int index= Integer.parseInt(((Group)catGroupParent).getText().substring(9))-1;
-		Group test=catGroups[index];
 		Qbox[] qBoxGroup= new Qbox[5];
 		Question[] qs=new Question[5];
 	
@@ -412,8 +422,8 @@ public class Board extends Composite {
 			for(int i =0;i<catGroups.length;i++) {
 				
 				Control[] children= catGroups[i].getChildren();
-				Text title=(Text) children[0];
-				fileOut.println(title.getText()+" ");
+				String title=((Text)children[0]).getText().replaceAll("\n", " ");
+				fileOut.println(title+" ");
 				for(int j =qIndexInGroup;j<children.length;j++) { //start at 2 because skip the category title+type
 					Qbox qEd=(Qbox)children[j];
 					outputDD=qEd.getDD();
@@ -429,15 +439,15 @@ public class Board extends Composite {
 					}
 					
 					
-					fileOut.println(qEd.getText()+" ");
-					fileOut.println(" "+qEd.getAnswer()+"^^^^");
+					fileOut.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
+					fileOut.println(" "+qEd.getAnswer().replaceAll("\n", " ")+"^^^^");
 					fileOut.println(outputDD);
 					fileOut.println(qEd.getTypeDetails());
 					}
 			}
 			//after all the loops are done at the very end add the FINAL QUESTION
-			fileOut.println(fQtext.getText()+" ");
-			fileOut.println(" "+fQanswer.getText()+"^^^^");
+			fileOut.println(fQtext.getText().replaceAll("\n", " ")+" ");
+			fileOut.println(" "+fQanswer.getText().replaceAll("\n", " ")+"^^^^");
 			
 			fileOut.close();
 			if(ddCount<2) {

@@ -63,7 +63,8 @@ public class Category {
 		this.type=newType;
 		
 		//go through each question and update it's TYPE to match
-		if(this.questions.length==5) {
+		//But DON'T bother if they're mixed
+		if(this.questions.length==5 && !newType.contains("mixed")) {
 			for(int i=0;i<this.questions.length;i++) {
 				this.questions[i].setType(newType);
 			}

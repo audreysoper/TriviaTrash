@@ -22,8 +22,8 @@ public class QEdit extends Qbox {
 		
 		qAnswer.setEditable(true);
 		
-		
-	
+		//this.layout();
+		//this.pack();
 
 	}
 
