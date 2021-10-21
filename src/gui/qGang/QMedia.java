@@ -45,7 +45,7 @@ public class QMedia extends Qbox {
 		chooser = new FileDialog(parent.getShell());
 
 		if (q.getTypeDetails().contains("P")) {
-			fileExtension = new String[] { "*.jpg","*.png","*.gif","*.jpeg"};
+			fileExtension = new String[] {"*.jpg;*.png;*.gif;*.jfif;*.bmp;*.jpeg;*.tiff"};
 		} else if (q.getTypeDetails().contains("S")) {
 			fileExtension = new String[] {"*.mp3"};
 		} else {

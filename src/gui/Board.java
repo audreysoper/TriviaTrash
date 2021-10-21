@@ -76,38 +76,40 @@ public class Board extends Composite {
 		setBackgroundMode(SWT.INHERIT_DEFAULT);
 		
 		//setBackground(bgColor);
-		setLayout(new GridLayout());
+		setLayout(new GridLayout(3,false));
 		
 		Label title=new Label(this,SWT.NONE);
 		
 		//title.setForeground(SWTResourceManager.getColor(204, 153, 255));
-		title.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
+		title.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,3,1));
 		title.setText("The Fancy Question Editor");
 		title.setAlignment(SWT.CENTER);
 		title.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
 		
 		
 		
-		//create group Top Header that buttons live in
-		Group topHeader= new Group(this, SWT.NONE);
-		topHeader.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.CENTER));
+		//create group Top Header that BUTTONS(only) live in
+		Group buttonHeader= new Group(this, SWT.NONE);
+		buttonHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,false,false));
+		//topHeader.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.CENTER));
 		
 		//now set the actual layout that Top header is employing
 		RowLayout headerInnerLayout= new RowLayout();
 		//headerInnerLayout.justify=true;
 		headerInnerLayout.spacing=10;
 		headerInnerLayout.center=true;
-		topHeader.setLayout(headerInnerLayout);
+		headerInnerLayout.marginWidth=2;
+		buttonHeader.setLayout(headerInnerLayout);
 		//topHeader.setText("Options");
 		
 		
 		//add stuff to topHeader Group
-		Label headerInstructions=new Label(topHeader,SWT.NONE);
+		Label headerInstructions=new Label(buttonHeader,SWT.NONE);
 		headerInstructions.setLayoutData(new RowData(SWT.DEFAULT,50));
 		headerInstructions.setText("Options:");
 		headerInstructions.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
 		
-		Button ufnButton=new Button(topHeader,SWT.CHECK|SWT.WRAP);
+		Button ufnButton=new Button(buttonHeader,SWT.CHECK|SWT.WRAP);
 		ufnButton.setLayoutData(new RowData(SWT.DEFAULT,50));
 		//ufnButton.setBounds(0, 0, 120, 50);
 		ufnButton.setText("Use file names as answers?");
@@ -126,7 +128,7 @@ public class Board extends Composite {
 		
 		if(currentOpenDoc != null) {
 			title.setText(title.getText()+" - "+currentOpenDoc.getName());
-			Button save= new Button(topHeader,SWT.PUSH);
+			Button save= new Button(buttonHeader,SWT.PUSH);
 			save.setLayoutData(new RowData(SWT.DEFAULT,40));
 			save.setText("SAVE - "+currentOpenDoc.getName());
 			save.addSelectionListener(new SelectionAdapter() {
@@ -138,7 +140,7 @@ public class Board extends Composite {
 		}
 		
 		//Save Button
-		Button saveAS= new Button(topHeader,SWT.PUSH);
+		Button saveAS= new Button(buttonHeader,SWT.PUSH);
 		saveAS.setLayoutData(new RowData(SWT.DEFAULT,40));
 		saveAS.setText("SAVE AS...");
 		saveAS.addSelectionListener(new SelectionAdapter() {
@@ -170,7 +172,7 @@ public class Board extends Composite {
 		});
 		
 		//Open Button
-		Button open= new Button(topHeader,SWT.PUSH);
+		Button open= new Button(buttonHeader,SWT.PUSH);
 		//open.setBounds(100, 0, 120, 50);
 		open.setLayoutData(new RowData(SWT.DEFAULT,40));
 		open.setText("OPEN");
@@ -196,7 +198,7 @@ public class Board extends Composite {
 		});
 		
 		//New button
-		Button newBoard= new Button(topHeader,SWT.PUSH);
+		Button newBoard= new Button(buttonHeader,SWT.PUSH);
 		//new.setBounds(100, 0, 120, 50);
 		newBoard.setLayoutData(new RowData(SWT.DEFAULT,40));
 		newBoard.setText("NEW BOARD");
@@ -210,40 +212,50 @@ public class Board extends Composite {
 			});
 		
 		//fINAL QUESTION SECTION
-		Label sep = new Label(topHeader,SWT.SEPARATOR|SWT.VERTICAL);
-		Label finalQSecText=new Label(topHeader,SWT.NONE);
-		finalQSecText.setLayoutData(new RowData(SWT.DEFAULT,50));
+			Group finalQHeader= new Group(this, SWT.NONE);
+			finalQHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,2,1));
+			GridLayout fqSectionLayout= new GridLayout(3,false);
+			finalQHeader.setLayout(fqSectionLayout);	
+				
+				
+		Label finalQSecText=new Label(finalQHeader,SWT.NONE);
 		finalQSecText.setText("Final Question");
 		finalQSecText.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
+		finalQSecText.setLayoutData(new GridData(GridData.BEGINNING,GridData.BEGINNING,false,false));
+		
+		
 
-		//Group finalQSection= new Group(topHeader, SWT.NONE);
-		//finalQSection.setLayout(new RowLayout(SWT.VERTICAL));
-		//finalQSection.setText("Final Question");
 		Question finalQ=catObjs[6].getQuestions()[0];
-		Group finalQTextSec= new Group(topHeader, SWT.NONE);
+		Group finalQTextSec= new Group(finalQHeader, SWT.NONE);
 		finalQTextSec.setText("Question");
-		finalQTextSec.setLayout(new RowLayout());
+		finalQTextSec.setLayout(new GridLayout());
 		fQtext= new Text(finalQTextSec,SWT.MULTI|SWT.WRAP);
 		fQtext.setText(finalQ.getQuestion());
-		fQtext.setLayoutData(new RowData(SWT.MIN *2,60));
+		fQtext.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
+		((GridData) fQtext.getLayoutData()).heightHint=fQtext.getLineHeight()*3;
+		finalQTextSec.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
 		
-		Group finalQAnsSec= new Group(topHeader, SWT.NONE);
+		Group finalQAnsSec= new Group(finalQHeader, SWT.NONE);
 		finalQAnsSec.setText("Answer");
-		finalQAnsSec.setLayout(new RowLayout());
+		finalQAnsSec.setLayout(new GridLayout());
 		fQanswer= new Text(finalQAnsSec,SWT.MULTI|SWT.WRAP);
 		fQanswer.setText(finalQ.getAnswer());
-		fQanswer.setLayoutData(new RowData(SWT.MIN *2,60));
-		
+		finalQAnsSec.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
+		fQanswer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
+		((GridData) fQanswer.getLayoutData()).heightHint=fQtext.getLineHeight()*3;
+		finalQHeader.pack();
 		
 		
 		
 		//START THE MAIN SECTION OF THE WINDOW
 		ScrolledComposite scrollContainer= new ScrolledComposite(this,SWT.V_SCROLL|SWT.H_SCROLL| SWT.BORDER);
-		scrollContainer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
+		scrollContainer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true,3,1));
 		
 		
-		Composite dummyContainer = new Composite(scrollContainer,SWT.NONE);
+		//Composite dummyContainer = new Composite(scrollContainer,SWT.NONE);
+		Group dummyContainer = new Group(scrollContainer,SWT.NONE);
 		dummyContainer.setLayout(new GridLayout(6,true));
+		dummyContainer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
 		dummyContainer.setBackground(darkerLilac);
 		
 		scrollContainer.setContent(dummyContainer);
@@ -262,7 +274,7 @@ public class Board extends Composite {
 		for(int i =0;i<catObjs.length-1;i++) {
 			catGroups[i]= new Group(dummyContainer, SWT.SHADOW_ETCHED_IN);
 			catGroups[i].setText("Category "+(i+1));
-			catGroups[i].setLayoutData(new GridData(GridData.BEGINNING));
+			catGroups[i].setLayoutData(new GridData(GridData.BEGINNING,GridData.BEGINNING,false,false));
 			
 			switch(catObjs[i].getType()) {
 			case "audio": catGroups[i].setBackground(audioBG);
