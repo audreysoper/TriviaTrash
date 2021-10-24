@@ -97,7 +97,7 @@ public class Qbox extends Composite {
 		openButton.setImage(SWTResourceManager.getImage(Qbox.class, "Open16.gif"));
 		openButton.setVisible(false);
 		GridData openLayoutDetails = new GridData(GridData.FILL, GridData.FILL, true, false, 3, 1);
-		openLayoutDetails.widthHint = this.width;
+		openLayoutDetails.minimumWidth = this.width;
 		openLayoutDetails.exclude=true;
 		openButton.setLayoutData(openLayoutDetails);
 		
@@ -106,20 +106,20 @@ public class Qbox extends Composite {
 		width=computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
 		
 		qEdit = new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER);
-		GridData qEditLayoutDetails=new GridData(GridData.FILL,GridData.FILL,false,false,3,1);
+		GridData qEditLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,false,3,1);
 		editHeightDefault=qEdit.getLineHeight()*5;
 		qEditLayoutDetails.heightHint=editHeightDefault;
 		//qEditLayoutDetails.heightHint=this.height*2/5;
-		qEditLayoutDetails.widthHint=this.width;
+		qEditLayoutDetails.minimumWidth=this.width;
 		qEdit.setLayoutData(qEditLayoutDetails);
 		qEdit.setMessage("Question");
 		qEdit.setText(q.getQuestion());
 		qEdit.setEditable(false);
 		
 		qAnswer = new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER);
-		GridData qAnswerLayoutDetails=new GridData(GridData.FILL,GridData.FILL,false,false,3,1);
+		GridData qAnswerLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,false,3,1);
 		ansHeightDefault=qAnswer.getLineHeight()*3;
-		qAnswerLayoutDetails.widthHint=this.width;
+		qAnswerLayoutDetails.minimumWidth=this.width;
 		qAnswerLayoutDetails.heightHint=ansHeightDefault;
 		qAnswer.setMessage("Answer");
 		qAnswer.setLayoutData(qAnswerLayoutDetails);

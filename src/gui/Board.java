@@ -250,10 +250,10 @@ public class Board extends Composite {
 		//START THE MAIN SECTION OF THE WINDOW
 		ScrolledComposite scrollContainer= new ScrolledComposite(this,SWT.V_SCROLL|SWT.H_SCROLL| SWT.BORDER);
 		scrollContainer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true,3,1));
+		scrollContainer.setExpandHorizontal(true);
 		
-		
-		//Composite dummyContainer = new Composite(scrollContainer,SWT.NONE);
-		Group dummyContainer = new Group(scrollContainer,SWT.NONE);
+		Composite dummyContainer = new Composite(scrollContainer,SWT.NONE);
+		//Group dummyContainer = new Group(scrollContainer,SWT.NONE);
 		dummyContainer.setLayout(new GridLayout(6,true));
 		dummyContainer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
 		dummyContainer.setBackground(darkerLilac);
@@ -274,7 +274,7 @@ public class Board extends Composite {
 		for(int i =0;i<catObjs.length-1;i++) {
 			catGroups[i]= new Group(dummyContainer, SWT.SHADOW_ETCHED_IN);
 			catGroups[i].setText("Category "+(i+1));
-			catGroups[i].setLayoutData(new GridData(GridData.BEGINNING,GridData.BEGINNING,false,false));
+			catGroups[i].setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
 			
 			switch(catObjs[i].getType()) {
 			case "audio": catGroups[i].setBackground(audioBG);
@@ -284,13 +284,8 @@ public class Board extends Composite {
 			}
 			catGroups[i].setBackgroundMode(SWT.INHERIT_DEFAULT);
 		
-			RowLayout catLayout=new RowLayout(SWT.HORIZONTAL|SWT.WRAP);
-			//catLayout.spacing=1;
-			catLayout.justify=true;
-			//catLayout.center=true;
-			catLayout.marginWidth=5;
-			catLayout.fill=true;
-			catGroups[i].setLayout(catLayout);
+			
+			catGroups[i].setLayout(new GridLayout());
 			 
 			
 			
@@ -306,9 +301,7 @@ public class Board extends Composite {
 			//Category types
 			catType[i]= new Combo(catGroups[i],SWT.DROP_DOWN|SWT.READ_ONLY);
 			catType[i].setItems(typeNames);
-			//catType[i].setSize(boxW, 15);
-			//catType[i].setLayoutData(new RowData(boxW, 30));
-			//catType[i].setLayoutData(new RowData(SWT.DEFAULT, 30));
+			catType[i].setLayoutData(new GridData(GridData.FILL,GridData.CENTER,true,false));
 			catType[i].setText(catObjs[i].getType());
 			catType[i].addModifyListener(new ModifyListener() {
 			
@@ -328,13 +321,13 @@ public class Board extends Composite {
 			//add all the questions
 			Question[] qs=catObjs[i].getQuestions();
 			Qbox[] boxes=makeQuestionGroup(catGroups[i],qs);	
-			titles[i].setLayoutData(new RowData(boxes[0].width, (catType[i].getBounds().height)*2));
+			titles[i].setLayoutData(new GridData(GridData.FILL,GridData.BEGINNING,true,false));
 		}
 		
 		dummyContainer.layout();
 		dummyContainer.pack();
 		scrollContainer.pack();
-		
+		scrollContainer.setMinWidth(dummyContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
 		pack();
 		
 		
@@ -367,8 +360,6 @@ public class Board extends Composite {
 			parentCatGroup.setBackground(lilac);
 			for(int j =0;j<qs.length;j++) {
 				qGroup[j]= new QEdit(parentCatGroup, SWT.NONE,qs[j]);
-				//qGroup[j].setSize(boxW, boxH);//adding extra boxH to the starting position because of title
-				//qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
 			}
 		}else if((newType.contains("audio")) || (newType.contains("picture")) ){
 			qGroup= new QMedia[5];
@@ -381,8 +372,6 @@ public class Board extends Composite {
 			
 			for(int j =0;j<qs.length;j++) {
 				qGroup[j]= new QMedia(parentCatGroup, SWT.NONE,qs[j]);
-				//qGroup[j].setSize(boxW, boxH);//adding extra boxH to the starting position because of title
-				//qGroup[j].setLayoutData(new RowData(boxW+20, boxH));
 			}
 			
 		}else if((newType.contains("mixed"))) {
@@ -392,6 +381,11 @@ public class Board extends Composite {
 				qGroup[j]= new QMixed(parentCatGroup, SWT.NONE,qs[j]);
 			}
 		}
+		
+		for(Qbox q:qGroup) {
+			q.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
+		}
+		
 		parentCatGroup.layout();
 		parentCatGroup.pack();
 		parentCatGroup.update();
