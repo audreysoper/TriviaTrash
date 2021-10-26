@@ -3,7 +3,6 @@ package gui.qGang;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -68,7 +67,7 @@ public class QMedia extends Qbox {
 		openButton.setLayoutData(openLayoutDetails);
 		this.layout();
 		qEdit.setEditable(true);
-		GridData qEditLayoutDetails = new GridData(GridData.FILL, GridData.FILL, false, false, 3, 1);
+		GridData qEditLayoutDetails = new GridData(GridData.FILL, GridData.FILL, true, false, 3, 1);
 		qEditLayoutDetails.heightHint = qEdit.getBounds().height - (openButton.getBounds().height + vSpace * 2);
 		qEditLayoutDetails.widthHint = width;
 		qEdit.setLayoutData(qEditLayoutDetails);

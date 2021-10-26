@@ -254,7 +254,10 @@ public class Board extends Composite {
 		
 		Composite dummyContainer = new Composite(scrollContainer,SWT.NONE);
 		//Group dummyContainer = new Group(scrollContainer,SWT.NONE);
-		dummyContainer.setLayout(new GridLayout(6,true));
+		
+		GridLayout dummyLay= new GridLayout(6,true);
+		dummyLay.horizontalSpacing=10;
+		dummyContainer.setLayout(dummyLay);
 		dummyContainer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
 		dummyContainer.setBackground(darkerLilac);
 		
@@ -321,13 +324,18 @@ public class Board extends Composite {
 			//add all the questions
 			Question[] qs=catObjs[i].getQuestions();
 			Qbox[] boxes=makeQuestionGroup(catGroups[i],qs);	
-			titles[i].setLayoutData(new GridData(GridData.FILL,GridData.BEGINNING,true,false));
+			GridData titleData= new GridData(GridData.FILL,GridData.FILL,true,false);
+			titleData.widthHint=boxes[0].width;
+			titleData.heightHint=titles[i].getLineHeight()*2;
+			titles[i].setLayoutData(titleData);
+			((GridData)catGroups[i].getLayoutData()).minimumWidth=catGroups[i].computeSize(SWT.DEFAULT,SWT.DEFAULT).x;
+			
 		}
 		
 		dummyContainer.layout();
 		dummyContainer.pack();
 		scrollContainer.pack();
-		scrollContainer.setMinWidth(dummyContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
+		scrollContainer.setMinWidth(dummyContainer.getSize().x);
 		pack();
 		
 		
@@ -388,7 +396,6 @@ public class Board extends Composite {
 		
 		parentCatGroup.layout();
 		parentCatGroup.pack();
-		parentCatGroup.update();
 		return qGroup;
 	}
 	
@@ -411,8 +418,8 @@ public class Board extends Composite {
 		Category c=qs[0].getCategory();
 		c.changeType(newType);//change the type at category level
 		makeQuestionGroup(catGroupParent,qs);
-		catGroupParent.layout();
-		//catGroupParent.pack();
+		catGroupParent.getParent().pack();
+		
 		
 	}
 

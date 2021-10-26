@@ -7,6 +7,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -46,7 +48,17 @@ public class Qbox extends Composite {
 		super(parent, style);
 		boardFather=((Board)parent.getParent().getParent().getParent());
 		this.q=q;
-
+		
+		GC gc = new GC(new Text(this,SWT.MULTI));
+	    FontMetrics fm = gc.getFontMetrics();
+	    int charWidth = (int) (fm.getAverageCharacterWidth()*15);
+	    gc.dispose();
+		this.getChildren()[0].dispose();
+		
+		height=computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+		width=parent.getSize().x-10;
+		
+		
 		this.qNumber=q.getLevel();
 		//this.setBackground(ViewBoard.listBG);
 		GridLayout gridLayout = new GridLayout(3,false);
@@ -97,20 +109,21 @@ public class Qbox extends Composite {
 		openButton.setImage(SWTResourceManager.getImage(Qbox.class, "Open16.gif"));
 		openButton.setVisible(false);
 		GridData openLayoutDetails = new GridData(GridData.FILL, GridData.FILL, true, false, 3, 1);
-		openLayoutDetails.minimumWidth = this.width;
+		openLayoutDetails.minimumWidth = charWidth;
+		openLayoutDetails.widthHint=this.width;
 		openLayoutDetails.exclude=true;
 		openButton.setLayoutData(openLayoutDetails);
 		
 		
-		height=computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-		width=computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		
 		
 		qEdit = new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER);
 		GridData qEditLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,false,3,1);
 		editHeightDefault=qEdit.getLineHeight()*5;
 		qEditLayoutDetails.heightHint=editHeightDefault;
 		//qEditLayoutDetails.heightHint=this.height*2/5;
-		qEditLayoutDetails.minimumWidth=this.width;
+		qEditLayoutDetails.widthHint=this.width;
+		qEditLayoutDetails.minimumWidth = charWidth;
 		qEdit.setLayoutData(qEditLayoutDetails);
 		qEdit.setMessage("Question");
 		qEdit.setText(q.getQuestion());
@@ -119,7 +132,8 @@ public class Qbox extends Composite {
 		qAnswer = new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER);
 		GridData qAnswerLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,false,3,1);
 		ansHeightDefault=qAnswer.getLineHeight()*3;
-		qAnswerLayoutDetails.minimumWidth=this.width;
+		qAnswerLayoutDetails.minimumWidth = charWidth;
+		qAnswerLayoutDetails.widthHint=this.width;
 		qAnswerLayoutDetails.heightHint=ansHeightDefault;
 		qAnswer.setMessage("Answer");
 		qAnswer.setLayoutData(qAnswerLayoutDetails);
