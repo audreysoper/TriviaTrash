@@ -91,6 +91,7 @@ public class Board extends Composite {
 		//create group Top Header that BUTTONS(only) live in
 		Group buttonHeader= new Group(this, SWT.NONE);
 		buttonHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,false,false));
+		
 		//topHeader.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.CENTER));
 		
 		//now set the actual layout that Top header is employing
@@ -211,17 +212,25 @@ public class Board extends Composite {
 				}
 			});
 		
+		Label reminder=new Label(buttonHeader,SWT.WRAP|SWT.CENTER);
+		reminder.setLayoutData(new RowData(SWT.DEFAULT,50));
+		reminder.setText("REMINDER: Please always open boards in Trivia Board Pro Editor and SAVE before playing, just in case");
+		reminder.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
+		reminder.setBackground(mixedBG);
+		((GridData)buttonHeader.getLayoutData()).widthHint=buttonHeader.computeSize(SWT.DEFAULT,SWT.DEFAULT).x/2;
+		buttonHeader.pack();
+		
 		//fINAL QUESTION SECTION
 			Group finalQHeader= new Group(this, SWT.NONE);
 			finalQHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,2,1));
-			GridLayout fqSectionLayout= new GridLayout(3,false);
+			GridLayout fqSectionLayout= new GridLayout(2,false);
 			finalQHeader.setLayout(fqSectionLayout);	
 				
 				
 		Label finalQSecText=new Label(finalQHeader,SWT.NONE);
 		finalQSecText.setText("Final Question");
-		finalQSecText.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
-		finalQSecText.setLayoutData(new GridData(GridData.BEGINNING,GridData.BEGINNING,false,false));
+		finalQSecText.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		finalQSecText.setLayoutData(new GridData(GridData.CENTER,GridData.BEGINNING,false,false,2,1));
 		
 		
 
