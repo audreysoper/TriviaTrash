@@ -87,4 +87,10 @@ public class Question {
 		if (selection) {this.dailyDouble='Y';}
 		else {this.dailyDouble='N';}
 	}
+
+	public void clear() {
+		this.q="";
+		this.a="";
+		
+	}
 }

@@ -35,7 +35,7 @@ import orgObjects.Question;
 
 public class Board extends Composite {
 
-	private final int qIndexInGroup=2; //Use this for noting what index questions start at in category Group
+	private final int qIndexInGroup=3; //Use this for noting what index questions start at in category Group
 	public boolean useFileNames;
 	private Group[] catGroups;
 	private Text[] titles;
@@ -276,7 +276,7 @@ public class Board extends Composite {
 		titles= new Text[6];
 		Composite[] qGroup; //start with qGroup as a group of qEdits, but potentially they will become qMedias
 		Combo[] catType= new Combo[6];
-		
+		Button[] clear=new Button[6];
 		
 		
 		
@@ -294,11 +294,10 @@ public class Board extends Composite {
 			case "mixed":catGroups[i].setBackground(mixedBG);
 			case "text":catGroups[i].setBackground(lilac);
 			}
-			catGroups[i].setBackgroundMode(SWT.INHERIT_DEFAULT);
-		
+			catGroups[i].setBackgroundMode(SWT.INHERIT_DEFAULT);	
+			catGroups[i].setLayout(new GridLayout(2,false));
+			Question[] qs=catObjs[i].getQuestions(); 
 			
-			catGroups[i].setLayout(new GridLayout());
-			 
 			
 			
 			
@@ -316,8 +315,6 @@ public class Board extends Composite {
 			catType[i].setLayoutData(new GridData(GridData.FILL,GridData.CENTER,true,false));
 			catType[i].setText(catObjs[i].getType());
 			catType[i].addModifyListener(new ModifyListener() {
-			
-
 				@Override
 				public void modifyText(ModifyEvent e) {
 					// TODO Auto-generated method stub
@@ -330,14 +327,31 @@ public class Board extends Composite {
 				
 			});
 			
+			
+			clear[i]=new Button(catGroups[i],SWT.PUSH);
+			clear[i].setImage(SWTResourceManager.getImage(Board.class, "Delete16.gif"));
+			clear[i].setText("Clear");
+			
+			
+			
 			//add all the questions
-			Question[] qs=catObjs[i].getQuestions();
+			
 			Qbox[] boxes=makeQuestionGroup(catGroups[i],qs);	
-			GridData titleData= new GridData(GridData.FILL,GridData.FILL,true,false);
+			GridData titleData= new GridData(GridData.FILL,GridData.FILL,true,false,2,1);
 			titleData.widthHint=boxes[0].width;
 			titleData.heightHint=titles[i].getLineHeight()*2;
 			titles[i].setLayoutData(titleData);
 			((GridData)catGroups[i].getLayoutData()).minimumWidth=catGroups[i].computeSize(SWT.DEFAULT,SWT.DEFAULT).x;
+			
+			clear[i].addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					// 
+					for(Qbox q:boxes) {
+						q.clear();
+					}
+				}
+			});
 			
 		}
 		
@@ -400,7 +414,7 @@ public class Board extends Composite {
 		}
 		
 		for(Qbox q:qGroup) {
-			q.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
+			q.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true,2,1));
 		}
 		
 		parentCatGroup.layout();
@@ -419,7 +433,7 @@ public class Board extends Composite {
 		String newType=typeSelect.getText();
 		Control[]kids=catGroupParent.getChildren();//these kids are all the things in Category group:title,chooser, q1,q2...q5
 		for(int i=0;i<qBoxGroup.length;i++) { 
-			qBoxGroup[i]= (Qbox) kids[i+qIndexInGroup];//start at 2 because 0 and 1 are title + chooser
+			qBoxGroup[i]= (Qbox) kids[i+qIndexInGroup];//start at 3 because 0-2 are title + chooser + clear
 			qs[i]= qBoxGroup[i].getQobject();//also grab the question and add it to an array
 			qBoxGroup[i].dispose();
 		}

@@ -183,6 +183,12 @@ public class Qbox extends Composite {
 		qEdit.setText(q.getQuestion());
 		qAnswer.setText(q.getAnswer());
 	}
+
+	public void clear() {
+		qEdit.setText("");
+		qAnswer.setText("");
+		
+	}
 	
 	
 	
