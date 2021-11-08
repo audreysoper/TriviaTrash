@@ -123,8 +123,10 @@ public class QMixed extends QMedia {
 					- (openButton.getBounds().height + vSpace)- (typeSelect.getBounds().height/2);
 
 			// SIZE ANSWER BOX TO ACCOMIDATE TYPE SELECT
-			((GridData) qAnswer.getLayoutData()).heightHint = ansHeightDefault
+			if(!isMC) {
+			((GridData) qAnswer.getLayoutData()).heightHint = openAnsHeightDefault
 					- (typeSelect.getBounds().height/2 + vSpace);
+			}
 
 		} else if (qType.contains("text")) {
 			// SIZE QUESTION BOX TO ACCOMIDATE TYPE SELECT
@@ -132,7 +134,7 @@ public class QMixed extends QMedia {
 					- (typeSelect.getBounds().height + vSpace);
 
 			// SIZE ANSWER BOX TO DEFAULT
-			((GridData) qAnswer.getLayoutData()).heightHint = ansHeightDefault;
+			((GridData) qAnswer.getLayoutData()).heightHint = openAnsHeightDefault;
 		}
 
 		this.layout(true);

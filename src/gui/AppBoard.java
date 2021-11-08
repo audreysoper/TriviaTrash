@@ -3,6 +3,8 @@ package gui;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -22,6 +24,10 @@ public class AppBoard {
 
 	protected Shell shell;
 	private int boxH;
+	protected MenuItem saveMenuItem;
+	protected MenuItem openMenuItem;
+	protected MenuItem newMenuItem;
+	protected MenuItem mcToggleMenuItem;
 
 	/**
 	 * Launch the application.
@@ -48,7 +54,9 @@ public class AppBoard {
 		shell = new Shell();
 		shell.setLayout(new FillLayout());
 		shell.setText("Trivia Question Viewer");
-
+		Menu menuBar=createMenu();
+		shell.setMenuBar(menuBar);
+		
 		Display display = Display.getDefault();
 		boxH = (display.getBounds().height) / 7;
 		int shellW = (display.getBounds().width) / 3;
@@ -65,6 +73,29 @@ public class AppBoard {
 				display.sleep();
 			}
 		}
+	}
+
+	private Menu createMenu() {
+		Menu bar= new Menu(shell,SWT.BAR);
+		MenuItem fileItem = new MenuItem (bar, SWT.CASCADE);
+		fileItem.setText ("&File");
+		Menu fileMenu = new Menu (shell, SWT.DROP_DOWN);
+		fileItem.setMenu (fileMenu);
+		saveMenuItem = new MenuItem (fileMenu, SWT.PUSH);
+		saveMenuItem.addListener (SWT.Selection, e -> System.out.println ("Save"));
+		saveMenuItem.setText ("Save\t Ctrl+S");
+		saveMenuItem.setAccelerator (SWT.MOD1 + 'S');
+		
+		openMenuItem=new MenuItem (fileMenu, SWT.PUSH);
+		openMenuItem.addListener (SWT.Selection, e -> System.out.println ("Open"));
+		openMenuItem.setText ("Open\t Ctrl+O");
+		openMenuItem.setAccelerator (SWT.MOD1 + 'O');
+		
+		newMenuItem=new MenuItem (fileMenu, SWT.PUSH);
+		newMenuItem.addListener (SWT.Selection, e -> System.out.println ("New"));
+		newMenuItem.setText ("Open\t Ctrl+N");
+		newMenuItem.setAccelerator (SWT.MOD1 + 'N');
+		return bar;
 	}
 
 	/*
@@ -112,8 +143,12 @@ public class AppBoard {
 		 */
 		// Board myBoard = new Board(scrollContainer, SWT.NONE,createBlank());
 		// Board myBoard =new Board(scrollContainer, SWT.NONE,parseBoard(dir));
+		
 		if (source != null) {
-			return new Board(shell, SWT.NONE, cats, source);
+			boolean mC=cats[0].getQuestions()[0].getAnswer().split("\\^").length>2;
+			for(String a:cats[0].getQuestions()[0].getAnswer().split("\\^"))
+				System.out.println(a);
+			return new Board(shell, SWT.NONE, cats, source,mC);
 		}
 		return new Board(shell, SWT.NONE, cats);
 
@@ -138,7 +173,7 @@ public class AppBoard {
 		return cats;
 	}
 
-	public Category[] parseBoard(File source) {
+	static public Category[] parseBoard(File source) {
 		Category[] cats = new Category[7];
 		try {
 			Scanner scanner = new Scanner(source);
@@ -174,7 +209,7 @@ public class AppBoard {
 						dd = scanner.nextLine();
 						format = scanner.nextLine();
 						if (answer.endsWith("^^^^") && answer.length() > 4) {
-							answer = answer.substring(0, answer.indexOf('^'));
+							answer = answer.substring(0, answer.lastIndexOf("^^^^"));
 						} else if (answer.length() <= 4) {
 							answer = " ";
 						}
@@ -188,15 +223,20 @@ public class AppBoard {
 						qNum++;
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
-						Composite sad = getSad();
-						shell.open();
-						MessageBox ope = new MessageBox(shell, SWT.OK);
+						Shell fuck=new Shell();
+						fuck.open();
+						Image sad=SWTResourceManager.getImage(AppBoard.class, "MEDowo.png");
+						fuck.setBackgroundImage(sad);
+						fuck.setSize(fuck.computeSize(sad.getBounds().width,sad.getBounds().height));
+						
+						MessageBox ope = new MessageBox(fuck, SWT.OK);
 						ope.setMessage("Hmmmmm.... This file doesn't look quite like I was expecting it to. "
 								+ "\n You sure this is a trivia file that's formatted properly?"
 								+ "\n If so please send it to Audrey to figure out why I can't read it");
 						ope.setText("File Read Error");
 						ope.open();
-						// e.printStackTrace();
+						fuck.dispose();
+						e1.printStackTrace();
 						return null;
 					}
 					// if we've got all out questions, change back to category start
@@ -262,16 +302,19 @@ public class AppBoard {
 		return cats;
 	}
 
-	public Composite getSad() {
-		Composite sad = new Composite(shell, SWT.NONE);
+	public static Composite getSad() {
+		Shell fuck=new Shell();
+		fuck.open();
+		fuck.setBackgroundImage(null);
+		Composite sad = new Composite(fuck, SWT.NONE);
 		sad.setLayout(new FillLayout());
 		Label owoSticker = new Label(sad, SWT.NONE);
 		Image bigOwo = SWTResourceManager.getImage(AppBoard.class, "MEDowo.png");
 		owoSticker.setImage(bigOwo);
 		owoSticker.setBounds(bigOwo.getBounds());
 		// owoSticker.setText("Plz stop breaking me");
-		shell.layout(true);
-		shell.pack();
+		fuck.layout(true);
+		fuck.pack();
 		return sad;
 	}
 }

@@ -15,6 +15,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -23,7 +24,10 @@ import org.eclipse.swt.layout.RowLayout;
 
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import gui.qGang.QEdit;
@@ -37,6 +41,8 @@ public class Board extends Composite {
 
 	private final int qIndexInGroup=3; //Use this for noting what index questions start at in category Group
 	public boolean useFileNames;
+	private Composite parent;
+	private boolean mcToggle;
 	private Group[] catGroups;
 	private Text[] titles;
 	public final static String[] typeNames=new String[]{"text","picture","audio","mixed"};
@@ -45,13 +51,76 @@ public class Board extends Composite {
 	public int boxW;
 	public int boxH;
 	public File currentOpenDoc;
+
 	public final static Color audioBG= SWTResourceManager.getColor(255, 229, 249);//light pink
 	public final static Color picBG= SWTResourceManager.getColor(230, 249, 255);//light blue
 	public final static Color mixedBG= SWTResourceManager.getColor(255, 248, 212);//yellow
 	public final static Color lilac= SWTResourceManager.getColor(238, 230, 255);
 	public final static Color bgColor= SWTResourceManager.getColor(243, 233, 210);
-	//public final static Color bgColor= SWTResourceManager.getColor(249, 238, 210);
 	public final static Color darkerLilac= SWTResourceManager.getColor(148, 130, 201);
+	
+	
+	private SelectionListener newBoardAdapter=new SelectionAdapter() {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			// 
+			AppBoard newWindow= new AppBoard();
+			newWindow.openBlank();
+		}
+	};
+	
+	private SelectionListener openBoardAdapter=new SelectionAdapter() {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			// 
+			FileDialog chooser= new FileDialog(((Button) e.widget).getShell(),SWT.SAVE);
+			try {
+			chooser.setFilterExtensions(new String[] {"*.txt"});
+			chooser.open();
+			
+				if(chooser.getFileName().length()>1) {
+					File source= new File(chooser.getFilterPath()+"\\"+chooser.getFileName());
+					AppBoard newWindow= new AppBoard();
+					newWindow.openFile(source);
+				}
+			}catch(Exception err) {
+				//nuthin
+				err.printStackTrace();
+			}
+		}
+	};
+	private SelectionListener saveASAdapter=new SelectionAdapter() {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			FileDialog chooser= new FileDialog(((Button)e.widget).getShell(),SWT.SAVE);
+			try {
+				chooser.setFilterExtensions(new String[] {"*.txt"});
+				chooser.open();
+				String fileName=chooser.getFileName();
+				
+				if(fileName.length()>1) {
+					//if it doesn't end with the extension, then add the extension
+					if(!fileName.endsWith(chooser.getFilterExtensions()[0].substring(1))) {
+						fileName=fileName+chooser.getFilterExtensions()[0].substring(1);
+					}
+					File output= new File(chooser.getFilterPath()+"\\"+fileName);
+					exportToFile(output);
+					Shell shee=getShell();
+					
+					new Board(shee,SWT.NONE,AppBoard.parseBoard(output),output,mcToggle);
+					dispose();
+				}
+			}catch(Exception err) {
+				//no forreal I don't want to do anything
+				err.printStackTrace();
+			}
+			
+		}
+
+	};
+	
+	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -61,14 +130,18 @@ public class Board extends Composite {
 	 */
 	public Board(Composite parent, int style,Category[] catObjs) {
 		super(parent, style);
+		
 		populateBoard(catObjs);
+		
 	}
 	
 	//CONSTRUCTOR FOR OPENING FILES
-	public Board(Composite parent, int style,Category[] catObjs,File source) {
+	public Board(Composite parent, int style,Category[] catObjs,File source,boolean isMC) {
 		super(parent, style);
+		this.mcToggle=isMC;
 		currentOpenDoc=source;
 		populateBoard(catObjs);
+		
 	}
 	
 
@@ -77,6 +150,8 @@ public class Board extends Composite {
 		
 		//setBackground(bgColor);
 		setLayout(new GridLayout(3,false));
+		
+		
 		
 		Label title=new Label(this,SWT.NONE);
 		
@@ -88,41 +163,37 @@ public class Board extends Composite {
 		
 		
 		
-		//create group Top Header that BUTTONS(only) live in
+		//create group Top Header that BUTTONS+warning (only) live in
 		Group buttonHeader= new Group(this, SWT.NONE);
 		buttonHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,false,false));
 		
-		//topHeader.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.CENTER));
 		
 		//now set the actual layout that Top header is employing
-		RowLayout headerInnerLayout= new RowLayout();
+		GridLayout headerInnerLayout= new GridLayout(5,false);
 		//headerInnerLayout.justify=true;
-		headerInnerLayout.spacing=10;
-		headerInnerLayout.center=true;
-		headerInnerLayout.marginWidth=2;
+//		headerInnerLayout.spacing=10;
+//		headerInnerLayout.center=true;
+//		headerInnerLayout.marginWidth=2;
 		buttonHeader.setLayout(headerInnerLayout);
-		//topHeader.setText("Options");
+		buttonHeader.setText("Options");
 		
 		
 		//add stuff to topHeader Group
-		Label headerInstructions=new Label(buttonHeader,SWT.NONE);
-		headerInstructions.setLayoutData(new RowData(SWT.DEFAULT,50));
-		headerInstructions.setText("Options:");
-		headerInstructions.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
-		
+//		Label headerInstructions=new Label(buttonHeader,SWT.NONE);
+//		//headerInstructions.setLayoutData(new RowData(SWT.DEFAULT,50));
+//		headerInstructions.setLayoutData(new GridData());
+//		headerInstructions.setText("Options:");
+//		headerInstructions.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.BOLD));
+//		
 		Button ufnButton=new Button(buttonHeader,SWT.CHECK|SWT.WRAP);
-		ufnButton.setLayoutData(new RowData(SWT.DEFAULT,50));
-		//ufnButton.setBounds(0, 0, 120, 50);
+		//ufnButton.setLayoutData(new RowData(SWT.DEFAULT,50));
+		
 		ufnButton.setText("Use file names as answers?");
 		ufnButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				
-				if(ufnButton.getSelection()) { //true= selected & want to use file name
-					//INCOMPLETE
-					useFileNames=true;
-					setAllMediaAnswersToFileName();
-				}
+				useFileNameAction((Button)e.widget);
 				
 			}
 		});
@@ -130,94 +201,44 @@ public class Board extends Composite {
 		if(currentOpenDoc != null) {
 			title.setText(title.getText()+" - "+currentOpenDoc.getName());
 			Button save= new Button(buttonHeader,SWT.PUSH);
-			save.setLayoutData(new RowData(SWT.DEFAULT,40));
+			//save.setLayoutData(new RowData(SWT.DEFAULT,40));
 			save.setText("SAVE - "+currentOpenDoc.getName());
 			save.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 				exportToFile(currentOpenDoc);
+				
 				}
 			});
 		}
 		
 		//Save Button
 		Button saveAS= new Button(buttonHeader,SWT.PUSH);
-		saveAS.setLayoutData(new RowData(SWT.DEFAULT,40));
 		saveAS.setText("SAVE AS...");
-		saveAS.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				FileDialog chooser= new FileDialog(((Control) e.widget).getShell(),SWT.SAVE);
-				try {
-					chooser.setFilterExtensions(new String[] {"*.txt"});
-					chooser.open();
-					String fileName=chooser.getFileName();
-					
-					if(fileName.length()>1) {
-						//if it doesn't end with the extension, then add the extension
-						if(!fileName.endsWith(chooser.getFilterExtensions()[0].substring(1))) {
-							fileName=fileName+chooser.getFilterExtensions()[0].substring(1);
-						}
-						File output= new File(chooser.getFilterPath()+"\\"+fileName);
-						exportToFile(output);
-						
-					}
-				}catch(Exception err) {
-					//no forreal I don't want to do anything
-					err.printStackTrace();
-				}
-				
-			}
-
-		});
+		saveAS.addSelectionListener(saveASAdapter);
 		
 		//Open Button
 		Button open= new Button(buttonHeader,SWT.PUSH);
-		//open.setBounds(100, 0, 120, 50);
-		open.setLayoutData(new RowData(SWT.DEFAULT,40));
 		open.setText("OPEN");
-		open.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				FileDialog chooser= new FileDialog(((Control) e.widget).getShell(),SWT.SAVE);
-				try {
-				chooser.setFilterExtensions(new String[] {"*.txt"});
-				chooser.open();
-				
-					if(chooser.getFileName().length()>1) {
-						File source= new File(chooser.getFilterPath()+"\\"+chooser.getFileName());
-						AppBoard newWindow= new AppBoard();
-						newWindow.openFile(source);
-					}
-				}catch(Exception err) {
-					//nuthin
-					err.printStackTrace();
-				}
-			}
-		});
+		open.addSelectionListener(openBoardAdapter);
 		
 		//New button
 		Button newBoard= new Button(buttonHeader,SWT.PUSH);
-		//new.setBounds(100, 0, 120, 50);
-		newBoard.setLayoutData(new RowData(SWT.DEFAULT,40));
 		newBoard.setText("NEW BOARD");
-		newBoard.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					// 
-					AppBoard newWindow= new AppBoard();
-					newWindow.openBlank();
-				}
-			});
+		newBoard.addSelectionListener(newBoardAdapter);
+		
+		
+		
 		
 		Label reminder=new Label(buttonHeader,SWT.WRAP|SWT.CENTER);
-		reminder.setLayoutData(new RowData(SWT.DEFAULT,50));
-		reminder.setText("REMINDER: Please always open boards in Trivia Board Pro Editor and SAVE before playing, just in case");
+		//reminder.setLayoutData(new RowData(SWT.DEFAULT,50));
+		GridData reminderLayData=new GridData(SWT.FILL,SWT.FILL,false,true,5,1);
+		reminderLayData.widthHint=reminder.computeSize(SWT.DEFAULT,SWT.DEFAULT).x/2;
+		reminder.setLayoutData(reminderLayData);
+		
+		reminder.setText("REMINDER: \nPlease always open boards in Trivia Board Pro Editor and SAVE before playing, just in case");
 		reminder.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
 		reminder.setBackground(mixedBG);
-		((GridData)buttonHeader.getLayoutData()).widthHint=buttonHeader.computeSize(SWT.DEFAULT,SWT.DEFAULT).x/2;
 		buttonHeader.pack();
 		
 		//fINAL QUESTION SECTION
@@ -364,6 +385,17 @@ public class Board extends Composite {
 		
 	}
 	
+
+	protected void useFileNameAction(Button ufnButton) {
+		if(ufnButton.getSelection()) { //true= selected & want to use file name
+			useFileNames=true;
+			setAllMediaAnswersToFileName();
+		}else {
+			useFileNames=false;
+		}
+		
+	}
+
 	protected void setAllMediaAnswersToFileName() {
 		// TODO Auto-generated method stub
 		Control[] kids;
@@ -434,7 +466,7 @@ public class Board extends Composite {
 		Control[]kids=catGroupParent.getChildren();//these kids are all the things in Category group:title,chooser, q1,q2...q5
 		for(int i=0;i<qBoxGroup.length;i++) { 
 			qBoxGroup[i]= (Qbox) kids[i+qIndexInGroup];//start at 3 because 0-2 are title + chooser + clear
-			qs[i]= qBoxGroup[i].getQobject();//also grab the question and add it to an array
+			qs[i]= qBoxGroup[i].getQobject(true);//also grab the question and add it to an array
 			qBoxGroup[i].dispose();
 		}
 		
@@ -458,7 +490,7 @@ public class Board extends Composite {
 			for(int i =0;i<catGroups.length;i++) {
 				
 				Control[] children= catGroups[i].getChildren();
-				String title=((Text)children[0]).getText().replaceAll("\n", " ");
+				String title=((Text)children[0]).getText().replaceAll("\\n", " ");
 				fileOut.println(title+" ");
 				for(int j =qIndexInGroup;j<children.length;j++) { //start at 2 because skip the category title+type
 					Qbox qEd=(Qbox)children[j];
@@ -476,14 +508,14 @@ public class Board extends Composite {
 					
 					
 					fileOut.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
-					fileOut.println(" "+qEd.getAnswer().replaceAll("\n", " ")+"^^^^");
+					fileOut.println(" "+qEd.getAnswer().replaceAll("\\n", " ")+"^^^^");
 					fileOut.println(outputDD);
 					fileOut.println(qEd.getTypeDetails());
 					}
 			}
 			//after all the loops are done at the very end add the FINAL QUESTION
-			fileOut.println(fQtext.getText().replaceAll("\n", " ")+" ");
-			fileOut.println(" "+fQanswer.getText().replaceAll("\n", " ")+"^^^^");
+			fileOut.println(fQtext.getText().replaceAll("\\n", " ")+" ");
+			fileOut.println(" "+fQanswer.getText().replaceAll("\\n", " ")+"^^^^");
 			
 			fileOut.close();
 			if(ddCount<2) {
@@ -502,14 +534,14 @@ public class Board extends Composite {
 
 	public void swapQuestions(Qbox originalBox, int newLevel) {
 		//figure out qBox's current level && initialize OG question object 
-		Question originalQ =originalBox.getQobject();
+		Question originalQ =originalBox.getQobject(true);
 		int oldLevel=originalQ.getLvlIndex();
 		
 		//get qBoxchildren in parent group so we can get questions
 		Qbox newBox=(Qbox) originalBox.getParent().getChildren()[qIndexInGroup+newLevel]; //get the specific sibling at the desired level
 		
 		//grab question object at newLevel
-		Question newQ= newBox.getQobject();
+		Question newQ= newBox.getQobject(true);
 
 		//set qBox at newLevel to OG question
 		newBox.setNewQObject(originalQ);
@@ -523,21 +555,9 @@ public class Board extends Composite {
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-}
 
-
-/* Not sure I need this method anymore?
- * Put it directly in selection listener
-protected void openClick(SelectionEvent e) {
-	// TODO Auto-generated method stub
-	FileDialog chooser= new FileDialog(this.getShell());
-	chooser.open();
-	File source= new File(chooser.getFilterPath()+"\\"+chooser.getFileName());
-	
-	ViewBoard newWindow= new ViewBoard();
-	newWindow.openNewFile(source);
-	
-	
+	public boolean isMc() {
+		return mcToggle;
+	}
 }
-*/
 

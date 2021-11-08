@@ -56,7 +56,7 @@ public class QMedia extends Qbox {
 
 		qDD.setGrayed(false);
 
-		qAnswer.setEditable(true);
+		
 
 		openButton.setVisible(true);
 		((GridData) openButton.getLayoutData()).exclude = false;
@@ -116,11 +116,11 @@ public class QMedia extends Qbox {
 
 	public void setAnswerToFileName() {
 		if (fileName != null) {
-			qAnswer.setText(fileName);
+			qAnswer.changeQ(fileName);
 		} else if (qEdit.getText().contains(fileExtension[0])) {
 			int lastIndex = qEdit.getText().lastIndexOf('.') - 1;
 			int firstIndex = qEdit.getText().lastIndexOf('\\') + 1;
-			qAnswer.setText(qEdit.getText(firstIndex, lastIndex));
+			qAnswer.changeQ(qEdit.getText(firstIndex, lastIndex));
 		}
 	}
 
