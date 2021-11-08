@@ -458,7 +458,7 @@ public class Board extends Composite {
 			for(int i =0;i<catGroups.length;i++) {
 				
 				Control[] children= catGroups[i].getChildren();
-				String title=((Text)children[0]).getText().replaceAll("\n", " ");
+				String title=((Text)children[0]).getText().replaceAll("\\n", " ");
 				fileOut.println(title+" ");
 				for(int j =qIndexInGroup;j<children.length;j++) { //start at 2 because skip the category title+type
 					Qbox qEd=(Qbox)children[j];
@@ -476,7 +476,7 @@ public class Board extends Composite {
 					
 					
 					fileOut.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
-					fileOut.println(" "+qEd.getAnswer().replaceAll("\n", " ")+"^^^^");
+					fileOut.println(" "+qEd.getAnswer().replaceAll("\\n|\\r", " ")+"^^^^");
 					fileOut.println(outputDD);
 					fileOut.println(qEd.getTypeDetails());
 					}
