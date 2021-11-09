@@ -172,6 +172,11 @@ public class AppBoard {
 					try {
 						answer = scanner.nextLine();
 						dd = scanner.nextLine();
+						if(!(dd.contains("N")||dd.contains("Y"))) {
+							System.out.println(dd);
+							answer=answer+" "+dd;
+							dd=scanner.nextLine();
+						}
 						format = scanner.nextLine();
 						if (answer.endsWith("^^^^") && answer.length() > 4) {
 							answer = answer.substring(0, answer.indexOf('^'));
