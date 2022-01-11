@@ -15,14 +15,13 @@ public class QEdit extends Qbox {
 	public QEdit(Composite parent, int style,Question q) {
 		super(parent, style,q);
 		
-		
-		qDD.setGrayed(false);
+	
 		
 		qEdit.setEditable(true);
 		
 		
 		
-		//this.layout();
+		this.layout();
 		//this.pack();
 
 	}

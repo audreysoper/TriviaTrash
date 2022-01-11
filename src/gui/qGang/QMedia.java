@@ -16,10 +16,13 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import gui.Board;
+import gui.previews.PicPreview;
 import orgObjects.Question;
 
 public class QMedia extends Qbox {
@@ -40,13 +43,23 @@ public class QMedia extends Qbox {
 	 */
 	public QMedia(Composite parent, int style, Question q) {
 		super(parent, style, q);
+		try{
+			fullPath=q.getQuestion();
+		}catch(Exception e) {
+			fullPath="";
+		}
 		Board grandparent = (Board) parent.getParent().getParent().getParent();
 		chooser = new FileDialog(parent.getShell());
 
 		if (q.getTypeDetails().contains("P")) {
 			fileExtension = new String[] {"*.jpg;*.png;*.gif;*.jfif;*.bmp;*.jpeg;*.tiff"};
+			openButton.setText("Select Picture");
+			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Zoom16.gif"));
+		
 		} else if (q.getTypeDetails().contains("S")) {
 			fileExtension = new String[] {"*.mp3"};
+			openButton.setText("Select Audio");
+			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Volume16.gif"));
 		} else {
 			fileExtension = new String[] {"*.*"};
 			System.out.println(
@@ -59,20 +72,21 @@ public class QMedia extends Qbox {
 		
 
 		openButton.setVisible(true);
+		viewButton.setVisible(true);
 		((GridData) openButton.getLayoutData()).exclude = false;
-		openButton.setText("Select Media File");
+		((GridData) viewButton.getLayoutData()).exclude=false;
 
-		GridData openLayoutDetails = new GridData(GridData.FILL, GridData.FILL, true, false, 3, 1);
-		openLayoutDetails.widthHint = this.width;
-		openButton.setLayoutData(openLayoutDetails);
-		this.layout();
+		//GridData openLayoutDetails = new GridData(GridData.FILL, GridData.FILL, true, false, 3, 1);
+		//openLayoutDetails.widthHint = this.width;
+		//openButton.setLayoutData(openLayoutDetails);
+		
 		qEdit.setEditable(true);
 		GridData qEditLayoutDetails = new GridData(GridData.FILL, GridData.FILL, true, false, 3, 1);
 		qEditLayoutDetails.heightHint = qEdit.getBounds().height - (openButton.getBounds().height + vSpace * 2);
 		qEditLayoutDetails.widthHint = width;
 		qEdit.setLayoutData(qEditLayoutDetails);
 
-		this.layout(true);
+		//this.layout(true);
 		this.pack();
 		
 		openButton.addSelectionListener(new SelectionAdapter() {
@@ -107,6 +121,29 @@ public class QMedia extends Qbox {
 					System.out.print("Ope that didn't work");
 				}
 
+			}
+		});
+		
+		
+		viewButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				File test= new File(fullPath);
+				if(test.exists() && q.getTypeDetails().contains("P")) {
+					PicPreview pre=new PicPreview(fullPath);
+				}else {
+				MessageBox ope = new MessageBox(((Control) e.widget).getShell(), SWT.OK);
+					if(q.getTypeDetails().contains("S")) {
+						ope.setMessage("Sorry, audio previews don't exist yet");
+						ope.setText("No Audio Previews Yet");
+					}
+					else {
+						ope.setMessage("I can't seem to find a file at "+fullPath);
+						ope.setText("Can't Find File!");
+					}
+				ope.open();
+				
+				}
 			}
 		});
 

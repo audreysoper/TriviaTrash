@@ -54,14 +54,15 @@ public class AppBoard {
 		shell = new Shell();
 		shell.setLayout(new FillLayout());
 		shell.setText("Trivia Question Viewer");
-		Menu menuBar=createMenu();
-		shell.setMenuBar(menuBar);
+		
 		
 		Display display = Display.getDefault();
 		boxH = (display.getBounds().height) / 7;
 		int shellW = (display.getBounds().width) / 3;
 
-		createContents(createBlank(), null);
+		Board current =createContents(createBlank(), null);
+		Menu menuBar=createMenu(current);
+		shell.setMenuBar(menuBar);
 		shell.open();
 		// shell.layout();
 		// shell.pack();
@@ -75,25 +76,29 @@ public class AppBoard {
 		}
 	}
 
-	private Menu createMenu() {
+	private Menu createMenu(Board curr) {
 		Menu bar= new Menu(shell,SWT.BAR);
 		MenuItem fileItem = new MenuItem (bar, SWT.CASCADE);
 		fileItem.setText ("&File");
 		Menu fileMenu = new Menu (shell, SWT.DROP_DOWN);
 		fileItem.setMenu (fileMenu);
 		saveMenuItem = new MenuItem (fileMenu, SWT.PUSH);
-		saveMenuItem.addListener (SWT.Selection, e -> System.out.println ("Save"));
+		saveMenuItem.setData(curr.getShell());
+		saveMenuItem.addSelectionListener (curr.saveASAdapter);
 		saveMenuItem.setText ("Save\t Ctrl+S");
 		saveMenuItem.setAccelerator (SWT.MOD1 + 'S');
 		
+		
 		openMenuItem=new MenuItem (fileMenu, SWT.PUSH);
-		openMenuItem.addListener (SWT.Selection, e -> System.out.println ("Open"));
+		openMenuItem.setData(curr.getShell());
+		openMenuItem.addSelectionListener (curr.openBoardAdapter);
 		openMenuItem.setText ("Open\t Ctrl+O");
 		openMenuItem.setAccelerator (SWT.MOD1 + 'O');
 		
 		newMenuItem=new MenuItem (fileMenu, SWT.PUSH);
-		newMenuItem.addListener (SWT.Selection, e -> System.out.println ("New"));
-		newMenuItem.setText ("Open\t Ctrl+N");
+		newMenuItem.setData(curr.getShell());
+		newMenuItem.addSelectionListener (curr.newBoardAdapter);
+		newMenuItem.setText ("New\t Ctrl+N");
 		newMenuItem.setAccelerator (SWT.MOD1 + 'N');
 		return bar;
 	}
@@ -112,6 +117,8 @@ public class AppBoard {
 		Category[] cats = parseBoard(source);
 		if (cats != null) {
 			Board openBoard = createContents(cats, source);
+			Menu menuBar=createMenu(openBoard);
+			shell.setMenuBar(menuBar);
 			shell.open();
 			Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 			shell.setSize(size.x, size.y / 3 * 2);

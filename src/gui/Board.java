@@ -51,16 +51,19 @@ public class Board extends Composite {
 	public int boxW;
 	public int boxH;
 	public File currentOpenDoc;
+	private String titleText="Fancy Question Editor";
+	private String version = "version 22.1.3";
 
-	public final static Color audioBG= SWTResourceManager.getColor(255, 229, 249);//light pink
-	public final static Color picBG= SWTResourceManager.getColor(230, 249, 255);//light blue
-	public final static Color mixedBG= SWTResourceManager.getColor(255, 248, 212);//yellow
-	public final static Color lilac= SWTResourceManager.getColor(238, 230, 255);
-	public final static Color bgColor= SWTResourceManager.getColor(243, 233, 210);
-	public final static Color darkerLilac= SWTResourceManager.getColor(148, 130, 201);
+	public final static Color audioBG= new Color(255, 229, 249);//light pink
+	public final static Color picBG= new Color(230, 249, 255);//light blue
+	public final static Color mixedBG= new Color(255, 248, 212);//yellow
+	public final static Color lilac= new Color(238, 230, 255);
+	public final static Color ddBG= new Color(0, 0, 0,100);
+	public final static Color bgColor= new Color(243, 233, 210);
+	public final static Color darkerLilac= new Color(148, 130, 201);
 	
 	
-	private SelectionListener newBoardAdapter=new SelectionAdapter() {
+	public SelectionListener newBoardAdapter=new SelectionAdapter() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// 
@@ -69,11 +72,11 @@ public class Board extends Composite {
 		}
 	};
 	
-	private SelectionListener openBoardAdapter=new SelectionAdapter() {
+	public SelectionListener openBoardAdapter=new SelectionAdapter() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// 
-			FileDialog chooser= new FileDialog(((Button) e.widget).getShell(),SWT.SAVE);
+			FileDialog chooser= new FileDialog((Shell) e.widget.getData(),SWT.SAVE);
 			try {
 			chooser.setFilterExtensions(new String[] {"*.txt"});
 			chooser.open();
@@ -89,11 +92,11 @@ public class Board extends Composite {
 			}
 		}
 	};
-	private SelectionListener saveASAdapter=new SelectionAdapter() {
+	public SelectionListener saveASAdapter=new SelectionAdapter() {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
-			FileDialog chooser= new FileDialog(((Button)e.widget).getShell(),SWT.SAVE);
+			FileDialog chooser= new FileDialog((Shell) e.widget.getData(),SWT.SAVE);
 			try {
 				chooser.setFilterExtensions(new String[] {"*.txt"});
 				chooser.open();
@@ -156,12 +159,15 @@ public class Board extends Composite {
 		Label title=new Label(this,SWT.NONE);
 		
 		//title.setForeground(SWTResourceManager.getColor(204, 153, 255));
-		title.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,3,1));
-		title.setText("The Fancy Question Editor");
+		title.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,2,1));
+		title.setText(titleText);
 		title.setAlignment(SWT.CENTER);
 		title.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
-		
-		
+		Label ver=new Label(this,SWT.NONE);
+		ver.setLayoutData(new GridData(GridData.FILL,GridData.FILL,false,false,1,1));
+		ver.setText(version);
+		ver.setAlignment(SWT.RIGHT);
+		ver.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
 		
 		//create group Top Header that BUTTONS+warning (only) live in
 		Group buttonHeader= new Group(this, SWT.NONE);
@@ -215,11 +221,13 @@ public class Board extends Composite {
 		//Save Button
 		Button saveAS= new Button(buttonHeader,SWT.PUSH);
 		saveAS.setText("SAVE AS...");
+		saveAS.setData(this.getShell());
 		saveAS.addSelectionListener(saveASAdapter);
 		
 		//Open Button
 		Button open= new Button(buttonHeader,SWT.PUSH);
 		open.setText("OPEN");
+		open.setData(this.getShell());
 		open.addSelectionListener(openBoardAdapter);
 		
 		//New button
@@ -371,6 +379,7 @@ public class Board extends Composite {
 					for(Qbox q:boxes) {
 						q.clear();
 					}
+					
 				}
 			});
 			
@@ -508,7 +517,7 @@ public class Board extends Composite {
 					
 					
 					fileOut.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
-					fileOut.println(" "+qEd.getAnswer().replaceAll("\\n", " ")+"^^^^");
+					fileOut.println(" "+qEd.getAnswer().replaceAll("\\n", " "));
 					fileOut.println(outputDD);
 					fileOut.println(qEd.getTypeDetails());
 					}

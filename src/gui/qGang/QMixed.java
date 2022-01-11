@@ -11,6 +11,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import gui.Board;
 import orgObjects.Question;
@@ -96,49 +97,63 @@ public class QMixed extends QMedia {
 	public void setupForType() {
 		switch (qType) {
 		case "picture":
+			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Zoom16.gif"));
 			openButton.setVisible(true);
+			viewButton.setVisible(true);
 			((GridData) openButton.getLayoutData()).exclude = false;
+			((GridData) viewButton.getLayoutData()).exclude = false;
 			fileExtension = new String[] { "*.jpg;*.png;*.gif;*.jpeg","*.jpg","*.png","*.gif","*.jpeg"};
-			openButton.setText("Select A Picture File");
+			openButton.setText("Select Picture");
+			
 			break;
 
 		case "audio":
-			fileExtension = new String[] {"*.mp3"};
+			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Volume16.gif"));
 			openButton.setVisible(true);
+			viewButton.setVisible(true);
 			((GridData) openButton.getLayoutData()).exclude = false;
-			openButton.setText("Select An Audio File");
+			((GridData) viewButton.getLayoutData()).exclude = false;
+			fileExtension = new String[] {"*.mp3"};
+			openButton.setText("Select Audio");
+			
 			break;
 		case "text":
 			openButton.setVisible(false);
 			((GridData) openButton.getLayoutData()).exclude = true;
+			viewButton.setVisible(false);
+			((GridData) viewButton.getLayoutData()).exclude = true;
 			break;
 		}
 		chooser.setFilterExtensions(fileExtension);
-		this.layout();
-		this.pack();
+		//this.layout(true);
+		//this.pack();
 		if (qType.contains("audio") || qType.contains("pic")) {
 
 			// SIZE QUESTION BOX TO ACCOMIDATE MEDIA BUTTON
 			((GridData) qEdit.getLayoutData()).heightHint = editHeightDefault
-					- (openButton.getBounds().height + vSpace)- (typeSelect.getBounds().height/2);
+					- (openButton.getBounds().height + typeSelect.getBounds().height +vSpace)/2;
 
 			// SIZE ANSWER BOX TO ACCOMIDATE TYPE SELECT
 			if(!isMC) {
 			((GridData) qAnswer.getLayoutData()).heightHint = openAnsHeightDefault
-					- (typeSelect.getBounds().height/2 + vSpace);
+					- (openButton.getBounds().height + typeSelect.getBounds().height +vSpace)/2;
 			}
 
+		
 		} else if (qType.contains("text")) {
 			// SIZE QUESTION BOX TO ACCOMIDATE TYPE SELECT
 			((GridData) qEdit.getLayoutData()).heightHint = editHeightDefault
-					- (typeSelect.getBounds().height + vSpace);
+					- (typeSelect.getBounds().height/2+vSpace);
 
 			// SIZE ANSWER BOX TO DEFAULT
-			((GridData) qAnswer.getLayoutData()).heightHint = openAnsHeightDefault;
+			((GridData) qAnswer.getLayoutData()).heightHint = openAnsHeightDefault- (typeSelect.getBounds().height/2);
+			
 		}
-
+		
 		this.layout(true);
-		this.pack();
+		//qAnswer.pack();
+		//qEdit.pack();
+		//this.pack();
 
 	}
 
