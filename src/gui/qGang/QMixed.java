@@ -163,5 +163,5 @@ public class QMixed extends QMedia {
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-
+	
 }

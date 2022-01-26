@@ -77,7 +77,7 @@ public class Question {
 		return (dailyDouble=='Y');
 	}
 	
-	public void swapQtext(String q, String a) {
+	public void updateQobj(String q, String a) {
 		this.q=q;
 		this.a=a;
 	}

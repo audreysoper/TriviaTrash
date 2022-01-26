@@ -14,8 +14,11 @@ import orgObjects.Question;
 
 import java.io.File;
 import java.util.Scanner;
+import java.util.prefs.Preferences;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -28,7 +31,10 @@ public class AppBoard {
 	protected MenuItem openMenuItem;
 	protected MenuItem newMenuItem;
 	protected MenuItem mcToggleMenuItem;
-
+	protected MenuItem pathingMenuItem;
+	public static String homeFolder="";
+	public static Preferences userPrefs;
+	public static boolean advancedPathing;
 	/**
 	 * Launch the application.
 	 * 
@@ -36,6 +42,8 @@ public class AppBoard {
 	 */
 	public static void main(String[] args) {
 
+		userPrefs = Preferences.userRoot(); 
+		advancedPathing=userPrefs.getBoolean("advancedPathing", false);
 		try {
 			AppBoard window = new AppBoard();
 
@@ -100,6 +108,22 @@ public class AppBoard {
 		newMenuItem.addSelectionListener (curr.newBoardAdapter);
 		newMenuItem.setText ("New\t Ctrl+N");
 		newMenuItem.setAccelerator (SWT.MOD1 + 'N');
+		
+		pathingMenuItem = new MenuItem (fileMenu, SWT.CHECK);
+		pathingMenuItem.setData(curr.getShell());
+		pathingMenuItem.setText ("Toggle Advanced Pathing");
+		pathingMenuItem.setSelection(advancedPathing);
+		pathingMenuItem.addSelectionListener (new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				advancedPathing=!advancedPathing;
+				userPrefs.putBoolean("advancedPathing", advancedPathing); 
+				pathingMenuItem.setSelection(advancedPathing);
+				
+			
+			}
+		});
+		
 		return bar;
 	}
 
@@ -193,6 +217,7 @@ public class AppBoard {
 			String answer;
 			String dd;
 			String format;
+			
 			boolean sameType = true;
 
 			while (catNum < 6 && scanner.hasNextLine()) {
@@ -296,6 +321,9 @@ public class AppBoard {
 
 				Question finQ = new Question(text.trim(), answer.trim(), 'N', "text", "", 0);
 				cats[catNum] = new Category("final", new Question[] { finQ }, 7);
+				if(scanner.hasNext("`")) {
+					homeFolder=scanner.nextLine();
+				}
 			} catch (Exception e1) {
 				System.out.println("I couln't make the Final Question");
 				e1.printStackTrace();
