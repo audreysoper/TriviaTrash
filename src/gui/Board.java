@@ -30,6 +30,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
@@ -524,6 +525,7 @@ public class Board extends Composite {
 		for(QMedia q:qs) {
 			q.setRelativePath(homeFolder);
 			q.swapPathFront(pathToHome);
+			
 		}
 		
 	}
@@ -658,30 +660,11 @@ public class Board extends Composite {
 			PrintWriter fileOut= new PrintWriter(output);
 			
 			for(int i =0;i<catGroups.length;i++) {
-				
-				Control[] children= catGroups[i].getChildren();
-				String title=((Text)children[0]).getText().replaceAll("\\n", " ");
-				fileOut.println(title+" ");
-				for(int j =qIndexInGroup;j<children.length;j++) { //start at 2 because skip the category title+type
-					Qbox qEd=(Qbox)children[j];
-					outputDD=qEd.getDD();
-					
-					//doing this to make sure there's at least 2 daily doubles
-					if(outputDD=='Y') {
-						ddCount ++;
-					}else if(i==5) { //if its the last category (6)
-						if((j-ddCount==3+qIndexInGroup) && (j>2+qIndexInGroup)) {//and we don't have enough DDs
-							outputDD='Y';
-							ddCount++;
-						}
-					}
-					
-					
-					fileOut.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
-					fileOut.println(" "+qEd.exportAnswer().replaceAll("\\n", " "));
-					fileOut.println(outputDD);
-					fileOut.println(qEd.getTypeDetails());
-					}
+				String title=exportSingleCat(fileOut,catGroups[i]);
+				File catFile= new File(("Categories"+File.separatorChar+title+".txt"));
+				PrintWriter specificOut= new PrintWriter(catFile);
+				exportSingleCat(specificOut,catGroups[i]);
+				specificOut.close();
 			}
 			//after all the loops are done at the very end add the FINAL QUESTION
 			fileOut.println(fQtextBox.getText().replaceAll("\\n", " ")+" ");
@@ -699,7 +682,31 @@ public class Board extends Composite {
 	}
 	
 	
-	
+	private String exportSingleCat(PrintWriter out, Control cat) {
+		char outputDD;
+		
+		try {
+			Control[] children= ((Composite) cat).getChildren();
+			String title=((Text)children[0]).getText().replaceAll("\\n", " ");
+			out.println(title+" ");
+			for(int j =qIndexInGroup;j<children.length;j++) { //start at 2 because skip the category title+type
+				Qbox qEd=(Qbox)children[j];
+				outputDD=qEd.getDD();
+				
+				
+				
+				out.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
+				out.println(" "+qEd.exportAnswer().replaceAll("\\n", " "));
+				out.println(outputDD);
+				out.println(qEd.getTypeDetails());
+				}
+			return title;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
 
 
 	public void swapQuestions(Qbox originalBox, int newLevel) {
@@ -728,6 +735,29 @@ public class Board extends Composite {
 
 	public boolean isMc() {
 		return mcToggle;
+	}
+
+	/* input: original path (aka question text) of media question
+	 * returns: index of that path where RELATIVE path starts
+	 */
+	public int askForPath(String fullPath) {
+		int index=fullPath.substring(0,fullPath.lastIndexOf("\\")).lastIndexOf("\\");
+		String guessPath=fullPath.substring(index);
+		MessageBox ask = new MessageBox(this.getShell(), SWT.NO|SWT.YES|SWT.CENTER);
+		ask.setMessage("I couldn't use "+homeFolder+" to determine the relative path for:"
+				+ "\n"+fullPath
+				+ "\n Would you like to use the relative path:"
+				+ "\n"+ guessPath+ " ?");
+		
+		ask.setText("Home Folder Not Found in Path");
+		if(ask.open()==SWT.YES) {
+			return index;
+		}else {
+			return 0;
+		}
+		
+		// TODO Auto-generated method stub
+		
 	}
 }
 

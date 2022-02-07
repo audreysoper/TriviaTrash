@@ -296,7 +296,8 @@ public class QMedia extends Qbox {
 			if(index>0)relativePath=fullPath.substring(index);
 			//relativePath=initial.substring(index);
 			else {
-				index=fullPath.lastIndexOf("\\");
+				index=grandparent.askForPath(fullPath);
+				
 				pathToHome=fullPath.substring(0,index);
 				relativePath=fullPath.substring(index);
 			}
@@ -313,6 +314,9 @@ public class QMedia extends Qbox {
 	
 	public void swapPathFront(String pathToHome) {
 		fullPath=pathToHome+relativePath;
+		if(!grandparent.useRelativePaths) {
+			qEdit.setText(fullPath);
+		}
 	}
 	
 	@Override

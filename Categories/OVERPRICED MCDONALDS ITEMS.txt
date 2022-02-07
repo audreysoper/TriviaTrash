@@ -1,0 +1,21 @@
+OVERPRICED MCDONALDS ITEMS 
+Within $0.50 how much is a McChicken (at the McDonalds on 5th)? 
+ $1.19 ^^^^
+N
+T#MS Gothic#28#True#False#16645837#
+Within $0.50, how much is a McDouble (at  the McDonalds on 5th)? 
+ $2.19 ^^^^
+N
+T#MS Gothic#28#True#False#16645837#
+Within $1.00, how much is a medium sized Big Mac Combo (at the McDonalds on 5th?) 
+ $7.49 ^^^^
+N
+T#MS Gothic#28#True#False#16645837#
+Within $0.10, how much is a Fudge/Caramel Sundae (at  the McDonalds on 5th)? 
+ $2.39 ^^^^
+Y
+T#MS Gothic#28#True#False#16645837#
+Within $0.10 what is the price DIFFERENCE between a McDouble at the McDonalds on 5th, and the McDonalds on E Main? 
+ $0.30 ^^^^
+N
+T#MS Gothic#28#True#False#16645837#
