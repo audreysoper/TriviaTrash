@@ -193,15 +193,15 @@ public class Qbox extends Composite {
 	public String getText() {
 		return qEdit.getText();
 	}
-	public String exportAnswer() {
-		return qAnswer.ansExport();
+	public String getAnswer() {
+		return qAnswer.getAnsForExport();
 	}
 	public String getTypeDetails() {
 		return q.getTypeDetails();
 	}
 	public Question getQobject(boolean forceUpdate) {
 		if(forceUpdate) {
-			q.updateQobj(qEdit.getText(), qAnswer.getAnswer());
+			q.swapQtext(qEdit.getText(), qAnswer.getAnsForExport());
 		}
 		q.setDD(qDD.getSelection());
 		return this.q;

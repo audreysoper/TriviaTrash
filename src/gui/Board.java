@@ -9,11 +9,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
@@ -47,21 +42,18 @@ public class Board extends Composite {
 
 	private final int qIndexInGroup=3; //Use this for noting what index questions start at in category Group
 	public boolean useFileNames;
-	public boolean useRelativePaths;
 	private Composite parent;
 	private boolean mcToggle;
 	private Group[] catGroups;
 	private Text[] titles;
 	public final static String[] typeNames=new String[]{"text","picture","audio","mixed"};
-	private Text fQtextBox;
-	private Text fQanswerBox;
+	private Text fQtext;
+	private Text fQanswer;
 	public int boxW;
 	public int boxH;
 	public File currentOpenDoc;
 	private String titleText="Fancy Question Editor";
-	private String version = "version 22.1.20";
-	public String homeFolder;
-	public String pathToHome;
+	private String version = "version 22.1.3";
 
 	public final static Color audioBG= new Color(255, 229, 249);//light pink
 	public final static Color picBG= new Color(230, 249, 255);//light blue
@@ -85,7 +77,7 @@ public class Board extends Composite {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			// 
-			FileDialog chooser= new FileDialog((Shell) e.widget.getData(),SWT.OPEN);
+			FileDialog chooser= new FileDialog((Shell) e.widget.getData(),SWT.SAVE);
 			try {
 			chooser.setFilterExtensions(new String[] {"*.txt"});
 			chooser.open();
@@ -131,19 +123,7 @@ public class Board extends Composite {
 		}
 
 	};
-
-	public ModifyListener textChanged=new ModifyListener() {
-		@Override
-		public void modifyText(ModifyEvent e) {
-			if(((String) e.widget.getData()).contains("home")) {
-				homeFolder=((Text) e.widget).getText();
-			}else if(((String) e.widget.getData()).contains("path")) {
-				pathToHome=((Text) e.widget).getText();
-			}
-			
-		}
-		
-	};
+	
 	
 	/**
 	 * Create the composite.
@@ -154,9 +134,7 @@ public class Board extends Composite {
 	 */
 	public Board(Composite parent, int style,Category[] catObjs) {
 		super(parent, style);
-		homeFolder="";
-		pathToHome="";
-		useRelativePaths=false;
+		
 		populateBoard(catObjs);
 		
 	}
@@ -164,8 +142,6 @@ public class Board extends Composite {
 	//CONSTRUCTOR FOR OPENING FILES
 	public Board(Composite parent, int style,Category[] catObjs,File source,boolean isMC) {
 		super(parent, style);
-		homeFolder=source.separatorChar+source.getParentFile().getName()+source.separatorChar;
-		pathToHome=source.getParentFile().getParent();
 		this.mcToggle=isMC;
 		currentOpenDoc=source;
 		populateBoard(catObjs);
@@ -175,6 +151,7 @@ public class Board extends Composite {
 
 	private void populateBoard(Category[] catObjs) {
 		setBackgroundMode(SWT.INHERIT_DEFAULT);
+		
 		//setBackground(bgColor);
 		setLayout(new GridLayout(3,false));
 		
@@ -189,12 +166,9 @@ public class Board extends Composite {
 		title.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
 		Label ver=new Label(this,SWT.NONE);
 		ver.setLayoutData(new GridData(GridData.FILL,GridData.FILL,false,false,1,1));
-		//((GridData)ver.getLayoutData()).
 		ver.setText(version);
 		ver.setAlignment(SWT.RIGHT);
 		ver.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
-		//((GridData)title.getLayoutData()).horizontalIndent=ver.getBounds().width;
-		//((GridData)title.getLayoutData()).
 		
 		//create group Top Header that BUTTONS+warning (only) live in
 		Group buttonHeader= new Group(this, SWT.NONE);
@@ -263,6 +237,8 @@ public class Board extends Composite {
 		newBoard.addSelectionListener(newBoardAdapter);
 		
 		
+		
+		
 		Label reminder=new Label(buttonHeader,SWT.WRAP|SWT.CENTER);
 		//reminder.setLayoutData(new RowData(SWT.DEFAULT,50));
 		GridData reminderLayData=new GridData(SWT.FILL,SWT.FILL,false,true,5,1);
@@ -274,138 +250,39 @@ public class Board extends Composite {
 		reminder.setBackground(mixedBG);
 		buttonHeader.pack();
 		
-		
-		
-		
-		
-		
 		//fINAL QUESTION SECTION
 			Group finalQHeader= new Group(this, SWT.NONE);
-			finalQHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,1,1));
-			GridLayout fqSectionLayout= new GridLayout(1,false);
-			fqSectionLayout.marginHeight=5;
-			fqSectionLayout.marginWidth=10;
-			fqSectionLayout.verticalSpacing=2;
-			finalQHeader.setLayout(fqSectionLayout);
-			finalQHeader.setText("Final Question");
+			finalQHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,2,1));
+			GridLayout fqSectionLayout= new GridLayout(2,false);
+			finalQHeader.setLayout(fqSectionLayout);	
 				
 				
-			/*
-			 * Label finalQSecText=new Label(finalQHeader,SWT.NONE);
-			 * finalQSecText.setText("Final Question");
-			 * finalQSecText.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
-			 * finalQSecText.setLayoutData(new
-			 * GridData(GridData.CENTER,GridData.BEGINNING,false,false));
-			 */
-		Label fQtextLabel=new Label(finalQHeader,SWT.NONE);	
-		fQtextLabel.setText("QUESTION:");
-		fQtextLabel.setFont(SWTResourceManager.getFont("Segoe UI", 8, SWT.NORMAL));
+		Label finalQSecText=new Label(finalQHeader,SWT.NONE);
+		finalQSecText.setText("Final Question");
+		finalQSecText.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
+		finalQSecText.setLayoutData(new GridData(GridData.CENTER,GridData.BEGINNING,false,false,2,1));
+		
+		
 
 		Question finalQ=catObjs[6].getQuestions()[0];
-		//Group finalQTextSec= new Group(finalQHeader, SWT.NONE);
-		//finalQTextSec.setText("Question");
-		//finalQTextSec.setLayout(new GridLayout());
-		//fQtext= new Text(finalQTextSec,SWT.MULTI|SWT.WRAP);
-		fQtextBox= new Text(finalQHeader,SWT.MULTI|SWT.WRAP);
-		fQtextBox.setText(finalQ.getQuestion());
-		fQtextBox.setMessage("Type the text of Final Question here");
-		fQtextBox.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
-		((GridData) fQtextBox.getLayoutData()).heightHint=fQtextBox.getLineHeight()*2+5;
-		//finalQTextSec.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
+		Group finalQTextSec= new Group(finalQHeader, SWT.NONE);
+		finalQTextSec.setText("Question");
+		finalQTextSec.setLayout(new GridLayout());
+		fQtext= new Text(finalQTextSec,SWT.MULTI|SWT.WRAP);
+		fQtext.setText(finalQ.getQuestion());
+		fQtext.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
+		((GridData) fQtext.getLayoutData()).heightHint=fQtext.getLineHeight()*3;
+		finalQTextSec.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
 		
-		
-		Label fQanswerLabel=new Label(finalQHeader,SWT.NONE);
-		fQanswerLabel.setText("ANSWER:");
-		fQanswerLabel.setFont(SWTResourceManager.getFont("Segoe UI", 8, SWT.NORMAL));
-		//Group finalQAnsSec= new Group(finalQHeader, SWT.NONE);
-		//finalQAnsSec.setText("Answer");
-		//finalQAnsSec.setLayout(new GridLayout());
-		//fQanswer= new Text(finalQAnsSec,SWT.MULTI|SWT.WRAP);
-		fQanswerBox= new Text(finalQHeader,SWT.MULTI|SWT.WRAP);
-		fQanswerBox.setText(finalQ.getAnswer());
-		fQanswerBox.setMessage("Type the answer to the Final Question here");
-		fQanswerBox.setToolTipText("Type the answer to the Final Question here");
-		//finalQAnsSec.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
-		fQanswerBox.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
-		((GridData) fQanswerBox.getLayoutData()).heightHint=fQtextBox.getLineHeight()*1+5;
+		Group finalQAnsSec= new Group(finalQHeader, SWT.NONE);
+		finalQAnsSec.setText("Answer");
+		finalQAnsSec.setLayout(new GridLayout());
+		fQanswer= new Text(finalQAnsSec,SWT.MULTI|SWT.WRAP);
+		fQanswer.setText(finalQ.getAnswer());
+		finalQAnsSec.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true));
+		fQanswer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
+		((GridData) fQanswer.getLayoutData()).heightHint=fQtext.getLineHeight()*3;
 		finalQHeader.pack();
-		
-		
-		
-		
-		
-		//new section
-				Group pathingHeader= new Group(this, SWT.NONE);
-				pathingHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,1,1));
-				GridLayout pathingSectionLayout= new GridLayout(3,false);
-				pathingSectionLayout.marginHeight=5;
-				pathingSectionLayout.marginWidth=10;
-				pathingHeader.setLayout(pathingSectionLayout);	
-				pathingHeader.setText("Pathing Options");
-				//CHILD 0
-				Button rpButton=new Button(pathingHeader,SWT.TOGGLE|SWT.WRAP);
-				rpButton.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,3,1));
-				rpButton.setSelection(useRelativePaths);
-				rpButton.setText("Show relative paths?");
-				rpButton.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						useRelativePaths= !useRelativePaths;
-						Button w=(Button)e.widget;
-						togglePathViewType((Group)w.getParent());
-						if(useRelativePaths)rpButton.setText("Show full paths?");
-						else rpButton.setText("Show relative paths?");
-						
-					}
-				});
-				//CHILD 1
-				Label hfInputLabel=new Label(pathingHeader,SWT.NONE);
-				hfInputLabel.setText("Common Folder:");
-				//CHILD 2
-				Text homeFolderInput=new Text(pathingHeader,SWT.SINGLE|SWT.BORDER);
-				homeFolderInput.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,2,1));
-				homeFolderInput.setText(homeFolder);
-				homeFolderInput.setData("homeInput");
-				homeFolderInput.addModifyListener(textChanged);
-				//CHILD 3
-				Label pthfInputLabel=new Label(pathingHeader,SWT.NONE);
-				pthfInputLabel.setText("New Path To Common Folder:");
-				//CHILD 4
-				Text pathToInput=new Text(pathingHeader,SWT.SINGLE|SWT.BORDER);
-				pathToInput.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,2,1));
-				pathToInput.setText(pathToHome);
-				pathToInput.setData("pathInput");
-				//CHILD 5
-				Button replacePathsButton=new Button(pathingHeader,SWT.PUSH);
-				replacePathsButton.setLayoutData(new GridData(GridData.FILL,GridData.FILL,false,false,2,1));
-				replacePathsButton.setText("Replace Path to Common Folder");
-				replacePathsButton.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						replacePath(pathToInput.getText());
-					}
-				});
-				if(!AppBoard.userPrefs.getBoolean("advancedPathing", false)) {
-					((GridData)pathingHeader.getLayoutData()).exclude=true;
-					((GridData)finalQHeader.getLayoutData()).horizontalSpan=2;
-				}
-				 AppBoard.userPrefs.addPreferenceChangeListener(new PreferenceChangeListener() {
-
-					@Override
-					public void preferenceChange(PreferenceChangeEvent evt) {
-						if(!AppBoard.advancedPathing) {
-							((GridData)pathingHeader.getLayoutData()).exclude=true;
-							((GridData)finalQHeader.getLayoutData()).horizontalSpan=2;
-						}else {
-							((GridData)pathingHeader.getLayoutData()).exclude=false;
-							((GridData)finalQHeader.getLayoutData()).horizontalSpan=1;
-						}
-						
-					}
-				});
-			
-		
-		
 		
 		
 		
@@ -519,6 +396,7 @@ public class Board extends Composite {
 	}
 	
 
+<<<<<<< HEAD
 	protected void replacePath(String newPath) {
 		pathToHome=newPath;
 		ArrayList<QMedia> qs=getAllMediaQs();
@@ -530,38 +408,20 @@ public class Board extends Composite {
 		
 	}
 
+=======
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 	protected void useFileNameAction(Button ufnButton) {
 		if(ufnButton.getSelection()) { //true= selected & want to use file name
 			useFileNames=true;
-			getAllMediaQs().forEach(q->{
-				q.setAnswerToFileName();
-			});
+			setAllMediaAnswersToFileName();
 		}else {
 			useFileNames=false;
 		}
 		
 	}
-	
-	protected void togglePathViewType(Group header) {
-		if(useRelativePaths) {
-			getAllMediaQs().forEach(q->{
-				q.viewRelativePath();
-			});
-		
-		}else {
-			getAllMediaQs().forEach(q->{
-			q.viewFullPath();
-		});
-		}
-		
-		
-		
-		
-		
-	}
 
-	protected ArrayList<QMedia> getAllMediaQs() {
-		ArrayList<QMedia> allMediaQuestions= new ArrayList<QMedia>();
+	protected void setAllMediaAnswersToFileName() {
+		// TODO Auto-generated method stub
 		Control[] kids;
 		//go through all groups
 		for(Group g:catGroups) {
@@ -570,20 +430,12 @@ public class Board extends Composite {
 			if(!((Combo) kids[1]).getText().contains("text")) {
 				//get every question in each group
 				for(int i=qIndexInGroup;i<kids.length;i++) { 
-					allMediaQuestions.add((QMedia) kids[i]);
-					/*
-					 * if(type.contains("answers")) { // then set the answer to the file name
-					 * ((QMedia) kids[i]).setAnswerToFileName(); } else
-					 * if(type.contains("questions") && useRelativePaths) { // then set the question
-					 * to relative pathing ((QMedia) kids[i]).setPathToRelative(homeFolder); }else {
-					 * ((QMedia) kids[i]).setPathToFull(); }
-					 */
+					// then set the name to the file
+					((QMedia) kids[i]).setAnswerToFileName();
 			}
 			
 			}
 		}
-		
-		return allMediaQuestions;
 	}
 
 
@@ -660,15 +512,42 @@ public class Board extends Composite {
 			PrintWriter fileOut= new PrintWriter(output);
 			
 			for(int i =0;i<catGroups.length;i++) {
+<<<<<<< HEAD
 				String title=exportSingleCat(fileOut,catGroups[i]);
 				File catFile= new File(("Categories"+File.separatorChar+title+".txt"));
 				PrintWriter specificOut= new PrintWriter(catFile);
 				exportSingleCat(specificOut,catGroups[i]);
 				specificOut.close();
+=======
+				
+				Control[] children= catGroups[i].getChildren();
+				String title=((Text)children[0]).getText().replaceAll("\\n", " ");
+				fileOut.println(title+" ");
+				for(int j =qIndexInGroup;j<children.length;j++) { //start at 2 because skip the category title+type
+					Qbox qEd=(Qbox)children[j];
+					outputDD=qEd.getDD();
+					
+					//doing this to make sure there's at least 2 daily doubles
+					if(outputDD=='Y') {
+						ddCount ++;
+					}else if(i==5) { //if its the last category (6)
+						if((j-ddCount==3+qIndexInGroup) && (j>2+qIndexInGroup)) {//and we don't have enough DDs
+							outputDD='Y';
+							ddCount++;
+						}
+					}
+					
+					
+					fileOut.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
+					fileOut.println(" "+qEd.getAnswer().replaceAll("\\n", " "));
+					fileOut.println(outputDD);
+					fileOut.println(qEd.getTypeDetails());
+					}
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 			}
 			//after all the loops are done at the very end add the FINAL QUESTION
-			fileOut.println(fQtextBox.getText().replaceAll("\\n", " ")+" ");
-			fileOut.println(" "+fQanswerBox.getText().replaceAll("\\n", " ")+"^^^^");
+			fileOut.println(fQtext.getText().replaceAll("\\n", " ")+" ");
+			fileOut.println(" "+fQanswer.getText().replaceAll("\\n", " ")+"^^^^");
 			
 			fileOut.close();
 			if(ddCount<2) {

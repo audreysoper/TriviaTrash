@@ -26,16 +26,15 @@ public class Answer extends Composite {
 		
 		this.multipleChoice=multipleChoice;
 		try {
-			answerFormatted=parent.getQobject(false).getAnswer();
+			answerFormatted=parent.getQobject(false).getAnswer()+"^^^^";
 			
-			/*
-			 * if(answerFormatted==null) { answerFormatted="^^^^";}
-			 */
+			if(answerFormatted==null) {
+				answerFormatted="^^^^";}
 		}
 			catch(Exception e) {
 				e.printStackTrace();
 				correctAnswer="";
-				answerFormatted="";}
+				answerFormatted=" ";}
 		GridLayout lay=new GridLayout(2,false);
 		lay.marginHeight=0;
 		lay.marginWidth=0;
@@ -73,7 +72,10 @@ public class Answer extends Composite {
 			
 			
 		}else {
-			correctAnswer=answerFormatted;
+			try{correctAnswer=answerFormatted.substring(0,answerFormatted.indexOf('^'));
+			}catch(Exception e) {
+				correctAnswer="";
+			}
 			answerBoxes=new Text[]{new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER)};
 			GridData qAnswerLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,true,2,1);
 			//qAnswerLayoutDetails.heightHint=answerBoxes[0].getLineHeight()*3;
@@ -112,12 +114,10 @@ public class Answer extends Composite {
 				correctSelector[i].setSelection(false);
 			}
 		}
-		correctAnswer="";
-		answerFormatted="";
 		
 	}
 	
-	public String ansExport(){
+	public String getAnsForExport(){
 		correctAnswer=answerBoxes[0].getText().trim();
 		
 		
@@ -143,20 +143,6 @@ public class Answer extends Composite {
 		}
 		
 	}
-	public String getAnswer(){
-		correctAnswer=answerBoxes[0].getText().trim();
-		
-		
-		if(multipleChoice) {
-			answerFormatted="^ "+correctAnswer;
-			for(Text a:answerBoxes) {
-				answerFormatted +=("^ "+a.getText());
-			}
-			return answerFormatted;
-		}else {
-			 return correctAnswer;
-		}
-		
-	}
+	
 
 }

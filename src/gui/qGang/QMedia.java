@@ -9,8 +9,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -21,7 +19,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import gui.Board;
@@ -30,13 +27,10 @@ import orgObjects.Question;
 
 public class QMedia extends Qbox {
 
-	
 	private final int xWarningLevel = 1920;
 	private final int yWarningLevel = 1080;
 	private String fileName;
-	private String relativePath;
 	private String fullPath;
-	private String pathToHome;
 	protected FileDialog chooser;
 	protected String[] fileExtension;
 	private Board grandparent;
@@ -54,7 +48,7 @@ public class QMedia extends Qbox {
 		}catch(Exception e) {
 			fullPath="";
 		}
-		grandparent = (Board) parent.getParent().getParent().getParent();
+		Board grandparent = (Board) parent.getParent().getParent().getParent();
 		chooser = new FileDialog(parent.getShell());
 
 		if (q.getTypeDetails().contains("P")) {
@@ -72,18 +66,10 @@ public class QMedia extends Qbox {
 					"Something is not right, I'm rending a QMedia for a Q with type details: " + q.getTypeDetails());
 		}
 		chooser.setFilterExtensions(fileExtension);
-		chooser.setText(openButton.getText());
+
 		qDD.setGrayed(false);
 
-		try{
-			if(fullPath.length()>0) {
-				setRelativePath(grandparent.homeFolder);
-				
-			}
-			
-		}catch(Exception e) {
-			System.out.println("Can't grab Relatve Path from "+fullPath);
-		}
+		
 
 		openButton.setVisible(true);
 		viewButton.setVisible(true);
@@ -99,21 +85,7 @@ public class QMedia extends Qbox {
 		qEditLayoutDetails.heightHint = qEdit.getBounds().height - (openButton.getBounds().height + vSpace * 2);
 		qEditLayoutDetails.widthHint = width;
 		qEdit.setLayoutData(qEditLayoutDetails);
-		
-		qEdit.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				if(grandparent.useRelativePaths) {
-					relativePath=((Text) e.widget).getText();
-					fullPath=pathToHome+relativePath;
-				}else {
-					fullPath=((Text) e.widget).getText();
-					setRelativePath(grandparent.homeFolder);
-				}
-				
-			}
-			
-		});
+
 		//this.layout(true);
 		this.pack();
 		
@@ -137,12 +109,7 @@ public class QMedia extends Qbox {
 							checkPictureSize();
 						}
 						
-						if(grandparent.useRelativePaths) {
-							viewRelativePath();
-						}else {
-							setRelativePath(grandparent.homeFolder);
-							qEdit.setText(fullPath);
-						}
+						qEdit.setText(fullPath);
 						if (grandparent.useFileNames) {
 							setAnswerToFileName();
 						}
@@ -263,6 +230,7 @@ public class QMedia extends Qbox {
 	
 	
 	private void removeTransparency() {
+		
 
 			String newfullPath = fullPath.substring(0, fullPath.length() - 4).concat("JPG.jpg");
 			BufferedImage img;
@@ -280,7 +248,10 @@ public class QMedia extends Qbox {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			
 		
+<<<<<<< HEAD
 	}
 	
 	public void viewRelativePath() {
@@ -317,26 +288,14 @@ public class QMedia extends Qbox {
 		if(!grandparent.useRelativePaths) {
 			qEdit.setText(fullPath);
 		}
+=======
+
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 	}
 	
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-	@Override
-	public String getText() {
-		return fullPath;
-	}
-
-
-
-	public void viewFullPath() {
-		qEdit.setText(fullPath);
-		
-	}
-
-
-
-	
 
 }

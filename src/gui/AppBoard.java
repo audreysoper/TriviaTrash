@@ -14,11 +14,8 @@ import orgObjects.Question;
 
 import java.io.File;
 import java.util.Scanner;
-import java.util.prefs.Preferences;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -31,10 +28,13 @@ public class AppBoard {
 	protected MenuItem openMenuItem;
 	protected MenuItem newMenuItem;
 	protected MenuItem mcToggleMenuItem;
+<<<<<<< HEAD
 	protected MenuItem pathingMenuItem;
 	public static String homeFolder = "";
 	public static Preferences userPrefs;
 	public static boolean advancedPathing;
+=======
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 
 	/**
 	 * Launch the application.
@@ -43,8 +43,11 @@ public class AppBoard {
 	 */
 	public static void main(String[] args) {
 
+<<<<<<< HEAD
 		userPrefs = Preferences.userRoot();
 		advancedPathing = userPrefs.getBoolean("advancedPathing", false);
+=======
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 		try {
 			AppBoard window = new AppBoard();
 
@@ -104,6 +107,7 @@ public class AppBoard {
 
 		newMenuItem = new MenuItem(fileMenu, SWT.PUSH);
 		newMenuItem.setData(curr.getShell());
+<<<<<<< HEAD
 		newMenuItem.addSelectionListener(curr.newBoardAdapter);
 		newMenuItem.setText("New\t Ctrl+N");
 		newMenuItem.setAccelerator(SWT.MOD1 + 'N');
@@ -122,6 +126,11 @@ public class AppBoard {
 			}
 		});
 
+=======
+		newMenuItem.addSelectionListener (curr.newBoardAdapter);
+		newMenuItem.setText ("New\t Ctrl+N");
+		newMenuItem.setAccelerator (SWT.MOD1 + 'N');
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 		return bar;
 	}
 
@@ -215,7 +224,10 @@ public class AppBoard {
 			String answer;
 			String dd;
 			String format;
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 			boolean sameType = true;
 
 			while (catNum < 6 && scanner.hasNextLine()) {
@@ -318,6 +330,11 @@ public class AppBoard {
 					answer = " ";
 				}
 
+<<<<<<< HEAD
+=======
+				Question finQ = new Question(text.trim(), answer.trim(), 'N', "text", "", 0);
+				cats[catNum] = new Category("final", new Question[] { finQ }, 7);
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 			} catch (Exception e1) {
 				System.out.println("I couln't read the Final Question");
 				e1.printStackTrace();
