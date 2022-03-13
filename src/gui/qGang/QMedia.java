@@ -252,6 +252,7 @@ public class QMedia extends Qbox {
 			
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
 	}
 	
 	public void viewRelativePath() {
@@ -288,6 +289,9 @@ public class QMedia extends Qbox {
 		if(!grandparent.useRelativePaths) {
 			qEdit.setText(fullPath);
 		}
+=======
+
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 =======
 
 >>>>>>> parent of 254b82a (FILE PATHING BABAY!)

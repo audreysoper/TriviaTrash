@@ -397,6 +397,7 @@ public class Board extends Composite {
 	
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	protected void replacePath(String newPath) {
 		pathToHome=newPath;
 		ArrayList<QMedia> qs=getAllMediaQs();
@@ -408,6 +409,8 @@ public class Board extends Composite {
 		
 	}
 
+=======
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 =======
 >>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 	protected void useFileNameAction(Button ufnButton) {

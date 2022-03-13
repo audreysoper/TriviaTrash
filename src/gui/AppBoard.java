@@ -29,10 +29,13 @@ public class AppBoard {
 	protected MenuItem newMenuItem;
 	protected MenuItem mcToggleMenuItem;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	protected MenuItem pathingMenuItem;
 	public static String homeFolder = "";
 	public static Preferences userPrefs;
 	public static boolean advancedPathing;
+=======
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 =======
 >>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 
@@ -44,8 +47,11 @@ public class AppBoard {
 	public static void main(String[] args) {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		userPrefs = Preferences.userRoot();
 		advancedPathing = userPrefs.getBoolean("advancedPathing", false);
+=======
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 =======
 >>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 		try {
@@ -108,6 +114,7 @@ public class AppBoard {
 		newMenuItem = new MenuItem(fileMenu, SWT.PUSH);
 		newMenuItem.setData(curr.getShell());
 <<<<<<< HEAD
+<<<<<<< HEAD
 		newMenuItem.addSelectionListener(curr.newBoardAdapter);
 		newMenuItem.setText("New\t Ctrl+N");
 		newMenuItem.setAccelerator(SWT.MOD1 + 'N');
@@ -126,6 +133,11 @@ public class AppBoard {
 			}
 		});
 
+=======
+		newMenuItem.addSelectionListener (curr.newBoardAdapter);
+		newMenuItem.setText ("New\t Ctrl+N");
+		newMenuItem.setAccelerator (SWT.MOD1 + 'N');
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 =======
 		newMenuItem.addSelectionListener (curr.newBoardAdapter);
 		newMenuItem.setText ("New\t Ctrl+N");
@@ -225,7 +237,10 @@ public class AppBoard {
 			String dd;
 			String format;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 =======
 >>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 			boolean sameType = true;
@@ -334,6 +349,9 @@ public class AppBoard {
 =======
 				Question finQ = new Question(text.trim(), answer.trim(), 'N', "text", "", 0);
 				cats[catNum] = new Category("final", new Question[] { finQ }, 7);
+<<<<<<< HEAD
+>>>>>>> parent of 254b82a (FILE PATHING BABAY!)
+=======
 >>>>>>> parent of 254b82a (FILE PATHING BABAY!)
 			} catch (Exception e1) {
 				System.out.println("I couln't read the Final Question");
