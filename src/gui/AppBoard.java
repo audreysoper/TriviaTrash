@@ -113,7 +113,14 @@ public class AppBoard {
 		// Board myBoard = new Board(scrollContainer, SWT.NONE,createBlank());
 		// Board myBoard =new Board(scrollContainer, SWT.NONE,parseBoard(dir));
 		if (source != null) {
+<<<<<<< Updated upstream
 			return new Board(shell, SWT.NONE, cats, source);
+=======
+			boolean mC = cats[0].getQuestions()[0].getAnswer().split("\\^").length > 2;
+			for (String a : cats[0].getQuestions()[0].getAnswer().split("\\^"))
+				
+			return new Board(shell, SWT.NONE, cats, source, mC);
+>>>>>>> Stashed changes
 		}
 		return new Board(shell, SWT.NONE, cats);
 

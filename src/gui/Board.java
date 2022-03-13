@@ -67,6 +67,13 @@ public class Board extends Composite {
 	//CONSTRUCTOR FOR OPENING FILES
 	public Board(Composite parent, int style,Category[] catObjs,File source) {
 		super(parent, style);
+<<<<<<< Updated upstream
+=======
+		homeFolder=source.separatorChar+source.getParentFile().getName()+source.separatorChar;
+		pathToHome=source.getParentFile().getParent();
+		System.out.println(pathToHome);
+		this.mcToggle=isMC;
+>>>>>>> Stashed changes
 		currentOpenDoc=source;
 		populateBoard(catObjs);
 	}
