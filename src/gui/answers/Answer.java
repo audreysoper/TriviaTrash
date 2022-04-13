@@ -82,7 +82,10 @@ public class Answer extends Composite {
 			answerBoxes[0].setText(correctAnswer);
 			//((GridData)answerBoxes[0].getLayoutData()).widthHint=parent.width;
 			
-			
+		}
+		for(Text aBox:answerBoxes) {
+			if(aBox.getText().length()>Board.charLimit-1)aBox.setText(aBox.getText().substring(0, Board.charLimit-1));
+			aBox.setTextLimit(Board.charLimit);
 		}
 		//pack();
 		layout();
@@ -122,7 +125,7 @@ public class Answer extends Composite {
 		
 		
 		if(multipleChoice) {
-			answerFormatted="^ "+correctAnswer;
+			answerFormatted=correctAnswer;
 			for(Text a:answerBoxes) {
 				answerFormatted +=("^ "+a.getText());
 			}

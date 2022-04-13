@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import orgObjects.Category;
@@ -27,6 +28,7 @@ public class AppBoard {
 
 	protected Shell shell;
 	private int boxH;
+
 	protected MenuItem saveMenuItem;
 	protected MenuItem openMenuItem;
 	protected MenuItem newMenuItem;
@@ -35,6 +37,7 @@ public class AppBoard {
 	public static String homeFolder="";
 	public static Preferences userPrefs;
 	public static boolean advancedPathing;
+
 	/**
 	 * Launch the application.
 	 * 
@@ -42,8 +45,9 @@ public class AppBoard {
 	 */
 	public static void main(String[] args) {
 
-		userPrefs = Preferences.userRoot(); 
-		advancedPathing=userPrefs.getBoolean("advancedPathing", false);
+		userPrefs = Preferences.userRoot();
+		advancedPathing = userPrefs.getBoolean("advancedPathing", false);
+
 		try {
 			AppBoard window = new AppBoard();
 
@@ -66,16 +70,19 @@ public class AppBoard {
 		
 		Display display = Display.getDefault();
 		boxH = (display.getBounds().height) / 7;
-		int shellW = (display.getBounds().width) / 3;
+		int shellW = (display.getBounds().width) *4/5;
 
-		Board current =createContents(createBlank(), null);
-		Menu menuBar=createMenu(current);
+
+		Board current = createContents(createBlank(), null);
+		Menu menuBar = createMenu(current);
 		shell.setMenuBar(menuBar);
+
 		shell.open();
 		// shell.layout();
 		// shell.pack();
 		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		shell.setSize(size.x, size.y / 3 * 2);
+		shell.setBounds(0,0,shellW, size.y / 3 * 2);
+	
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -83,6 +90,7 @@ public class AppBoard {
 			}
 		}
 	}
+
 
 	private Menu createMenu(Board curr) {
 		Menu bar= new Menu(shell,SWT.BAR);
@@ -127,6 +135,7 @@ public class AppBoard {
 		return bar;
 	}
 
+
 	/*
 	 * FOR OPENING OTHER FILES AFTER INITIAL
 	 */
@@ -141,8 +150,10 @@ public class AppBoard {
 		Category[] cats = parseBoard(source);
 		if (cats != null) {
 			Board openBoard = createContents(cats, source);
-			Menu menuBar=createMenu(openBoard);
+
+			Menu menuBar = createMenu(openBoard);
 			shell.setMenuBar(menuBar);
+
 			shell.open();
 			Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 			shell.setSize(size.x, size.y / 3 * 2);
@@ -174,12 +185,13 @@ public class AppBoard {
 		 */
 		// Board myBoard = new Board(scrollContainer, SWT.NONE,createBlank());
 		// Board myBoard =new Board(scrollContainer, SWT.NONE,parseBoard(dir));
-		
+
+
 		if (source != null) {
-			boolean mC=cats[0].getQuestions()[0].getAnswer().split("\\^").length>2;
-			for(String a:cats[0].getQuestions()[0].getAnswer().split("\\^"))
+			boolean mC = cats[0].getQuestions()[0].getAnswer().split("\\^").length > 2;
+			for (String a : cats[0].getQuestions()[0].getAnswer().split("\\^"))
 				System.out.println(a);
-			return new Board(shell, SWT.NONE, cats, source,mC);
+			return new Board(shell, SWT.NONE, cats, source, mC);
 		}
 		return new Board(shell, SWT.NONE, cats);
 
@@ -214,10 +226,11 @@ public class AppBoard {
 			Category currentCat = null;
 			Question questions[] = new Question[5];
 			String text;
+			String question;
 			String answer;
 			String dd;
 			String format;
-			
+
 			boolean sameType = true;
 
 			while (catNum < 6 && scanner.hasNextLine()) {
@@ -237,39 +250,58 @@ public class AppBoard {
 				// WHEN POSITION IS A NEW QUESTION
 				case "question":
 					try {
-						answer = scanner.nextLine();
-						dd = scanner.nextLine();
-						if(!(dd.contains("N")||dd.contains("Y"))) {
-							System.out.println(dd);
-							answer=answer+" "+dd;
-							dd=scanner.nextLine();
-						}
-						format = scanner.nextLine();
+						question = text;
+						if (question.contains("^^^^"))
+							throw new Exception("Your question looks like an answer");
+						text = scanner.nextLine();
+						answer = text;
+						if (answer.length() > 3 && !answer.contains("^^^^"))
+							throw new Exception("Answer isn't formatted correctly");
+
+						text = scanner.nextLine();
+						dd = text;
+						if (dd.length() > 2)
+							throw new Exception("That doesn't look like a daily double...");
+
+						text = scanner.nextLine();
+						format = text;
+						if (format.length() > 2 && !format.contains("#"))
+							throw new Exception("This question formatting line is incorrect");
+
 						if (answer.endsWith("^^^^") && answer.length() > 4) {
 							answer = answer.substring(0, answer.lastIndexOf("^^^^"));
 						} else if (answer.length() <= 4) {
 							answer = " ";
 						}
-						
+
 						if (qNum > 0 && sameType) {
 							sameType = questions[qNum - 1].getTypeDetails().contains(format);
 						}
 
-						questions[qNum] = new Question(text.trim(), answer.trim(), dd.charAt(0), "", format, qNum);
+						questions[qNum] = new Question(question.trim(), answer.trim(), dd.charAt(0), "", format, qNum);
 
 						qNum++;
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
-						Shell fuck=new Shell();
+
+						Shell fuck = new Shell();
 						fuck.open();
-						Image sad=SWTResourceManager.getImage(AppBoard.class, "MEDowo.png");
-						fuck.setBackgroundImage(sad);
-						fuck.setSize(fuck.computeSize(sad.getBounds().width,sad.getBounds().height));
-						
+						fuck.setLayout(new FillLayout());
+						Label actualError = new Label(fuck, SWT.NONE);
+						String trace = "FAILED AT: " + text + "\n" + e1.getMessage() + "\n";
+						for (StackTraceElement eE : e1.getStackTrace()) {
+							trace += eE.toString() + "\n";
+						}
+						actualError.setText(trace);
+
+						Image sad = SWTResourceManager.getImage(AppBoard.class, "MEDowo.png");
+						actualError.setBackgroundImage(sad);
+						fuck.setSize(fuck.computeSize(sad.getBounds().width, sad.getBounds().height));
+
 						MessageBox ope = new MessageBox(fuck, SWT.OK);
+
 						ope.setMessage("Hmmmmm.... This file doesn't look quite like I was expecting it to. "
-								+ "\n You sure this is a trivia file that's formatted properly?"
-								+ "\n If so please send it to Audrey to figure out why I can't read it");
+								+ "\n HINT: There's some info about what might be wrong in the sad-face window");
 						ope.setText("File Read Error");
 						ope.open();
 						fuck.dispose();
@@ -324,37 +356,24 @@ public class AppBoard {
 					answer = " ";
 				}
 
-				Question finQ = new Question(text.trim(), answer.trim(), 'N', "text", "", 0);
-				cats[catNum] = new Category("final", new Question[] { finQ }, 7);
-				if(scanner.hasNext("`")) {
-					homeFolder=scanner.nextLine();
-				}
 			} catch (Exception e1) {
 				System.out.println("I couln't make the Final Question");
-				e1.printStackTrace();
+				text = "I couldn't find a final";
+				answer = "so this is here instead";
 			}
+
+			Question finQ = new Question(text.trim(), answer.trim(), 'N', "text", "", 0);
+			cats[catNum] = new Category("final", new Question[] { finQ }, 7);
+
 			scanner.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("what the fuck");
 		}
 
 		return cats;
 	}
 
-	public static Composite getSad() {
-		Shell fuck=new Shell();
-		fuck.open();
-		fuck.setBackgroundImage(null);
-		Composite sad = new Composite(fuck, SWT.NONE);
-		sad.setLayout(new FillLayout());
-		Label owoSticker = new Label(sad, SWT.NONE);
-		Image bigOwo = SWTResourceManager.getImage(AppBoard.class, "MEDowo.png");
-		owoSticker.setImage(bigOwo);
-		owoSticker.setBounds(bigOwo.getBounds());
-		// owoSticker.setText("Plz stop breaking me");
-		fuck.layout(true);
-		fuck.pack();
-		return sad;
-	}
+
 }

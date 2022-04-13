@@ -147,10 +147,13 @@ public class Qbox extends Composite {
 		qEdit.setMessage("Question");
 		qEdit.setText(q.getQuestion());
 		qEdit.setEditable(false);
-		
+		if(qEdit.getText().length()>Board.charLimit-1)qEdit.setText(qEdit.getText().substring(0, Board.charLimit-1));
+		qEdit.setTextLimit(Board.charLimit);
+
+
 		qAnswer=new Answer(this,boardFather.isMc());
 		GridData qAnsLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,true,3,1);
-		qAnsLayoutDetails.heightHint=openAnsHeightDefault;
+		//qAnsLayoutDetails.heightHint=openAnsHeightDefault;
 		qAnsLayoutDetails.widthHint=this.width;
 		qAnsLayoutDetails.minimumWidth = minWidth;
 		qAnswer.setLayoutData(qAnsLayoutDetails);
