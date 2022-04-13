@@ -45,6 +45,7 @@ public class Board extends Composite {
 	public int boxW;
 	public int boxH;
 	public File currentOpenDoc;
+	private Object mcToggle;
 	public final static Color audioBG= SWTResourceManager.getColor(255, 229, 249);//light pink
 	public final static Color picBG= SWTResourceManager.getColor(230, 249, 255);//light blue
 	public final static Color mixedBG= SWTResourceManager.getColor(255, 248, 212);//yellow
@@ -65,15 +66,13 @@ public class Board extends Composite {
 	}
 	
 	//CONSTRUCTOR FOR OPENING FILES
-	public Board(Composite parent, int style,Category[] catObjs,File source) {
+	public Board(Composite parent, int style,Category[] catObjs,File source,boolean isMC) {
 		super(parent, style);
-<<<<<<< Updated upstream
-=======
-		homeFolder=source.separatorChar+source.getParentFile().getName()+source.separatorChar;
-		pathToHome=source.getParentFile().getParent();
+
+		String homeFolder=source.separatorChar+source.getParentFile().getName()+source.separatorChar;
+		String pathToHome=source.getParentFile().getParent();
 		System.out.println(pathToHome);
 		this.mcToggle=isMC;
->>>>>>> Stashed changes
 		currentOpenDoc=source;
 		populateBoard(catObjs);
 	}
