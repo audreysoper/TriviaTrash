@@ -57,7 +57,7 @@ public class Question {
 		this.type=newType;
 		switch(newType) {
 		case "text":
-			this.format="T#MS Gothic#28#True#False#16645837#";
+			this.format="T";
 			break;
 		case "picture":
 			this.format="P";

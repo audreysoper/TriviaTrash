@@ -128,7 +128,10 @@ public class Qbox extends Composite {
 		qEdit.setMessage("Question");
 		qEdit.setText(q.getQuestion());
 		qEdit.setEditable(false);
+		if(qEdit.getText().length()>Board.charLimit-1)qEdit.setText(qEdit.getText().substring(0, Board.charLimit-1));
+		qEdit.setTextLimit(Board.charLimit);
 		
+<<<<<<< Updated upstream
 		qAnswer = new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER);
 		GridData qAnswerLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,false,3,1);
 		ansHeightDefault=qAnswer.getLineHeight()*3;
@@ -140,6 +143,16 @@ public class Qbox extends Composite {
 		qAnswer.setText(q.getAnswer());
 		qAnswer.setEditable(false);
 		this.layout(true);
+=======
+		qAnswer=new Answer(this,boardFather.isMc());
+		GridData qAnsLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,true,3,1);
+		//qAnsLayoutDetails.heightHint=openAnsHeightDefault;
+		qAnsLayoutDetails.widthHint=this.width;
+		qAnsLayoutDetails.minimumWidth = minWidth;
+		qAnswer.setLayoutData(qAnsLayoutDetails);
+		
+		this.layout();
+>>>>>>> Stashed changes
 		this.pack();
 		
 	}
