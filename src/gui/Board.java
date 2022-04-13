@@ -5,7 +5,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.FontDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +16,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -48,7 +45,6 @@ public class Board extends Composite {
 	public int boxW;
 	public int boxH;
 	public File currentOpenDoc;
-<<<<<<< Updated upstream
 	public final static Color audioBG= SWTResourceManager.getColor(255, 229, 249);//light pink
 	public final static Color picBG= SWTResourceManager.getColor(230, 249, 255);//light blue
 	public final static Color mixedBG= SWTResourceManager.getColor(255, 248, 212);//yellow
@@ -56,99 +52,6 @@ public class Board extends Composite {
 	public final static Color bgColor= SWTResourceManager.getColor(243, 233, 210);
 	//public final static Color bgColor= SWTResourceManager.getColor(249, 238, 210);
 	public final static Color darkerLilac= SWTResourceManager.getColor(148, 130, 201);
-=======
-	private String titleText="Fancy Question Editor";
-	private String version = "version 22.4.6";
-	public String homeFolder;
-	public String pathToHome;
-	public String textStyle="#MS Gothic#28#True#False#16645837#";
-	public FontData fontInfo;
-	
-	public final static int charLimit=275;
-
-	public final static Color audioBG= new Color(255, 229, 249);//light pink
-	public final static Color picBG= new Color(230, 249, 255);//light blue
-	public final static Color mixedBG= new Color(255, 248, 212);//yellow
-	public final static Color lilac= new Color(238, 230, 255);
-	public final static Color ddBG= new Color(0, 0, 0,100);
-	public final static Color bgColor= new Color(243, 233, 210);
-	public final static Color darkerLilac= new Color(148, 130, 201);
-	public final static Font bigButtons=SWTResourceManager.getFont("Calibri Light", 11, SWT.BOLD);
-	
-	public SelectionListener newBoardAdapter=new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			// 
-			AppBoard newWindow= new AppBoard();
-			newWindow.openBlank();
-		}
-	};
-	
-	public SelectionListener openBoardAdapter=new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			// 
-			FileDialog chooser= new FileDialog((Shell) e.widget.getData(),SWT.OPEN);
-			try {
-			chooser.setFilterExtensions(new String[] {"*.txt"});
-			chooser.open();
-			
-				if(chooser.getFileName().length()>1) {
-					File source= new File(chooser.getFilterPath()+"\\"+chooser.getFileName());
-					AppBoard newWindow= new AppBoard();
-					newWindow.openFile(source);
-				}
-			}catch(Exception err) {
-				//nuthin
-				err.printStackTrace();
-			}
-		}
-	};
-	public SelectionListener saveASAdapter=new SelectionAdapter() {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			// TODO Auto-generated method stub
-			FileDialog chooser= new FileDialog((Shell) e.widget.getData(),SWT.SAVE);
-			try {
-				chooser.setFilterExtensions(new String[] {"*.txt"});
-				chooser.open();
-				String fileName=chooser.getFileName();
-				
-				if(fileName.length()>1) {
-					//if it doesn't end with the extension, then add the extension
-					if(!fileName.endsWith(chooser.getFilterExtensions()[0].substring(1))) {
-						fileName=fileName+chooser.getFilterExtensions()[0].substring(1);
-					}
-					File output= new File(chooser.getFilterPath()+"\\"+fileName);
-					exportToFile(output);
-					Shell shee=getShell();
-					
-					new Board(shee,SWT.NONE,AppBoard.parseBoard(output),output,mcToggle);
-					dispose();
-				}
-			}catch(Exception err) {
-				//no forreal I don't want to do anything
-				err.printStackTrace();
-			}
-			
-		}
-
-	};
-
-	public ModifyListener textChanged=new ModifyListener() {
-		@Override
-		public void modifyText(ModifyEvent e) {
-			if(((String) e.widget.getData()).contains("home")) {
-				homeFolder=((Text) e.widget).getText();
-			}else if(((String) e.widget.getData()).contains("path")) {
-				pathToHome=((Text) e.widget).getText();
-			}
-			
-		}
-		
-	};
-	
->>>>>>> Stashed changes
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -180,101 +83,25 @@ public class Board extends Composite {
 		setBackgroundMode(SWT.INHERIT_DEFAULT);
 		
 		//setBackground(bgColor);
-		setLayout(new GridLayout(5,false));
-		Composite top=new Composite(this,SWT.NONE);
-		top.setLayout(new GridLayout(3,true));
-		top.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,5,1));
-		//EXPERIMENTING WITH COMPOSITE FOR BUTTONS
-		Composite buttons=new Composite(top,SWT.NONE);
-		buttons.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
-		//GridData butts=new GridData(SWT.FILL,SWT.FILL,false,false,1,1);
-		//butts.heightHint=100;
-		//buttons.setLayoutData(butts);
-		GridLayout buttonsLayout= new GridLayout(4,false);
-		buttons.setLayout(buttonsLayout);
-		if(currentOpenDoc != null) {
-			titleText=titleText+currentOpenDoc.getName();
-			Button save= new Button(buttons,SWT.PUSH);
-			//save.setLayoutData(new RowData(SWT.DEFAULT,40));
-			save.setText("SAVE - "+currentOpenDoc.getName());
-			save.setFont(bigButtons);
-			save.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-				exportToFile(currentOpenDoc);
-				
-				}
-			});
-		}
+		setLayout(new GridLayout(3,false));
 		
-		//Save Button
-		Button saveAS= new Button(buttons,SWT.PUSH);
-		saveAS.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-		saveAS.setText("SAVE AS...");
-		saveAS.setData(this.getShell());
-		saveAS.addSelectionListener(saveASAdapter);
-		saveAS.setFont(bigButtons);
-		
-<<<<<<< Updated upstream
 		Label title=new Label(this,SWT.NONE);
 		
 		//title.setForeground(SWTResourceManager.getColor(204, 153, 255));
 		title.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,3,1));
 		title.setText("The Fancy Question Editor");
-=======
-		//Open Button
-		Button open= new Button(buttons,SWT.PUSH);
-		open.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-		open.setText("OPEN");
-		open.setFont(bigButtons);
-		open.setData(this.getShell());
-		open.addSelectionListener(openBoardAdapter);
-		
-		//New button
-		Button newBoard= new Button(buttons,SWT.PUSH);
-		newBoard.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-		newBoard.setText("NEW BOARD");
-		newBoard.setFont(bigButtons);
-		newBoard.addSelectionListener(newBoardAdapter);
-		
-		
-		
-		
-		Label title=new Label(top,SWT.NONE);
-		
-		//title.setForeground(SWTResourceManager.getColor(204, 153, 255));
-		title.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,1,1));
-		title.setText(titleText);
->>>>>>> Stashed changes
 		title.setAlignment(SWT.CENTER);
 		title.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
 		
 		
-<<<<<<< Updated upstream
 		
 		//create group Top Header that BUTTONS(only) live in
 		Group buttonHeader= new Group(this, SWT.NONE);
 		buttonHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,false,false));
-=======
-		Label ver=new Label(top,SWT.NONE);
-		ver.setLayoutData(new GridData(SWT.END,GridData.FILL,false,false,1,1));
-		//((GridData)ver.getLayoutData()).
-		ver.setText(version);
-		ver.setAlignment(SWT.LEFT);
-		ver.setFont(SWTResourceManager.getFont("Verdana", 9,SWT.NORMAL));
-		//((GridData)title.getLayoutData()).horizontalIndent=ver.getBounds().width;
-		//((GridData)title.getLayoutData()).
-		this.layout();
-	
-		//create group Top Header that BUTTONS+warning (only) live in
-		Group optionsHeader= new Group(this, SWT.NONE);
-		optionsHeader.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
->>>>>>> Stashed changes
 		
 		//topHeader.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.CENTER));
 		
 		//now set the actual layout that Top header is employing
-<<<<<<< Updated upstream
 		RowLayout headerInnerLayout= new RowLayout();
 		//headerInnerLayout.justify=true;
 		headerInnerLayout.spacing=10;
@@ -294,20 +121,6 @@ public class Board extends Composite {
 		ufnButton.setLayoutData(new RowData(SWT.DEFAULT,50));
 		//ufnButton.setBounds(0, 0, 120, 50);
 		ufnButton.setText("Use file names as answers?");
-=======
-		GridLayout headerInnerLayout= new GridLayout(2,false);
-		headerInnerLayout.horizontalSpacing=10;
-//		headerInnerLayout.center=true;
-//		headerInnerLayout.marginWidth=2;
-		optionsHeader.setLayout(headerInnerLayout);
-		optionsHeader.setText("Options");
-		
-		Button ufnButton=new Button(optionsHeader,SWT.CHECK|SWT.WRAP);
-		//ufnButton.setLayoutData(new RowData(SWT.DEFAULT,50));
-		
-		ufnButton.setText("File names as answers?");
-		ufnButton.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,2,1));
->>>>>>> Stashed changes
 		ufnButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -321,7 +134,6 @@ public class Board extends Composite {
 			}
 		});
 		
-<<<<<<< Updated upstream
 		if(currentOpenDoc != null) {
 			title.setText(title.getText()+" - "+currentOpenDoc.getName());
 			Button save= new Button(buttonHeader,SWT.PUSH);
@@ -414,48 +226,9 @@ public class Board extends Composite {
 		reminder.setBackground(mixedBG);
 		((GridData)buttonHeader.getLayoutData()).widthHint=buttonHeader.computeSize(SWT.DEFAULT,SWT.DEFAULT).x/2;
 		buttonHeader.pack();
-=======
-		
-		
-		//Text options
-		Label fontFaceLabel=new Label(optionsHeader,SWT.WRAP|SWT.CENTER);
-		fontFaceLabel.setText("Current Text Style: ");
-		Button selectFont= new Button(optionsHeader,SWT.PUSH);
-		selectFont.setText("Customize");
-		selectFont.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FontDialog choose=new FontDialog(((Control) e.widget).getShell());
-				choose.setFontList(new FontData[]{fontInfo});
-				choose.setEffectsVisible(false);
-				fontInfo=choose.open();
-				textStyle="#"+fontInfo.getName()+"#"+fontInfo.getHeight()+"#True#False#16645837#";
-				fontInfo.setHeight(10);
-				fontFaceLabel.setFont(new Font(lilac.getDevice(),fontInfo));
-				fontFaceLabel.redraw();
-				fontFaceLabel.update();
-				//optionsHeader.layout();
-			
-			}
-		});
-		
-		Label reminder=new Label(optionsHeader,SWT.WRAP|SWT.CENTER);
-		//reminder.setLayoutData(new RowData(SWT.DEFAULT,50));
-		GridData reminderLayData=new GridData(SWT.CENTER,SWT.CENTER,true,false,2,1);
-		reminder.setText("REMINDER: \nCheck boards in Trivia Board Pro Editor and BEFORE playing");
-		reminder.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
-		reminderLayData.widthHint=reminder.computeSize(SWT.DEFAULT,SWT.DEFAULT).x/2;
-		reminder.setLayoutData(reminderLayData);
-		reminder.setBackground(mixedBG);
-		
-		
-		
-		optionsHeader.pack();
->>>>>>> Stashed changes
 		
 		//fINAL QUESTION SECTION
 			Group finalQHeader= new Group(this, SWT.NONE);
-<<<<<<< Updated upstream
 			finalQHeader.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false,2,1));
 			GridLayout fqSectionLayout= new GridLayout(2,false);
 			finalQHeader.setLayout(fqSectionLayout);	
@@ -467,120 +240,6 @@ public class Board extends Composite {
 		finalQSecText.setLayoutData(new GridData(GridData.CENTER,GridData.BEGINNING,false,false,2,1));
 		
 		
-=======
-			finalQHeader.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,2,1));
-			GridLayout fqSectionLayout= new GridLayout(1,false);
-			fqSectionLayout.marginHeight=5;
-			fqSectionLayout.marginWidth=10;
-			fqSectionLayout.verticalSpacing=2;
-			finalQHeader.setLayout(fqSectionLayout);
-			finalQHeader.setText("Final Question");
-				
-				
-			/*
-			 * Label finalQSecText=new Label(finalQHeader,SWT.NONE);
-			 * finalQSecText.setText("Final Question");
-			 * finalQSecText.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.BOLD));
-			 * finalQSecText.setLayoutData(new
-			 * GridData(GridData.CENTER,GridData.BEGINNING,false,false));
-			 */
-		Label fQtextLabel=new Label(finalQHeader,SWT.NONE);	
-		fQtextLabel.setText("QUESTION:");
-		fQtextLabel.setFont(SWTResourceManager.getFont("Segoe UI", 8, SWT.NORMAL));
-
-		Question finalQ=catObjs[6].getQuestions()[0];
-		//Group finalQTextSec= new Group(finalQHeader, SWT.NONE);
-		//finalQTextSec.setText("Question");
-		//finalQTextSec.setLayout(new GridLayout());
-		//fQtext= new Text(finalQTextSec,SWT.MULTI|SWT.WRAP);
-		fQtextBox= new Text(finalQHeader,SWT.MULTI|SWT.WRAP);
-		fQtextBox.setText(finalQ.getQuestion());
-		fQtextBox.setMessage("Type the text of Final Question here");
-		fQtextBox.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
-		((GridData) fQtextBox.getLayoutData()).heightHint=fQtextBox.getLineHeight()*2+5;
-		//finalQTextSec.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-		
-		
-		Label fQanswerLabel=new Label(finalQHeader,SWT.NONE);
-		fQanswerLabel.setText("ANSWER:");
-		fQanswerLabel.setFont(SWTResourceManager.getFont("Segoe UI", 8, SWT.NORMAL));
-		//Group finalQAnsSec= new Group(finalQHeader, SWT.NONE);
-		//finalQAnsSec.setText("Answer");
-		//finalQAnsSec.setLayout(new GridLayout());
-		//fQanswer= new Text(finalQAnsSec,SWT.MULTI|SWT.WRAP);
-		fQanswerBox= new Text(finalQHeader,SWT.MULTI|SWT.WRAP);
-		fQanswerBox.setText(finalQ.getAnswer());
-		fQanswerBox.setMessage("Type the answer to the Final Question here");
-		fQanswerBox.setToolTipText("Type the answer to the Final Question here");
-		//finalQAnsSec.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
-		fQanswerBox.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
-		((GridData) fQanswerBox.getLayoutData()).heightHint=fQtextBox.getLineHeight()*1+5;
-		finalQHeader.pack();
-		
-		
-		
-		
-		
-		//new section
-				Group pathingHeader= new Group(this, SWT.NONE);
-				//pathingHeader.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,2,1));
-				GridData pHlayData=new GridData(SWT.FILL,SWT.FILL,true,false,2,1);
-				pHlayData.minimumWidth=optionsHeader.computeSize(SWT.DEFAULT, SWT.DEFAULT).x*2;
-				pathingHeader.setLayoutData(pHlayData);
-				GridLayout pathingSectionLayout= new GridLayout(3,false);
-				pathingSectionLayout.marginHeight=5;
-				pathingSectionLayout.marginWidth=10;
-				pathingHeader.setLayout(pathingSectionLayout);	
-				pathingHeader.setText("Pathing Options");
-				//CHILD 0
-				Button rpButton=new Button(pathingHeader,SWT.TOGGLE|SWT.WRAP);
-				rpButton.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,3,1));
-				rpButton.setSelection(useRelativePaths);
-				rpButton.setText("Show relative paths?");
-				rpButton.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						useRelativePaths= !useRelativePaths;
-						Button w=(Button)e.widget;
-						togglePathViewType((Group)w.getParent());
-						if(useRelativePaths)rpButton.setText("Show full paths?");
-						else rpButton.setText("Show relative paths?");
-						
-					}
-				});
-				//CHILD 1
-				Label hfInputLabel=new Label(pathingHeader,SWT.NONE);
-				hfInputLabel.setText("Common Folder:");
-				//CHILD 2
-				Text homeFolderInput=new Text(pathingHeader,SWT.SINGLE|SWT.BORDER);
-				homeFolderInput.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,2,1));
-				homeFolderInput.setText(homeFolder);
-				homeFolderInput.setData("homeInput");
-				homeFolderInput.addModifyListener(textChanged);
-				//CHILD 3
-				Label pthfInputLabel=new Label(pathingHeader,SWT.NONE);
-				pthfInputLabel.setText("New Path To Common Folder:");
-				//CHILD 4
-				Text pathToInput=new Text(pathingHeader,SWT.SINGLE|SWT.BORDER);
-				pathToInput.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,2,1));
-				pathToInput.setText(pathToHome);
-				pathToInput.setData("pathInput");
-				//CHILD 5
-				Button replacePathsButton=new Button(pathingHeader,SWT.PUSH);
-				replacePathsButton.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,2,1));
-				replacePathsButton.setText("Replace Path to Common Folder");
-				replacePathsButton.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						replacePath(pathToInput.getText());
-					}
-				});
-				if(!AppBoard.userPrefs.getBoolean("advancedPathing", false)) {
-					((GridData)pathingHeader.getLayoutData()).exclude=true;
-					((GridData)finalQHeader.getLayoutData()).horizontalSpan=2;
-				}
-				 AppBoard.userPrefs.addPreferenceChangeListener(new PreferenceChangeListener() {
->>>>>>> Stashed changes
 
 		Question finalQ=catObjs[6].getQuestions()[0];
 		Group finalQTextSec= new Group(finalQHeader, SWT.NONE);
@@ -606,7 +265,7 @@ public class Board extends Composite {
 		
 		//START THE MAIN SECTION OF THE WINDOW
 		ScrolledComposite scrollContainer= new ScrolledComposite(this,SWT.V_SCROLL|SWT.H_SCROLL| SWT.BORDER);
-		scrollContainer.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true,5,1));
+		scrollContainer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true,3,1));
 		scrollContainer.setExpandHorizontal(true);
 		
 		Composite dummyContainer = new Composite(scrollContainer,SWT.NONE);
@@ -615,7 +274,7 @@ public class Board extends Composite {
 		GridLayout dummyLay= new GridLayout(6,true);
 		dummyLay.horizontalSpacing=10;
 		dummyContainer.setLayout(dummyLay);
-		dummyContainer.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
+		dummyContainer.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
 		dummyContainer.setBackground(darkerLilac);
 		
 		scrollContainer.setContent(dummyContainer);
@@ -634,7 +293,7 @@ public class Board extends Composite {
 		for(int i =0;i<catObjs.length-1;i++) {
 			catGroups[i]= new Group(dummyContainer, SWT.SHADOW_ETCHED_IN);
 			catGroups[i].setText("Category "+(i+1));
-			catGroups[i].setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true));
+			catGroups[i].setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,false));
 			
 			switch(catObjs[i].getType()) {
 			case "audio": catGroups[i].setBackground(audioBG);
@@ -660,7 +319,7 @@ public class Board extends Composite {
 			//Category types
 			catType[i]= new Combo(catGroups[i],SWT.DROP_DOWN|SWT.READ_ONLY);
 			catType[i].setItems(typeNames);
-			catType[i].setLayoutData(new GridData(SWT.FILL,GridData.CENTER,true,false));
+			catType[i].setLayoutData(new GridData(GridData.FILL,GridData.CENTER,true,false));
 			catType[i].setText(catObjs[i].getType());
 			catType[i].addModifyListener(new ModifyListener() {
 				@Override
@@ -685,7 +344,7 @@ public class Board extends Composite {
 			//add all the questions
 			
 			Qbox[] boxes=makeQuestionGroup(catGroups[i],qs);	
-			GridData titleData= new GridData(SWT.FILL,SWT.FILL,true,false,2,1);
+			GridData titleData= new GridData(GridData.FILL,GridData.FILL,true,false,2,1);
 			titleData.widthHint=boxes[0].width;
 			titleData.heightHint=titles[i].getLineHeight()*2;
 			titles[i].setLayoutData(titleData);
@@ -762,7 +421,7 @@ public class Board extends Composite {
 		}
 		
 		for(Qbox q:qGroup) {
-			q.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true,2,1));
+			q.setLayoutData(new GridData(GridData.FILL,GridData.FILL,true,true,2,1));
 		}
 		
 		parentCatGroup.layout();
@@ -808,7 +467,6 @@ public class Board extends Composite {
 				Control[] children= catGroups[i].getChildren();
 				String title=((Text)children[0]).getText().replaceAll("\\n", " ");
 				fileOut.println(title+" ");
-				//BEFORE ANYTHING I COUNT THE DDs
 				for(int j =qIndexInGroup;j<children.length;j++) { //start at 2 because skip the category title+type
 					Qbox qEd=(Qbox)children[j];
 					outputDD=qEd.getDD();
@@ -827,7 +485,7 @@ public class Board extends Composite {
 					fileOut.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
 					fileOut.println(" "+qEd.getAnswer().replaceAll("\\n|\\r", " ")+"^^^^");
 					fileOut.println(outputDD);
-					fileOut.println(qEd.getTypeDetails()+textStyle);
+					fileOut.println(qEd.getTypeDetails());
 					}
 			}
 			//after all the loops are done at the very end add the FINAL QUESTION
