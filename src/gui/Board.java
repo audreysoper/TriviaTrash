@@ -45,7 +45,8 @@ public class Board extends Composite {
 	public int boxW;
 	public int boxH;
 	public File currentOpenDoc;
-	private Object mcToggle;
+	private boolean mcToggle;
+	
 	public final static Color audioBG= SWTResourceManager.getColor(255, 229, 249);//light pink
 	public final static Color picBG= SWTResourceManager.getColor(230, 249, 255);//light blue
 	public final static Color mixedBG= SWTResourceManager.getColor(255, 248, 212);//yellow
