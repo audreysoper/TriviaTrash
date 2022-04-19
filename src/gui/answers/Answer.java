@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import gui.AppBoard;
+import gui.Board;
 import gui.qGang.Qbox;
 
 public class Answer extends Composite {

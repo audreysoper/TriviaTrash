@@ -153,7 +153,7 @@ public class Qbox extends Composite {
 
 		qAnswer=new Answer(this,boardFather.isMc());
 		GridData qAnsLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,true,3,1);
-		//qAnsLayoutDetails.heightHint=openAnsHeightDefault;
+		qAnsLayoutDetails.heightHint=openAnsHeightDefault;
 		qAnsLayoutDetails.widthHint=this.width;
 		qAnsLayoutDetails.minimumWidth = minWidth;
 		qAnswer.setLayoutData(qAnsLayoutDetails);

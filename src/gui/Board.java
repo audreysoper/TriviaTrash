@@ -62,10 +62,10 @@ public class Board extends Composite {
 	public File currentOpenDoc;
 
 	private String titleText="Fancy Question Editor";
-	private String version = "version 22.4.6";
+	private String version = "version 22.4.18";
 	public String homeFolder;
 	public String pathToHome;
-	public String textStyle="#MS Gothic#28#True#False#16645837#";
+	public String textStyle;
 	public FontData fontInfo;
 	
 	public final static int charLimit=275;
@@ -165,8 +165,8 @@ public class Board extends Composite {
 		homeFolder="";
 		pathToHome="";
 		useRelativePaths=false;
+		textStyle="#MS Gothic#28#True#False#16645837#";
 		populateBoard(catObjs);
-		
 	}
 	
 	//CONSTRUCTOR FOR OPENING FILES
@@ -176,8 +176,8 @@ public class Board extends Composite {
 		pathToHome=source.getParentFile().getParent();
 		this.mcToggle=isMC;
 		currentOpenDoc=source;
+		textStyle=catObjs[0].getQuestions()[0].getTypeDetails().substring(1);
 		populateBoard(catObjs);
-		
 	}
 	
 
@@ -283,7 +283,11 @@ public class Board extends Composite {
 		
 		//Text options
 		Label fontFaceLabel=new Label(optionsHeader,SWT.WRAP|SWT.CENTER);
-		fontFaceLabel.setText("Current Text Style: ");
+		Label fontSizeLabel=new Label(optionsHeader,SWT.WRAP|SWT.CENTER);
+		
+		fontFaceLabel.setText("Font: "+textStyle.substring(1,textStyle.indexOf('#',1)));
+		int hashIndex=textStyle.indexOf('#', textStyle.indexOf('#',1));
+		fontSizeLabel.setText("Size: "+textStyle.substring(1+hashIndex,textStyle.indexOf('#', hashIndex+1)));
 		Button selectFont= new Button(optionsHeader,SWT.PUSH);
 		selectFont.setText("Customize");
 		selectFont.addSelectionListener(new SelectionAdapter() {
@@ -292,13 +296,21 @@ public class Board extends Composite {
 				FontDialog choose=new FontDialog(((Control) e.widget).getShell());
 				choose.setFontList(new FontData[]{fontInfo});
 				choose.setEffectsVisible(false);
-				fontInfo=choose.open();
-				textStyle="#"+fontInfo.getName()+"#"+fontInfo.getHeight()+"#True#False#16645837#";
-				fontInfo.setHeight(10);
-				fontFaceLabel.setFont(new Font(lilac.getDevice(),fontInfo));
-				fontFaceLabel.redraw();
-				fontFaceLabel.update();
-				//optionsHeader.layout();
+				try {
+					fontInfo=choose.open();
+					textStyle="#"+fontInfo.getName()+"#"+fontInfo.getHeight()+"#True#False#16645837#";
+					fontFaceLabel.setText("Font: "+fontInfo.getName());
+					fontSizeLabel.setText("Size: "+fontInfo.getHeight());
+					fontInfo.setHeight(10);
+					fontFaceLabel.setFont(new Font(lilac.getDevice(),fontInfo));
+					
+					fontFaceLabel.redraw();
+					fontFaceLabel.update();
+					layout();
+				}catch(Exception e1) {
+					e1.printStackTrace();
+				}
+				
 			
 			}
 		});
@@ -306,9 +318,9 @@ public class Board extends Composite {
 		Label reminder=new Label(optionsHeader,SWT.WRAP|SWT.CENTER);
 		//reminder.setLayoutData(new RowData(SWT.DEFAULT,50));
 		GridData reminderLayData=new GridData(SWT.CENTER,SWT.CENTER,true,false,2,1);
-		reminder.setText("REMINDER: \nCheck boards in Trivia Board Pro Editor and BEFORE playing");
+		reminder.setText("REMINDER: \nCheck boards in Trivia Board Pro Editor BEFORE playing them");
 		reminder.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
-		reminderLayData.widthHint=reminder.computeSize(SWT.DEFAULT,SWT.DEFAULT).x/2;
+		reminderLayData.widthHint=reminder.computeSize(SWT.DEFAULT,SWT.DEFAULT).x*2/3;
 		reminder.setLayoutData(reminderLayData);
 		reminder.setBackground(mixedBG);
 		
@@ -727,7 +739,12 @@ public class Board extends Composite {
 					fileOut.println(qEd.getText().replaceAll("\\n|\\r", " ")+" ");
 					fileOut.println(" "+qEd.exportAnswer().replaceAll("\\n", " "));
 					fileOut.println(outputDD);
-					fileOut.println(qEd.getTypeDetails()+textStyle);
+					if(qEd.getTypeDetails().contains("T")) {
+						fileOut.println(qEd.getTypeDetails()+textStyle);
+					}else {
+						fileOut.println(qEd.getTypeDetails());
+					}
+					
 					}
 			}
 			//after all the loops are done at the very end add the FINAL QUESTION
