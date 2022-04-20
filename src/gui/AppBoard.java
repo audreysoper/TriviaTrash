@@ -29,12 +29,12 @@ public class AppBoard {
 	protected Shell shell;
 	private int boxH;
 
-	protected MenuItem saveMenuItem;
-	protected MenuItem openMenuItem;
-	protected MenuItem newMenuItem;
-	protected MenuItem mcToggleMenuItem;
-	protected MenuItem pathingMenuItem;
-	public static String homeFolder="";
+	protected static MenuItem saveMenuItem;
+	protected static MenuItem openMenuItem;
+	protected static MenuItem newMenuItem;
+	protected static MenuItem mcToggleMenuItem;
+	protected static MenuItem pathingMenuItem;
+	public static String homeFolder = "";
 	public static Preferences userPrefs;
 	public static boolean advancedPathing;
 
@@ -66,23 +66,20 @@ public class AppBoard {
 		shell = new Shell();
 		shell.setLayout(new FillLayout());
 		shell.setText("Trivia Question Viewer");
-		
-		
+
 		Display display = Display.getDefault();
 		boxH = (display.getBounds().height) / 7;
-		int shellW = (display.getBounds().width) *4/5;
+		int shellW = (display.getBounds().width) * 4 / 5;
 
-
-		Board current = createContents(createBlank(), null);
-		Menu menuBar = createMenu(current);
+		Board current = createContents(shell, createBlank(), null);
+		Menu menuBar = createMenu(shell,current);
 		shell.setMenuBar(menuBar);
 
 		shell.open();
 		// shell.layout();
 		// shell.pack();
 		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		shell.setBounds(0,0,shellW, size.y / 3 * 2);
-	
+		shell.setBounds(0, 0, shellW, size.y / 3 * 2);
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -91,50 +88,71 @@ public class AppBoard {
 		}
 	}
 
-
-	private Menu createMenu(Board curr) {
-		Menu bar= new Menu(shell,SWT.BAR);
-		MenuItem fileItem = new MenuItem (bar, SWT.CASCADE);
-		fileItem.setText ("&File");
-		Menu fileMenu = new Menu (shell, SWT.DROP_DOWN);
-		fileItem.setMenu (fileMenu);
-		saveMenuItem = new MenuItem (fileMenu, SWT.PUSH);
+	private static Menu createMenu(Shell shell3, Board curr) {
+		Menu bar = new Menu(shell3, SWT.BAR);
+		MenuItem fileItem = new MenuItem(bar, SWT.CASCADE);
+		fileItem.setText("&File");
+		Menu fileMenu = new Menu(shell3, SWT.DROP_DOWN);
+		fileItem.setMenu(fileMenu);
+		saveMenuItem = new MenuItem(fileMenu, SWT.PUSH);
 		saveMenuItem.setData(curr.getShell());
-		saveMenuItem.addSelectionListener (curr.saveASAdapter);
-		saveMenuItem.setText ("Save\t Ctrl+S");
-		saveMenuItem.setAccelerator (SWT.MOD1 + 'S');
-		
-		
-		openMenuItem=new MenuItem (fileMenu, SWT.PUSH);
+		saveMenuItem.addSelectionListener(curr.saveASAdapter);
+		saveMenuItem.setText("Save\t Ctrl+S");
+		saveMenuItem.setAccelerator(SWT.MOD1 + 'S');
+
+		openMenuItem = new MenuItem(fileMenu, SWT.PUSH);
 		openMenuItem.setData(curr.getShell());
-		openMenuItem.addSelectionListener (curr.openBoardAdapter);
-		openMenuItem.setText ("Open\t Ctrl+O");
-		openMenuItem.setAccelerator (SWT.MOD1 + 'O');
-		
-		newMenuItem=new MenuItem (fileMenu, SWT.PUSH);
+		openMenuItem.addSelectionListener(curr.openBoardAdapter);
+		openMenuItem.setText("Open\t Ctrl+O");
+		openMenuItem.setAccelerator(SWT.MOD1 + 'O');
+
+		newMenuItem = new MenuItem(fileMenu, SWT.PUSH);
 		newMenuItem.setData(curr.getShell());
-		newMenuItem.addSelectionListener (curr.newBoardAdapter);
-		newMenuItem.setText ("New\t Ctrl+N");
-		newMenuItem.setAccelerator (SWT.MOD1 + 'N');
-		
-		pathingMenuItem = new MenuItem (fileMenu, SWT.CHECK);
+		newMenuItem.addSelectionListener(curr.newBoardAdapter);
+		newMenuItem.setText("New\t Ctrl+N");
+		newMenuItem.setAccelerator(SWT.MOD1 + 'N');
+
+		pathingMenuItem = new MenuItem(fileMenu, SWT.CHECK);
 		pathingMenuItem.setData(curr.getShell());
-		pathingMenuItem.setText ("Toggle Advanced Pathing");
+		pathingMenuItem.setText("Toggle Advanced Pathing");
 		pathingMenuItem.setSelection(advancedPathing);
-		pathingMenuItem.addSelectionListener (new SelectionAdapter() {
+		pathingMenuItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				advancedPathing=!advancedPathing;
-				userPrefs.putBoolean("advancedPathing", advancedPathing); 
+				advancedPathing = !advancedPathing;
+				userPrefs.putBoolean("advancedPathing", advancedPathing);
 				pathingMenuItem.setSelection(advancedPathing);
-				
-			
+
 			}
 		});
-		
+
 		return bar;
 	}
 
+	public static void openGeneratedBoard(Category[] catsToUse) {
+		Shell shell2 = new Shell();
+		shell2.setLayout(new FillLayout());
+		shell2.setText("Trivia Question Viewer");
+		Display display = Display.getDefault();
+		int boxH = (display.getBounds().height) / 7;
+		
+		Board openBoard = createContents(shell2, catsToUse, null);
+
+		Menu menuBar = createMenu(shell2, openBoard);
+		shell2.setMenuBar(menuBar);
+
+		shell2.open();
+		Point size = shell2.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		shell2.setSize(size.x, size.y / 3 * 2);
+
+		while (!shell2.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+
+		}
+
+	}
 
 	/*
 	 * FOR OPENING OTHER FILES AFTER INITIAL
@@ -149,9 +167,9 @@ public class AppBoard {
 
 		Category[] cats = parseBoard(source);
 		if (cats != null) {
-			Board openBoard = createContents(cats, source);
+			Board openBoard = createContents(shell, cats, source);
 
-			Menu menuBar = createMenu(openBoard);
+			Menu menuBar = createMenu(shell, openBoard);
 			shell.setMenuBar(menuBar);
 
 			shell.open();
@@ -174,7 +192,7 @@ public class AppBoard {
 	/**
 	 * Create contents of the window.
 	 */
-	protected Board createContents(Category[] cats, File source) {
+	protected static Board createContents(Shell shell1, Category[] cats, File source) {
 
 		// scrollContainer.setBackground(listBG);
 		/*
@@ -186,14 +204,16 @@ public class AppBoard {
 		// Board myBoard = new Board(scrollContainer, SWT.NONE,createBlank());
 		// Board myBoard =new Board(scrollContainer, SWT.NONE,parseBoard(dir));
 
-
 		if (source != null) {
 			boolean mC = cats[0].getQuestions()[0].getAnswer().split("\\^").length > 2;
 			for (String a : cats[0].getQuestions()[0].getAnswer().split("\\^"))
 				System.out.println(a);
-			return new Board(shell, SWT.NONE, cats, source, mC);
+			return new Board(shell1, SWT.NONE, cats, source, mC);
+		}else if(cats[0].getQuestions()[0].getQuestion().length()>2) {
+			boolean mC = cats[0].getQuestions()[0].getAnswer().split("\\^").length > 2;
+			return new Board(shell1, SWT.NONE, cats, mC);
 		}
-		return new Board(shell, SWT.NONE, cats);
+		return new Board(shell1, SWT.NONE, cats);
 
 	}
 
@@ -230,6 +250,7 @@ public class AppBoard {
 			String answer;
 			String dd;
 			String format;
+			String textStyle = "";
 
 			boolean sameType = true;
 
@@ -255,7 +276,7 @@ public class AppBoard {
 							throw new Exception("Your question looks like an answer");
 						text = scanner.nextLine();
 						answer = text;
-						if (answer.length() > 3 && !answer.contains("^^^^"))
+						if (answer.length() > 3 && !answer.contains("^"))
 							throw new Exception("Answer isn't formatted correctly");
 
 						text = scanner.nextLine();
@@ -265,8 +286,13 @@ public class AppBoard {
 
 						text = scanner.nextLine();
 						format = text;
-						if (format.length() > 2 && !format.contains("#"))
-							throw new Exception("This question formatting line is incorrect");
+						if (format.length() > 2) {
+							if (!format.contains("#")) {
+								throw new Exception("This question formatting line is incorrect");
+							} else {
+								textStyle = format;
+							}
+						}
 
 						if (answer.endsWith("^^^^") && answer.length() > 4) {
 							answer = answer.substring(0, answer.lastIndexOf("^^^^"));
@@ -362,7 +388,7 @@ public class AppBoard {
 				answer = "so this is here instead";
 			}
 
-			Question finQ = new Question(text.trim(), answer.trim(), 'N', "text", "", 0);
+			Question finQ = new Question(text.trim(), answer.trim(), 'N', "text", textStyle, 0);
 			cats[catNum] = new Category("final", new Question[] { finQ }, 7);
 
 			scanner.close();
@@ -374,6 +400,5 @@ public class AppBoard {
 
 		return cats;
 	}
-
 
 }

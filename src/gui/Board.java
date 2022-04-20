@@ -62,7 +62,7 @@ public class Board extends Composite {
 	public File currentOpenDoc;
 
 	private String titleText="Fancy Question Editor";
-	private String version = "version 22.4.18";
+	private String version = "version 22.4.20 - CATEGORY GEN";
 	public String homeFolder;
 	public String pathToHome;
 	public String textStyle;
@@ -153,6 +153,11 @@ public class Board extends Composite {
 		
 	};
 	
+	
+	
+	
+	
+	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -176,9 +181,24 @@ public class Board extends Composite {
 		pathToHome=source.getParentFile().getParent();
 		this.mcToggle=isMC;
 		currentOpenDoc=source;
-		textStyle=catObjs[0].getQuestions()[0].getTypeDetails().substring(1);
+		textStyle=catObjs[catObjs.length-1].getQuestions()[0].getTypeDetails();
+		
 		populateBoard(catObjs);
 	}
+	
+	//CONSTRUCTOR FOR GENERATING FILES FROM CATS
+		public Board(Composite parent, int style,Category[] catObjs,boolean isMC) {
+			super(parent, style);
+			homeFolder="";
+			pathToHome="";
+			this.mcToggle=isMC;
+			textStyle=catObjs[catObjs.length-1].getQuestions()[0].getTypeDetails();
+			if(textStyle.length()<2) {
+				textStyle="#MS Gothic#28#True#False#16645837#";
+			}
+			
+			populateBoard(catObjs);
+		}
 	
 
 	private void populateBoard(Category[] catObjs) {
@@ -280,6 +300,32 @@ public class Board extends Composite {
 		});
 		
 		
+		Button catsButton=new Button(optionsHeader,SWT.PUSH);
+		//ufnButton.setLayoutData(new RowData(SWT.DEFAULT,50));
+		
+		catsButton.setText("Import Categories");
+		catsButton.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,2,1));
+		catsButton.setData(this.getShell());
+		SelectionListener categoryChangerAdapter=new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// 
+				FileDialog chooser= new FileDialog((Shell) e.widget.getData(),SWT.OPEN);
+				try {
+				chooser.setFilterExtensions(new String[] {"*.txt"});
+				chooser.open();
+				
+					if(chooser.getFileName().length()>1) {
+						File source= new File(chooser.getFilterPath()+"\\"+chooser.getFileName());
+						CategoryChooser testo=new CategoryChooser(catObjs,AppBoard.parseBoard(source));
+					}
+				}catch(Exception err) {
+					//nuthin
+					err.printStackTrace();
+				}
+			}
+		};
+		catsButton.addSelectionListener(categoryChangerAdapter);
 		
 		//Text options
 		Label fontFaceLabel=new Label(optionsHeader,SWT.WRAP|SWT.CENTER);

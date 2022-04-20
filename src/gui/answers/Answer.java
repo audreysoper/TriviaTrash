@@ -100,9 +100,12 @@ public class Answer extends Composite {
 		correctAnswer=answers[0].trim();
 		for(int i=0;(i<answerBoxes.length)&&(i+1<answers.length);i++) {
 			answerBoxes[i].setText(answers[i+1].trim());
-			if(answers[i+1].trim().matches(answers[0].trim())&& (!answerFound)) {
+			if(answers[i+1].trim().matches(answers[0].trim()) && (!answerFound)) {
 				correctSelector[i].setSelection(true);
 				answerFound=true;
+				
+			}else {
+				correctSelector[i].setSelection(false);
 			}
 		}
 		
@@ -122,16 +125,15 @@ public class Answer extends Composite {
 	}
 	
 	public String ansExport(){
-		correctAnswer=answerBoxes[0].getText().trim();
-		
 		
 		if(multipleChoice) {
 			answerFormatted=correctAnswer;
 			for(Text a:answerBoxes) {
 				answerFormatted +=("^ "+a.getText());
 			}
-			answerFormatted+="^^^^";
+			
 		}else {
+			correctAnswer=answerBoxes[0].getText().trim();
 			answerFormatted = correctAnswer+" ^^^^";
 		}
 		
@@ -148,16 +150,15 @@ public class Answer extends Composite {
 		
 	}
 	public String getAnswer(){
-		correctAnswer=answerBoxes[0].getText().trim();
-		
 		
 		if(multipleChoice) {
-			answerFormatted="^ "+correctAnswer;
+			answerFormatted=correctAnswer;
 			for(Text a:answerBoxes) {
 				answerFormatted +=("^ "+a.getText());
 			}
 			return answerFormatted;
 		}else {
+			correctAnswer=answerBoxes[0].getText().trim();
 			 return correctAnswer;
 		}
 		
