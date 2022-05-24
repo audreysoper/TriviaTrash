@@ -100,16 +100,32 @@ public class Qbox extends Composite {
 		qDD = new Button(this, SWT.CHECK);
 		qDD.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		qDD.setText("DD?");
-		qDD.setSelection(q.getDD());
+		qDD.setSelection(q.getDDbool());
 		qDD.setGrayed(false);
-		/*
-		 * qDD.addSelectionListener(new SelectionAdapter() {
-		 * 
-		 * @Override public void widgetSelected(SelectionEvent e) { ((Control)
-		 * e.widget).getParent().redraw();
-		 * 
-		 * } });
-		 */
+		if(qDD.getSelection()) {
+			  qDD.setFont(Board.ddFont);
+			  qDD.setText("DD!");
+			  qDD.setBackground(Board.ddBG);
+		  }
+		  qDD.addSelectionListener(new SelectionAdapter() {
+		  
+		  @Override public void widgetSelected(SelectionEvent e) { 
+			  Button ddBox=(Button) e.widget;
+			  if(ddBox.getSelection()) {
+				  ddBox.setFont(Board.ddFont);
+				  ddBox.setText("DD!");
+				  ddBox.setBackground(Board.ddBG);
+			  }else {
+
+				  ddBox.setFont(null);
+				  ddBox.setText("DD?");
+				  ddBox.setBackground(null);
+			  }
+			  
+			  
+		  
+		  } });
+		 
 		
 		
 		typeSelect = new Combo(this, SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -164,6 +180,9 @@ public class Qbox extends Composite {
 		
 	}
 
+	public String getQNumber() {
+		return qNumber;
+	}
 	private void getDefaults() {
 		Text defaultTester= new Text(this,SWT.MULTI);
 		GC gc = new GC(defaultTester);
@@ -196,7 +215,7 @@ public class Qbox extends Composite {
 	public String getText() {
 		return qEdit.getText();
 	}
-	public String exportAnswer() {
+	public String exportAnswer() throws Exception {
 		return qAnswer.ansExport();
 	}
 	public String getTypeDetails() {
@@ -212,7 +231,7 @@ public class Qbox extends Composite {
 
 	public char getDD() {
 		q.setDD(qDD.getSelection());
-		if(q.getDD()) {
+		if(q.getDDbool()) {
 			return 'Y';
 		}else {
 			return 'N';

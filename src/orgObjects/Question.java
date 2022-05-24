@@ -72,7 +72,7 @@ public class Question {
 		
 	}
 
-	public boolean getDD() {
+	public boolean getDDbool() {
 		// TODO Auto-generated method stub
 		return (dailyDouble=='Y');
 	}

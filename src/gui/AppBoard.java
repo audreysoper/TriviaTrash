@@ -37,6 +37,7 @@ public class AppBoard {
 	public static String homeFolder = "";
 	public static Preferences userPrefs;
 	public static boolean advancedPathing;
+	public static boolean mcEnabled;
 
 	/**
 	 * Launch the application.
@@ -51,7 +52,7 @@ public class AppBoard {
 		try {
 			AppBoard window = new AppBoard();
 
-			window.openBlank();
+			window.openBlank(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -61,7 +62,7 @@ public class AppBoard {
 	/**
 	 * Open the window.
 	 */
-	public void openBlank() {
+	public void openBlank(boolean mc) {
 
 		shell = new Shell();
 		shell.setLayout(new FillLayout());
@@ -71,7 +72,7 @@ public class AppBoard {
 		boxH = (display.getBounds().height) / 7;
 		int shellW = (display.getBounds().width) * 4 / 5;
 
-		Board current = createContents(shell, createBlank(), null);
+		Board current = createContents(shell, createBlank(mc), null);
 		Menu menuBar = createMenu(shell,current);
 		shell.setMenuBar(menuBar);
 
@@ -112,6 +113,21 @@ public class AppBoard {
 		newMenuItem.setText("New\t Ctrl+N");
 		newMenuItem.setAccelerator(SWT.MOD1 + 'N');
 
+	
+		mcToggleMenuItem = new MenuItem(fileMenu, SWT.CHECK);
+		mcToggleMenuItem.setData(curr.getShell());
+		mcToggleMenuItem.setText("Toggle Multiple Choice Mode");
+		mcToggleMenuItem.setSelection(mcEnabled);
+		mcToggleMenuItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				mcEnabled = !mcEnabled;
+				userPrefs.putBoolean("mcEnabled", mcEnabled);
+				pathingMenuItem.setSelection(mcEnabled);
+
+			}
+		});
+		
 		pathingMenuItem = new MenuItem(fileMenu, SWT.CHECK);
 		pathingMenuItem.setData(curr.getShell());
 		pathingMenuItem.setText("Toggle Advanced Pathing");
@@ -122,9 +138,13 @@ public class AppBoard {
 				advancedPathing = !advancedPathing;
 				userPrefs.putBoolean("advancedPathing", advancedPathing);
 				pathingMenuItem.setSelection(advancedPathing);
+				shell3.requestLayout();
+				shell3.redraw();
 
 			}
 		});
+		
+		
 
 		return bar;
 	}
@@ -204,30 +224,35 @@ public class AppBoard {
 		// Board myBoard = new Board(scrollContainer, SWT.NONE,createBlank());
 		// Board myBoard =new Board(scrollContainer, SWT.NONE,parseBoard(dir));
 
+		System.out.println(cats[0].getQuestions()[0].getAnswer().split("\\^").length);
 		if (source != null) {
 			boolean mC = cats[0].getQuestions()[0].getAnswer().split("\\^").length > 2;
 			for (String a : cats[0].getQuestions()[0].getAnswer().split("\\^"))
 				System.out.println(a);
 			return new Board(shell1, SWT.NONE, cats, source, mC);
-		}else if(cats[0].getQuestions()[0].getQuestion().length()>2) {
-			boolean mC = cats[0].getQuestions()[0].getAnswer().split("\\^").length > 2;
-			return new Board(shell1, SWT.NONE, cats, mC);
+		}else if(cats[0].getQuestions()[0].getAnswer().split("\\^").length > 2) {
+			return new Board(shell1, SWT.NONE, cats, true);
 		}
 		return new Board(shell1, SWT.NONE, cats);
 
 	}
 
-	private Category[] createBlank() {
+	private Category[] createBlank(boolean mc) {
 		Category[] cats = new Category[7];
 		Question[] qs;
 		for (int i = 0; i < cats.length; i++) {
 			qs = new Question[5];
 
 			for (int j = 0; j < qs.length; j++) {
-				qs[j] = new Question("", "", 'N', "text", "", j);
+				if(mc) {
+					qs[j] = new Question(" ", "^ ^ ^ ^", 'N', "text", "", j);
+				}else {
+					qs[j] = new Question(" ", "", 'N', "text", "", j);
+				}
+				
 			}
 			try {
-				cats[i] = new Category("", qs, i);
+				cats[i] = new Category(" ", qs, i);
 				cats[i].changeType("text");
 			} catch (Exception e) {
 				e.printStackTrace();
