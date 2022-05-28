@@ -315,7 +315,8 @@ public class AppBoard {
 							if (!format.contains("#")) {
 								throw new Exception("This question formatting line is incorrect");
 							} else {
-								textStyle = format;
+								textStyle = format.substring(1);
+								format=format.charAt(0)+"";
 							}
 						}
 
