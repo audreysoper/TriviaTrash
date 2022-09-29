@@ -13,7 +13,9 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import orgObjects.Category;
 import orgObjects.Question;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.Scanner;
 import java.util.prefs.Preferences;
 
@@ -77,10 +79,10 @@ public class AppBoard {
 		shell.setMenuBar(menuBar);
 
 		shell.open();
-		// shell.layout();
+		 shell.layout();
 		// shell.pack();
-		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		shell.setBounds(0, 0, shellW, size.y / 3 * 2);
+		//Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		//shell.setBounds(0, 0, shellW, size.y / 3 * 2);
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -264,7 +266,7 @@ public class AppBoard {
 	static public Category[] parseBoard(File source) {
 		Category[] cats = new Category[7];
 		try {
-			Scanner scanner = new Scanner(source);
+			Scanner scanner = new Scanner(new BufferedReader(new FileReader(source)));
 			String position = "newCat";
 			int qNum = 0;
 			int catNum = 0;

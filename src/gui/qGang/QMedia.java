@@ -291,28 +291,42 @@ public class QMedia extends Qbox {
 	
 	public QMedia setRelativePath(String homeFolder) {
 		if(fullPath.length()<1 || !fullPath.contains("\\"))return null;
-		int index=fullPath.lastIndexOf(homeFolder);
+		int index=fullPath.lastIndexOf(homeFolder); //find the home Folder in fullPath
 		try {
-			if(index>0)relativePath=fullPath.substring(index);
-			//relativePath=initial.substring(index);
+			if(index>0) {
+				relativePath=fullPath.substring(index); //set the relative path to the stuff AFTER the homefolder
+		
+			index=fullPath.indexOf(relativePath);
+			if(index>0)pathToHome=fullPath.substring(0,index); //set the pathToHome as everything BEFORE the home folder
+			}
 			else {
-				index=fullPath.lastIndexOf("\\");
-				pathToHome=fullPath.substring(0,index);
-				relativePath=fullPath.substring(index);
+				//INITIAL BEHAVIOR WAS: FIND THE LAST SLASH AND THEN STICK pathToHome IN FRONT OF IT
+				//THIS WAS A FUKIN STUPID AND BAD BEHAVIOR
+				//index=fullPath.lastIndexOf("\\");
+				//pathToHome=fullPath.substring(0,index);
+				//relativePath=fullPath.substring(index);
+				
+				//NEW BEHAVIOR: IF YOU DON'T FIND THE HOME FOLDER THEN DON'T CHANGE ANYTHING
+				
+				throw new Exception();
+				
 			}
 		}catch(Exception e) {
-			relativePath="";
+			relativePath=fullPath;
+			pathToHome="";
+			
 			System.out.println("Looks like the home folder wasn't in: "+fullPath);
 			return this;
 		}
-		index=fullPath.indexOf(relativePath);
-		if(index>0)pathToHome=fullPath.substring(0,index);
+		
 		
 		return null;
 	}
 	
 	public void swapPathFront(String pathToHome) {
+		if(pathToHome.length()>0) {
 		fullPath=pathToHome+relativePath;
+		}
 	}
 	
 	@Override

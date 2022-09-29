@@ -64,7 +64,7 @@ public class Board extends Composite {
 	public File currentOpenDoc;
 
 	private String titleText = "Fancy Question Editor";
-	private String version = "version 22.5.23";
+	private String version = "version 22.9.21";
 	public String homeFolder;
 	public String pathToHome;
 	public String textStyle;
@@ -384,9 +384,9 @@ public class Board extends Composite {
 		Label fontFaceLabel = new Label(optionsHeader, SWT.WRAP | SWT.CENTER);
 		Label fontSizeLabel = new Label(optionsHeader, SWT.WRAP | SWT.CENTER);
 
-		fontFaceLabel.setText("Font: " + textStyle.substring(1, textStyle.indexOf('#', 1)));
-		int hashIndex = textStyle.indexOf('#', textStyle.indexOf('#', 1));
-		fontSizeLabel.setText("Size: " + textStyle.substring(1 + hashIndex, textStyle.indexOf('#', hashIndex + 1)));
+		if(!textStyle.contains("#")) {
+			textStyle="#MS Gothic#28#True#False#16645837#";
+		}
 		Button selectFont = new Button(optionsHeader, SWT.PUSH);
 		selectFont.setText("Customize");
 		selectFont.addSelectionListener(new SelectionAdapter() {
@@ -663,6 +663,12 @@ public class Board extends Composite {
 		for (QMedia q : qs) {
 			q.setRelativePath(homeFolder);
 			q.swapPathFront(pathToHome);
+			if(useRelativePaths) {
+				q.viewRelativePath();
+			}
+			else {
+				q.viewFullPath();
+			}
 		}
 
 	}
@@ -703,7 +709,10 @@ public class Board extends Composite {
 			if (!((Combo) kids[1]).getText().contains("text")) {
 				// get every question in each group
 				for (int i = qIndexInGroup; i < kids.length; i++) {
-					allMediaQuestions.add((QMedia) kids[i]);
+					if(((Qbox)kids[i]).getTypeDetails() != "T") {
+						allMediaQuestions.add((QMedia) kids[i]);
+							
+					}
 					/*
 					 * if(type.contains("answers")) { // then set the answer to the file name
 					 * ((QMedia) kids[i]).setAnswerToFileName(); } else
