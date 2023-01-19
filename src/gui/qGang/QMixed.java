@@ -49,7 +49,7 @@ public class QMixed extends QMedia {
 			qType = "text";
 		}
 
-		// Category types
+		// QUESTION types
 		typeSelect.setVisible(true);
 		typeSelect.setItems(Arrays.copyOfRange(Board.typeNames, 0, 3));
 		typeSelect.setText(qType);
@@ -164,4 +164,58 @@ public class QMixed extends QMedia {
 		// Disable the check that prevents subclassing of SWT components
 	}
 	
+	@Override
+	public Question getQobject(boolean forceUpdate) {
+		if(forceUpdate) {
+			q.setType(typeSelect.getText());
+			q.updateQobj(qEdit.getText(), qAnswer.getAnswer());
+		}
+		q.setDD(qDD.getSelection());
+		return this.q;
+	}
+	
+	@Override
+	public void setNewQObject(Question newQ) {
+		
+		  switch (newQ.getTypeDetails().charAt(0)) {
+		  case 'P': qType = "picture";
+		  break; 
+		  case 'S': qType = "audio"; 
+		  break; 
+		  case 'T': qType = "text"; 
+		  break; }
+		 
+		typeSelect.setText(qType);
+		super.setNewQObject(newQ);
+		setupForType();
+	}
+	
+	@Override
+	public QMedia setRelativePath(String homeFolder) {
+		if(!qType.contains("text")){
+			super.setRelativePath(homeFolder);
+		}
+		return null;
+	}
+	
+	@Override
+	public void viewRelativePath() {
+		if(!qType.contains("text")){
+			super.viewRelativePath();
+		}
+	}
+	
+	@Override
+	public void viewFullPath() {
+		if(!qType.contains("text")){
+			super.viewFullPath();
+		}
+	}
+	
+	@Override
+	public void swapPathFront(String pathToHome) {
+		if(!qType.contains("text")){
+			super.swapPathFront(pathToHome);
+		}
+	}
 }

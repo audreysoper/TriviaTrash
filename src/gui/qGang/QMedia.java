@@ -34,7 +34,7 @@ public class QMedia extends Qbox {
 	private final int xWarningLevel = 1920;
 	private final int yWarningLevel = 1080;
 	private String fileName;
-	private String relativePath;
+	protected String relativePath;
 	private String fullPath;
 	private String pathToHome;
 	protected FileDialog chooser;
@@ -333,8 +333,9 @@ public class QMedia extends Qbox {
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
+	
 	@Override
-	public String getText() {
+	final public String getText() {
 		return fullPath;
 	}
 

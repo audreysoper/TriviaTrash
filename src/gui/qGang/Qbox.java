@@ -215,12 +215,15 @@ public class Qbox extends Composite {
 	public String getText() {
 		return qEdit.getText();
 	}
+	
 	public String exportAnswer() throws Exception {
 		return qAnswer.ansExport();
 	}
+	
 	public String getTypeDetails() {
 		return q.getTypeDetails();
 	}
+	
 	public Question getQobject(boolean forceUpdate) {
 		if(forceUpdate) {
 			q.updateQobj(qEdit.getText(), qAnswer.getAnswer());
@@ -237,6 +240,7 @@ public class Qbox extends Composite {
 			return 'N';
 		}
 	}
+	
 	public void setNewQObject(Question newQ) {
 		this.q=newQ;
 		qEdit.setText(q.getQuestion());

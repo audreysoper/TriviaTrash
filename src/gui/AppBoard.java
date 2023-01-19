@@ -289,7 +289,7 @@ public class AppBoard {
 				case "newCat":
 					if (text.length() > 1) {
 						currentCat = new Category(text.trim(), catNum);
-					} else if (text.length() > 0) {
+					} else if (text.length() >= 0) {
 						currentCat = new Category(" ", catNum);
 					}
 					position = "question";
