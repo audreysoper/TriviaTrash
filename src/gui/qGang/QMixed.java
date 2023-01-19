@@ -176,7 +176,7 @@ public class QMixed extends QMedia {
 	
 	@Override
 	public void setNewQObject(Question newQ) {
-		
+		super.setNewQObject(newQ);
 		  switch (newQ.getTypeDetails().charAt(0)) {
 		  case 'P': qType = "picture";
 		  break; 
@@ -186,7 +186,6 @@ public class QMixed extends QMedia {
 		  break; }
 		 
 		typeSelect.setText(qType);
-		super.setNewQObject(newQ);
 		setupForType();
 	}
 	
