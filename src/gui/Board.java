@@ -205,12 +205,10 @@ public class Board extends Composite {
 		Composite top = new Composite(this, SWT.NONE);
 		top.setLayout(new GridLayout(3, true));
 		top.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 5, 1));
+		
 		// EXPERIMENTING WITH COMPOSITE FOR BUTTONS
 		Composite buttons = new Composite(top, SWT.NONE);
 		buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		// GridData butts=new GridData(SWT.FILL,SWT.FILL,false,false,1,1);
-		// butts.heightHint=100;
-		// buttons.setLayoutData(butts);
 		GridLayout buttonsLayout = new GridLayout(4, false);
 		buttons.setLayout(buttonsLayout);
 		if (currentOpenDoc != null) {
@@ -310,33 +308,52 @@ public class Board extends Composite {
 		}
 
 		
-
+		//TITLE - which doesn't have it's own layout....it's just hangin
 		Label title = new Label(top, SWT.NONE);
-
 		// title.setForeground(SWTResourceManager.getColor(204, 153, 255));
 		title.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		title.setText(titleText);
 		title.setAlignment(SWT.CENTER);
 		title.setFont(SWTResourceManager.getFont("Segoe UI", 14, SWT.BOLD));
 
-		Label ver = new Label(top, SWT.NONE);
+		
+		//RIGHT SIDE HEADER:
+		Composite rightHeader = new Composite(top, SWT.NONE);
+		rightHeader.setLayoutData(new GridData(SWT.END, SWT.FILL, false, false, 1, 1));
+		GridLayout rightHeaderLayout = new GridLayout(1, false);
+		rightHeader.setLayout(rightHeaderLayout);
+		
+		Label ver = new Label(rightHeader, SWT.NONE);
 		ver.setLayoutData(new GridData(SWT.END, GridData.FILL, false, false, 1, 1));
 		// ((GridData)ver.getLayoutData()).
 		ver.setText(version);
 		ver.setAlignment(SWT.LEFT);
 		ver.setFont(SWTResourceManager.getFont("Verdana", 9, SWT.NORMAL));
-		// ((GridData)title.getLayoutData()).horizontalIndent=ver.getBounds().width;
-		// ((GridData)title.getLayoutData()).
+		
+		//IMPORT FROM ZIP 
+		Button localizeZip = new Button(rightHeader, SWT.PUSH);
+		localizeZip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		localizeZip.setText("LOCALIZE ZIP FROM EXCESS EDITOR");
+		localizeZip.setFont(bigButtons);
+		SelectionListener localizeAdapter = new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ZipLocalizer unzip=new ZipLocalizer();
+			}
+		};
+		localizeZip.addSelectionListener(localizeAdapter);
+		
+		
 
-		// create group Top Header that BUTTONS+warning (only) live in
+		// create group OPTIONS HEADER that (only) live in
 		Group optionsHeader = new Group(this, SWT.NONE);
 		optionsHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-		GridLayout headerInnerLayout = new GridLayout(3, false);
-		headerInnerLayout.horizontalSpacing = 10;
-		headerInnerLayout.verticalSpacing = 10;
+		GridLayout optionsInnerLayout = new GridLayout(3, false);
+		optionsInnerLayout.horizontalSpacing = 10;
+		optionsInnerLayout.verticalSpacing = 10;
 //		headerInnerLayout.center=true;
 //		headerInnerLayout.marginWidth=2;
-		optionsHeader.setLayout(headerInnerLayout);
+		optionsHeader.setLayout(optionsInnerLayout);
 		optionsHeader.setText("Options");
 
 		Button ufnButton = new Button(optionsHeader, SWT.CHECK | SWT.WRAP);

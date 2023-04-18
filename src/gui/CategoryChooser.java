@@ -62,7 +62,6 @@ public class CategoryChooser {
 					b.setSelection(false);
 					b.setBackground(null);
 				}
-
 				numberSelected = 0;
 			}
 		});
