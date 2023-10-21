@@ -1,25 +1,16 @@
 package gui.qGang;
 
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Widget;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Scrollable;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import gui.Board;
-import gui.answers.Answer;
 import orgObjects.Question;
 
 import org.eclipse.swt.layout.GridLayout;
@@ -50,8 +41,8 @@ public class Qbox extends Composite {
 	protected int editHeightDefault;
 	protected int openAnsHeightDefault;
 	protected int minWidth;
-	
-	
+
+
 	public Qbox(Composite parent, int style, Question q) {
 		super(parent, style);
 		boardFather=((Board)parent.getParent().getParent().getParent());
@@ -59,9 +50,7 @@ public class Qbox extends Composite {
 		isMC=boardFather.isMc();
 		width=parent.getSize().x-10;
 		getDefaults();
-		
-		
-		
+
 		
 		
 		this.qNumber=q.getLevel();
@@ -147,14 +136,33 @@ public class Qbox extends Composite {
 		qEdit.setMessage("Question");
 		qEdit.setText(q.getQuestion());
 		qEdit.setEditable(false);
+<<<<<<< Updated upstream
 		
+=======
+		qEdit.addTraverseListener(boardFather.tabLister);
+		if(qEdit.getText().length()>Board.charLimit-1)qEdit.setText(qEdit.getText().substring(0, Board.charLimit-1));
+		qEdit.setTextLimit(Board.charLimit);
+		qEdit.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent focusEvent) {
+
+			}
+
+			@Override
+			public void focusLost(FocusEvent focusEvent) {
+				if (qEdit.getText()!=q.getQuestion()){
+
+				}
+			}
+		});
+
+>>>>>>> Stashed changes
 		qAnswer=new Answer(this,boardFather.isMc());
 		GridData qAnsLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,true,3,1);
 		qAnsLayoutDetails.heightHint=openAnsHeightDefault;
 		qAnsLayoutDetails.widthHint=this.width;
 		qAnsLayoutDetails.minimumWidth = minWidth;
 		qAnswer.setLayoutData(qAnsLayoutDetails);
-		
 		this.layout();
 		this.pack();
 		
@@ -197,7 +205,7 @@ public class Qbox extends Composite {
 		return qAnswer.ansExport();
 	}
 	public String getTypeDetails() {
-		return q.getTypeDetails();
+		return q.getFormat();
 	}
 	public Question getQobject(boolean forceUpdate) {
 		if(forceUpdate) {

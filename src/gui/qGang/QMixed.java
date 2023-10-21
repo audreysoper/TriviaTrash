@@ -2,15 +2,11 @@ package gui.qGang;
 
 import java.util.Arrays;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import gui.Board;
@@ -33,8 +29,8 @@ public class QMixed extends QMedia {
 		super(parent, style, q);
 		Board grandparent = (Board) parent.getParent().getParent().getParent();
 		//chooser = new FileDialog(parent.getShell());
-		if (qType == null && q.getTypeDetails().length() > 0) {
-			switch (q.getTypeDetails().charAt(0)) {
+		if (qType == null && q.getFormat().length() > 0) {
+			switch (q.getFormat().charAt(0)) {
 			case 'P':
 				qType = "picture";
 				break;
@@ -45,7 +41,7 @@ public class QMixed extends QMedia {
 				qType = "text";
 				break;
 			}
-		} else if (qType == null && q.getTypeDetails().length() < 1) {
+		} else if (qType == null && q.getFormat().length() < 1) {
 			qType = "text";
 		}
 
@@ -164,4 +160,60 @@ public class QMixed extends QMedia {
 		// Disable the check that prevents subclassing of SWT components
 	}
 	
+<<<<<<< Updated upstream
+=======
+	@Override
+	public Question getQobject(boolean forceUpdate) {
+		if(forceUpdate) {
+			q.setType(typeSelect.getText());
+			q.updateQobj(qEdit.getText(), qAnswer.getAnswer());
+		}
+		q.setDD(qDD.getSelection());
+		return this.q;
+	}
+	
+	@Override
+	public void setNewQObject(Question newQ) {
+		super.setNewQObject(newQ);
+		  switch (newQ.getFormat().charAt(0)) {
+		  case 'P': qType = "picture";
+		  break; 
+		  case 'S': qType = "audio"; 
+		  break; 
+		  case 'T': qType = "text"; 
+		  break; }
+		 
+		typeSelect.setText(qType);
+		setupForType();
+	}
+	
+	@Override
+	public QMedia setRelativePath(String homeFolder) {
+		if(!qType.contains("text")){
+			super.setRelativePath(homeFolder);
+		}
+		return null;
+	}
+	
+	@Override
+	public void viewRelativePath() {
+		if(!qType.contains("text")){
+			super.viewRelativePath();
+		}
+	}
+	
+	@Override
+	public void viewFullPath() {
+		if(!qType.contains("text")){
+			super.viewFullPath();
+		}
+	}
+	
+	@Override
+	public void swapPathFront(String pathToHome) {
+		if(!qType.contains("text")){
+			super.swapPathFront(pathToHome);
+		}
+	}
+>>>>>>> Stashed changes
 }

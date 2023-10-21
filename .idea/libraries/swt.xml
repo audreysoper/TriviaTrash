@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="swt">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/eclipse-workspace/org.eclipse.swt/swt.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

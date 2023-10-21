@@ -13,7 +13,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.layout.GridData;
@@ -57,19 +56,19 @@ public class QMedia extends Qbox {
 		grandparent = (Board) parent.getParent().getParent().getParent();
 		chooser = new FileDialog(parent.getShell());
 
-		if (q.getTypeDetails().contains("P")) {
+		if (q.getFormat().contains("P")) {
 			fileExtension = new String[] {"*.jpg;*.png;*.gif;*.jfif;*.bmp;*.jpeg;*.tiff"};
 			openButton.setText("Select Picture");
 			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Zoom16.gif"));
 		
-		} else if (q.getTypeDetails().contains("S")) {
+		} else if (q.getFormat().contains("S")) {
 			fileExtension = new String[] {"*.mp3"};
 			openButton.setText("Select Audio");
 			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Volume16.gif"));
 		} else {
 			fileExtension = new String[] {"*.*"};
 			System.out.println(
-					"Something is not right, I'm rending a QMedia for a Q with type details: " + q.getTypeDetails());
+					"Something is not right, I'm rending a QMedia for a Q with type details: " + q.getFormat());
 		}
 		chooser.setFilterExtensions(fileExtension);
 		chooser.setText(openButton.getText());
@@ -132,7 +131,7 @@ public class QMedia extends Qbox {
 							checkForJPGTransparency();
 							checkPictureSize();
 						}
-						else if(q.getTypeDetails().contains("P")){
+						else if(q.getFormat().contains("P")){
 							changeFileType();
 							checkPictureSize();
 						}
@@ -162,11 +161,11 @@ public class QMedia extends Qbox {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				File test= new File(fullPath);
-				if(test.exists() && q.getTypeDetails().contains("P")) {
+				if(test.exists() && q.getFormat().contains("P")) {
 					PicPreview pre=new PicPreview(fullPath);
 				}else {
 				MessageBox ope = new MessageBox(((Control) e.widget).getShell(), SWT.OK);
-					if(q.getTypeDetails().contains("S")) {
+					if(q.getFormat().contains("S")) {
 						ope.setMessage("Sorry, audio previews don't exist yet");
 						ope.setText("No Audio Previews Yet");
 					}
