@@ -19,6 +19,8 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import orgObjects.Category;
 
+import static Resources.Colors.lilac;
+
 public class CategoryChooser {
 	private int numberSelected;
 
@@ -28,7 +30,7 @@ public class CategoryChooser {
 			Button clickedButton = (Button) e.widget;
 			if (clickedButton.getSelection()) {
 				if (numberSelected < 6) {
-					clickedButton.setBackground(Board.lilac);
+					clickedButton.setBackground(lilac);
 					numberSelected++;
 				} else {
 					// if they tried to select, but we have enough categories, then UNselect it
@@ -83,7 +85,7 @@ public class CategoryChooser {
 				c=starterCats[i/2];
 				catListSelect[i] = new Button(catsLeft, SWT.TOGGLE);
 				catListSelect[i].setSelection(true);
-				catListSelect[i].setBackground(Board.lilac);
+				catListSelect[i].setBackground(lilac);
 			} else {
 				c=importCats[i/2];
 				catListSelect[i] = new Button(catsRight, SWT.TOGGLE);

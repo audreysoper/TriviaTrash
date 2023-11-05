@@ -1,5 +1,7 @@
 package gui.qGang;
 
+import Resources.Colors;
+import gui.cGang.CGroup;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -25,35 +27,37 @@ public class Qbox extends Composite {
 	 * @param style
 	 * @param question
 	 */
-	public int width;
-	final public String qNumber;
-	final public boolean isMC;
+	public int qIndex; //starts at 0
+ 	public boolean isMC;
 	protected Board boardFather;
+	protected CGroup catDad;
 	protected Text qEdit;
 	protected Answer qAnswer;
-	protected Question q;
 	protected Button qDD;
 	protected Button openButton;
 	protected Button viewButton;
 	protected Combo typeSelect;
 	protected Combo swapPosition;
 	protected final int vSpace=3;
-	protected int editHeightDefault;
-	protected int openAnsHeightDefault;
-	protected int minWidth;
+	SelectionAdapter qSwapListener=new SelectionAdapter() {
 
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			Combo swapPCombo=(Combo) e.widget;
+			catDad.swapQuestions((Qbox)swapPCombo.getData(),Integer.parseInt(swapPCombo.getText())-1);
+		}
+	};
 
-	public Qbox(Composite parent, int style, Question q) {
-		super(parent, style);
+	public Qbox(CGroup parent, Question q, int index) {
+		super(parent, SWT.NONE);
 		boardFather=((Board)parent.getParent().getParent().getParent());
-		this.q=q;
 		isMC=boardFather.isMc();
-		width=parent.getSize().x-10;
-		getDefaults();
+		catDad=parent;
 
 		
 		
-		this.qNumber=q.getLevel();
+		this.qIndex =index;
 		//this.setBackground(ViewBoard.listBG);
 		GridLayout gridLayout = new GridLayout(3,false);
 		gridLayout.marginWidth=0;
@@ -74,17 +78,10 @@ public class Qbox extends Composite {
 		swapPosition = new Combo(this, SWT.DROP_DOWN|SWT.READ_ONLY);
 		swapPosition.setItems(new String[] {"1","2","3","4","5"});
 		swapPosition.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-		swapPosition.setText(this.qNumber);
+		swapPosition.setData(this);
+		swapPosition.setText(String.valueOf(qIndex+1));
 		
-		swapPosition.addSelectionListener(new SelectionAdapter() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				Combo swapPositionCombo=(Combo) e.widget;
-				swapQ(Integer.parseInt(swapPositionCombo.getText())-1);
-				}
-			});
+		swapPosition.addSelectionListener(qSwapListener);
 		
 		qDD = new Button(this, SWT.CHECK);
 		qDD.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
@@ -107,7 +104,7 @@ public class Qbox extends Composite {
 		((GridData)typeSelect.getLayoutData()).exclude=true;
 		
 		openButton = new Button(this, SWT.NONE);
-		openButton.setImage(SWTResourceManager.getImage(Qbox.class, "Open16.gif"));
+		openButton.setImage(SWTResourceManager.getImage(Colors.class, "Open16.gif"));
 		openButton.setVisible(false);
 		GridData openLayoutDetails = new GridData(GridData.FILL, GridData.FILL, true, false, 2, 1);
 		//openLayoutDetails.minimumWidth = minWidth;
@@ -127,18 +124,15 @@ public class Qbox extends Composite {
 		
 		
 		qEdit = new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER);
-		GridData qEditLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,true,3,1);
-		qEditLayoutDetails.heightHint=editHeightDefault;
+		GridData qEditLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,false,3,1);
+		qEditLayoutDetails.heightHint=boardFather.qBoxEditHeightDefault;
 		//qEditLayoutDetails.heightHint=this.height*2/5;
-		qEditLayoutDetails.widthHint=this.width;
-		qEditLayoutDetails.minimumWidth = minWidth;
+		qEditLayoutDetails.minimumWidth = boardFather.qBoxMinWidth;
 		qEdit.setLayoutData(qEditLayoutDetails);
 		qEdit.setMessage("Question");
 		qEdit.setText(q.getQuestion());
 		qEdit.setEditable(false);
-<<<<<<< Updated upstream
-		
-=======
+
 		qEdit.addTraverseListener(boardFather.tabLister);
 		if(qEdit.getText().length()>Board.charLimit-1)qEdit.setText(qEdit.getText().substring(0, Board.charLimit-1));
 		qEdit.setTextLimit(Board.charLimit);
@@ -156,12 +150,10 @@ public class Qbox extends Composite {
 			}
 		});
 
->>>>>>> Stashed changes
-		qAnswer=new Answer(this,boardFather.isMc());
+		qAnswer=new Answer(this, q, boardFather.isMc());
 		GridData qAnsLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,true,3,1);
-		qAnsLayoutDetails.heightHint=openAnsHeightDefault;
-		qAnsLayoutDetails.widthHint=this.width;
-		qAnsLayoutDetails.minimumWidth = minWidth;
+		qAnsLayoutDetails.heightHint=boardFather.qBoxAnsHeightDefault;
+		qAnsLayoutDetails.minimumWidth = boardFather.qBoxMinWidth;
 		qAnswer.setLayoutData(qAnsLayoutDetails);
 		this.layout();
 		this.pack();
@@ -169,29 +161,8 @@ public class Qbox extends Composite {
 		
 	}
 
-	private void getDefaults() {
-		Text defaultTester= new Text(this,SWT.MULTI);
-		GC gc = new GC(defaultTester);
-	    FontMetrics fm = gc.getFontMetrics();
-	    minWidth = (int) (fm.getAverageCharacterWidth()*15);
-	    gc.dispose();
-	    int lineHeight=defaultTester.getLineHeight();
-	    openAnsHeightDefault=lineHeight*3+lineHeight/2;
-		if(isMC) {
-			editHeightDefault=lineHeight*3;
-		}else{
-			editHeightDefault=lineHeight*4;
-			
-		}
-		
-		defaultTester.dispose();
-		
-	}
 
-	protected void swapQ(int level) {
-		boardFather.swapQuestions(this,level);
-		swapPosition.setText(this.qNumber);
-	}
+
 
 	@Override
 	protected void checkSubclass() {
@@ -205,29 +176,18 @@ public class Qbox extends Composite {
 		return qAnswer.ansExport();
 	}
 	public String getTypeDetails() {
-		return q.getFormat();
-	}
-	public Question getQobject(boolean forceUpdate) {
-		if(forceUpdate) {
-			q.updateQobj(qEdit.getText(), qAnswer.getAnswer());
-		}
-		q.setDD(qDD.getSelection());
-		return this.q;
+		return typeSelect.getText();
 	}
 
-	public char getDD() {
-		q.setDD(qDD.getSelection());
-		if(q.getDD()) {
-			return 'Y';
-		}else {
-			return 'N';
-		}
+
+	public boolean getDD() {
+		return qDD.getSelection();
 	}
+
 	public void setNewQObject(Question newQ) {
-		this.q=newQ;
-		qEdit.setText(q.getQuestion());
+		qEdit.setText(newQ.getQuestion());
 		qAnswer.clear();
-		qAnswer.changeQ(q.getAnswer());
+		qAnswer.changeQ(newQ.getAnswer());
 	}
 
 	public void clear() {
@@ -236,6 +196,24 @@ public class Qbox extends Composite {
 		qDD.setSelection(false);
 		
 	}
-		
+
+	public Qbox setLevel(int newIndex){
+		this.qIndex=newIndex;
+		return this;
+	}
+
+	public Question reduceToQ(){
+		char dd='F';
+		if(qDD.getSelection()){
+			dd='T';
+		}
+		Question q= new Question(qEdit.getText(), qAnswer.getAnswer(), dd,"",qIndex);
+		q.setType(typeSelect.getText());
+		return q;
+	}
+
+	public boolean hasPath(){
+		return false;
+	}
 
 }

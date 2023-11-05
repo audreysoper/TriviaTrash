@@ -8,6 +8,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import Resources.Colors;
+import gui.cGang.CGroup;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -16,55 +18,52 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import gui.Board;
 import gui.previews.PicPreview;
 import orgObjects.Question;
+
+import static Resources.Colors.audioBG;
+import static Resources.Colors.err;
 
 public class QMedia extends Qbox {
 
 	
 	private final int xWarningLevel = 1920;
 	private final int yWarningLevel = 1080;
-	private String fileName;
-	private String relativePath;
-	private String fullPath;
-	private String pathToHome;
+	protected String fileName;
+	protected String relativePath;
+	protected String fullPath;
 	protected FileDialog chooser;
 	protected String[] fileExtension;
-	private Board grandparent;
 
 	/**
 	 * Create the composite.
 	 * 
 	 * @param parent
-	 * @param style
 	 */
-	public QMedia(Composite parent, int style, Question q) {
-		super(parent, style, q);
+	public QMedia(CGroup parent, Question q, int index) {
+		super(parent,q,index);
 		try{
 			fullPath=q.getQuestion();
 		}catch(Exception e) {
 			fullPath="";
 		}
-		grandparent = (Board) parent.getParent().getParent().getParent();
 		chooser = new FileDialog(parent.getShell());
 
 		if (q.getFormat().contains("P")) {
 			fileExtension = new String[] {"*.jpg;*.png;*.gif;*.jfif;*.bmp;*.jpeg;*.tiff"};
 			openButton.setText("Select Picture");
-			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Zoom16.gif"));
+			viewButton.setImage(SWTResourceManager.getImage(Colors.class, "Zoom16.gif"));
 		
 		} else if (q.getFormat().contains("S")) {
 			fileExtension = new String[] {"*.mp3"};
 			openButton.setText("Select Audio");
-			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Volume16.gif"));
+			viewButton.setImage(SWTResourceManager.getImage(Colors.class, "Volume16.gif"));
 		} else {
 			fileExtension = new String[] {"*.*"};
 			System.out.println(
@@ -76,7 +75,7 @@ public class QMedia extends Qbox {
 
 		try{
 			if(fullPath.length()>0) {
-				setRelativePath(grandparent.homeFolder);
+				setRelativePath(catDad.homeFolder);
 				
 			}
 			
@@ -95,38 +94,39 @@ public class QMedia extends Qbox {
 		
 		qEdit.setEditable(true);
 		GridData qEditLayoutDetails = new GridData(GridData.FILL, GridData.FILL, true, false, 3, 1);
-		qEditLayoutDetails.heightHint = qEdit.getBounds().height - (openButton.getBounds().height + vSpace * 2);
-		qEditLayoutDetails.widthHint = width;
+		qEditLayoutDetails.heightHint = boardFather.qBoxEditHeightDefault - ( vSpace * 4);
+		//qEditLayoutDetails.widthHint = width;
 		qEdit.setLayoutData(qEditLayoutDetails);
-		
 		qEdit.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				if(grandparent.useRelativePaths) {
+				if(boardFather.useRelativePaths) {
+					int i=fullPath.lastIndexOf(relativePath);
 					relativePath=((Text) e.widget).getText();
-					fullPath=pathToHome+relativePath;
+					if (i>0){
+						fullPath=fullPath.substring(0,i)+relativePath;
+						System.out.println("full= "+fullPath);
+					}
+
 				}else {
 					fullPath=((Text) e.widget).getText();
-					setRelativePath(grandparent.homeFolder);
+					setRelativePath(catDad.homeFolder);
 				}
 				
 			}
 			
 		});
-		//this.layout(true);
-		this.pack();
+		this.layout();
 		
 		openButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
 				try {
 					chooser.open();
 					if (chooser.getFileName().length() > 1) {
 						fileName = chooser.getFileName().substring(0, (chooser.getFileName().lastIndexOf('.')));
 						fullPath = chooser.getFilterPath() + "\\" + chooser.getFileName();
-						
-						
+
 						if (fullPath.contains("jpg")) {
 							checkForJPGTransparency();
 							checkPictureSize();
@@ -136,13 +136,8 @@ public class QMedia extends Qbox {
 							checkPictureSize();
 						}
 						
-						if(grandparent.useRelativePaths) {
-							viewRelativePath();
-						}else {
-							setRelativePath(grandparent.homeFolder);
-							qEdit.setText(fullPath);
-						}
-						if (grandparent.useFileNames) {
+						togglePathView(!boardFather.useRelativePaths);
+						if (boardFather.useFileNames) {
 							setAnswerToFileName();
 						}
 					}
@@ -282,36 +277,34 @@ public class QMedia extends Qbox {
 		
 	}
 	
-	public void viewRelativePath() {
-		setRelativePath(grandparent.homeFolder);
-		qEdit.setText(relativePath);
-		
-	}
-	
-	public QMedia setRelativePath(String homeFolder) {
-		if(fullPath.length()<1 || !fullPath.contains("\\"))return null;
+
+	public void setRelativePath(String homeFolder) {
+		this.setBackground(null);
+		if(fullPath.length()<1 || !fullPath.contains("\\"))return;
 		int index=fullPath.lastIndexOf(homeFolder);
 		try {
-			if(index>0)relativePath=fullPath.substring(index);
-			//relativePath=initial.substring(index);
-			else {
-				index=fullPath.lastIndexOf("\\");
-				pathToHome=fullPath.substring(0,index);
+			if(index>0 && index<fullPath.length()){
 				relativePath=fullPath.substring(index);
 			}
+			//relativePath=initial.substring(index);
+			else {
+				relativePath=fullPath;
+			}
 		}catch(Exception e) {
-			relativePath="";
+			this.setBackground(err);
+			relativePath=fullPath;
 			System.out.println("Looks like the home folder wasn't in: "+fullPath);
-			return this;
+			return;
 		}
-		index=fullPath.indexOf(relativePath);
-		if(index>0)pathToHome=fullPath.substring(0,index);
-		
-		return null;
+
 	}
 	
 	public void swapPathFront(String pathToHome) {
-		fullPath=pathToHome+relativePath;
+		if(!fullPath.contentEquals(relativePath)){
+			fullPath=pathToHome+relativePath;
+			togglePathView(!boardFather.useRelativePaths);
+		}
+
 	}
 	
 	@Override
@@ -324,13 +317,20 @@ public class QMedia extends Qbox {
 	}
 
 
-
-	public void viewFullPath() {
-		qEdit.setText(fullPath);
-		
+	public void togglePathView(boolean viewFull){
+		if (viewFull){
+			qEdit.setText(fullPath);
+		}else{
+			System.out.println(catDad.homeFolder);
+			setRelativePath(catDad.homeFolder);
+			qEdit.setText(relativePath);
+		}
 	}
 
-
+	@Override
+	public boolean hasPath(){
+		return true;
+	}
 
 	
 

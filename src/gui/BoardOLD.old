@@ -1,61 +1,49 @@
 package gui;
 
-import gui.cGang.CGroup;
+import gui.qGang.QMedia;
+import gui.qGang.Qbox;
 import gui.tests.ZipLocalizer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.FontDialog;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.wb.swt.SWTResourceManager;
+import orgObjects.Category;
+import orgObjects.Question;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.wb.swt.SWTResourceManager;
-
-import orgObjects.Category;
-import orgObjects.Question;
 import static Resources.Colors.*;
 
 
-public class Board extends Composite {
+public class BoardOLD extends Composite {
 
+	private final int qIndexInGroup = 4; // Use this for noting what index questions start at in category Group
 	public boolean useFileNames;
 	public boolean useRelativePaths;
 	public boolean newBoardIsMC;
 	public boolean pathingIsCatDependent;
 	private boolean mcToggle;
-	private CGroup[] catGroups;
+	private Group[] catGroups;
 	private Text[] titles;
-
+	public final static String[] typeNames = new String[] { "text", "picture", "audio", "mixed" };
 	private Text fQtextBox;
 	private Text fQanswerBox;
 	public File currentOpenDoc;
 
 	private String titleText = "Fancy Question Editor";
-	private final String version = "version 2023.10.25";
+	private final String version = "version 2023.7.6";
 	public String homeFolder;
 	public String pathToHome;
 	public String textStyle;
 	public FontData fontInfo;
-	public int qBoxEditHeightDefault;
-	public int qBoxAnsHeightDefault;
-	public int qBoxMinWidth;
 
 	public final static int charLimit = 275;
 
@@ -80,7 +68,7 @@ public class Board extends Composite {
 						exportToFile(output);
 						Shell shee = getShell();
 
-						new Board(shee, SWT.NONE, AppBoard.parseBoard(output), output, mcToggle);
+						new BoardOLD(shee, SWT.NONE, AppBoard.parseBoard(output), output, mcToggle);
 						dispose();
 					}
 				} catch (Exception err) {
@@ -121,7 +109,7 @@ public class Board extends Composite {
 	 * @param style
 	 * @param catObjs
 	 */
-	public Board(Composite parent, int style, Category[] catObjs) {
+	public BoardOLD(Composite parent, int style, Category[] catObjs) {
 		super(parent, style);
 		homeFolder = "";
 		pathToHome = "";
@@ -131,7 +119,7 @@ public class Board extends Composite {
 	}
 
 	// CONSTRUCTOR FOR OPENING FILES
-	public Board(Composite parent, int style, Category[] catObjs, File source, boolean isMC) {
+	public BoardOLD(Composite parent, int style, Category[] catObjs, File source, boolean isMC) {
 		super(parent, style);
 		homeFolder = File.separatorChar + source.getParentFile().getName() + File.separatorChar;
 		pathToHome = source.getParentFile().getParent();
@@ -143,7 +131,7 @@ public class Board extends Composite {
 	}
 
 	// CONSTRUCTOR FOR GENERATING FILES FROM CATS
-	public Board(Composite parent, int style, Category[] catObjs, boolean isMC) {
+	public BoardOLD(Composite parent, int style, Category[] catObjs, boolean isMC) {
 		super(parent, style);
 		homeFolder = "";
 		pathToHome = "";
@@ -156,27 +144,7 @@ public class Board extends Composite {
 		populateBoard(catObjs);
 	}
 
-	private void getDefaults() {
-		Text defaultTester= new Text(this,SWT.MULTI);
-		GC gc = new GC(defaultTester);
-		FontMetrics fm = gc.getFontMetrics();
-		qBoxMinWidth = (int) (fm.getAverageCharacterWidth()*15);
-		gc.dispose();
-		int lineHeight=defaultTester.getLineHeight();
-		if(mcToggle) {
-			qBoxEditHeightDefault=lineHeight*3;
-			qBoxAnsHeightDefault =lineHeight*5+lineHeight/2;
-		}else{
-			qBoxEditHeightDefault=lineHeight*4;
-			qBoxAnsHeightDefault =lineHeight*3+lineHeight/2;
-
-		}
-
-		defaultTester.dispose();
-
-	}
 	private void populateBoard(Category[] catObjs) {
-		getDefaults();
 		entireHeaders(catObjs);
 
 		// START THE MAIN SECTION OF THE WINDOW
@@ -193,34 +161,165 @@ public class Board extends Composite {
 		dummyContainer.setBackground(darkerLilac);
 
 		scrollContainer.setContent(dummyContainer);
-		catGroups = new CGroup[6];
-		for (int i=0;i<catGroups.length;i++) {
-			catGroups[i]=new CGroup(dummyContainer,i+1,this,catObjs[i]);
-		}
+		catGroups = new Group[6];
 
+		titles = new Text[6];
+		Combo[] catType = new Combo[6];
+		Button[] clear = new Button[6];
+
+		// BEGIN PUTTING THINGS IN CAT GROUPS
+		for (int i = 0; i < catObjs.length - 1; i++) {
+			catGroups[i] = new Group(dummyContainer, SWT.SHADOW_ETCHED_IN);
+			catGroups[i].setText("Category " + (i + 1));
+			catGroups[i].setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+			switch (catObjs[i].getType()) {
+			case "audio":
+				catGroups[i].setBackground(audioBG);
+			case "picture":
+				catGroups[i].setBackground(picBG);
+			case "mixed":
+				catGroups[i].setBackground(mixedBG);
+			case "text":
+				catGroups[i].setBackground(lilac);
+			}
+			catGroups[i].setBackgroundMode(SWT.INHERIT_DEFAULT);
+			catGroups[i].setLayout(new GridLayout(2, false));
+			Question[] qs = catObjs[i].getQuestions();
+			String[] catCommons=catObjs[i].getCommon();
+
+			Group commonInstruct=new Group(catGroups[i],SWT.NONE);
+			commonInstruct.setLayoutData(new GridData(GridData.FILL,GridData.BEGINNING,true,true));
+			((GridData)commonInstruct.getLayoutData()).exclude=!pathingIsCatDependent||catCommons[0].length()<1;
+			commonInstruct.setText("Base Folder:");
+			commonInstruct.setVisible(pathingIsCatDependent);
+			commonInstruct.setLayout(new FillLayout());
+			Combo commons = new Combo(commonInstruct, SWT.DROP_DOWN| SWT.READ_ONLY );
+			commons.setItems(catCommons);
+
+
+			// Category titles
+			titles[i] = new Text(catGroups[i], SWT.MULTI | SWT.WRAP | SWT.BORDER | SWT.V_SCROLL);
+			titles[i].setFont(SWTResourceManager.getFont("Segoe UI", 13, SWT.NORMAL));
+			titles[i].setText(catObjs[i].getName().toUpperCase());
+			titles[i].addTraverseListener(tabLister);
+
+			// WE SET TILE SIZE LATER AFTER GRABBING THE BOXES
+
+			// Category types
+			catType[i] = new Combo(catGroups[i], SWT.DROP_DOWN | SWT.READ_ONLY);
+			catType[i].setItems(typeNames);
+			catType[i].setLayoutData(new GridData(SWT.FILL, GridData.CENTER, true, false));
+			catType[i].setText(catObjs[i].getType());
+			catType[i].addModifyListener(e -> {
+				Combo w = (Combo) e.widget;
+				Composite parent = w.getParent();
+				setType(parent, w);
+
+			});
+
+			clear[i] = new Button(catGroups[i], SWT.PUSH);
+			clear[i].setImage(SWTResourceManager.getImage(BoardOLD.class, "Delete16.gif"));
+			clear[i].setText("Clear");
+
+			// add all the questions
+
+			Qbox[] boxes = makeQuestionGroup(catGroups[i], qs);
+			GridData titleData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+			titleData.widthHint = boxes[0].width;
+			titleData.heightHint = titles[i].getLineHeight() * 2;
+			titles[i].setLayoutData(titleData);
+			((GridData) catGroups[i].getLayoutData()).minimumWidth = catGroups[i].computeSize(SWT.DEFAULT,
+					SWT.DEFAULT).x;
+
+			clear[i].addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					//
+					for (Qbox q : boxes) {
+						q.clear();
+					}
+
+				}
+			});
+
+		}
 
 		dummyContainer.layout();
 		dummyContainer.pack();
 		scrollContainer.pack();
-		this.layout();
-		this.pack();
+		scrollContainer.setMinWidth(dummyContainer.getSize().x);
+		pack();
 
 	}
 
 
 
+
+	protected void replacePath(String newPath) {
+		pathToHome = newPath;
+		ArrayList<QMedia> qs = getAllMediaQs();
+		for (QMedia q : qs) {
+			q.setRelativePath(homeFolder);
+			q.swapPathFront(pathToHome);
+			if(useRelativePaths) {
+				q.viewRelativePath();
+			}
+			else {
+				q.viewFullPath();
+			}
+		}
+
+	}
+
 	protected void useFileNameAction(Button ufnButton) {
 		if (ufnButton.getSelection()) { // true= selected & want to use file name
 			useFileNames = true;
-			for (CGroup c:catGroups) {
-				c.answersAreFileName();
-			}
+			getAllMediaQs().forEach(QMedia::setAnswerToFileName);
 		} else {
 			useFileNames = false;
 		}
 
 	}
 
+	protected void togglePathViewType() {
+		if (useRelativePaths) {
+			getAllMediaQs().forEach(QMedia::viewRelativePath);
+
+		} else {
+			getAllMediaQs().forEach(QMedia::viewFullPath);
+		}
+
+	}
+
+	protected ArrayList<QMedia> getAllMediaQs() {
+		ArrayList<QMedia> allMediaQuestions = new ArrayList<>();
+		Control[] kids;
+		// go through all groups
+		for (Group g : catGroups) {
+			kids = g.getChildren();
+			// check IF they're a media category
+			if (!((Combo) kids[1]).getText().contains("text")) {
+				// get every question in each group
+				for (int i = qIndexInGroup; i < kids.length; i++) {
+					if(((Qbox)kids[i]).getTypeDetails() != "T") {
+						allMediaQuestions.add((QMedia) kids[i]);
+						//TODO: this is terrible and should happenin category
+					}
+					/*
+					 * if(type.contains("answers")) { // then set the answer to the file name
+					 * ((QMedia) kids[i]).setAnswerToFileName(); } else
+					 * if(type.contains("questions") && useRelativePaths) { // then set the question
+					 * to relative pathing ((QMedia) kids[i]).setPathToRelative(homeFolder); }else {
+					 * ((QMedia) kids[i]).setPathToFull(); }
+					 */
+				}
+
+			}
+		}
+
+		return allMediaQuestions;
+	}
 
 
 	protected void exportToFile(File output) {
@@ -228,9 +327,34 @@ public class Board extends Composite {
 		try {
 			PrintWriter fileOut = new PrintWriter(output);
 
-			for (CGroup catGroup : catGroups) {
-				catGroup.printCat(fileOut);
+			for (Group catGroup : catGroups) {
 
+				Control[] children = catGroup.getChildren();
+				String title = ((Text) children[0]).getText().replaceAll("\\n", " ");
+				fileOut.println(title + " ");
+				// BEFORE ANYTHING I COUNT THE DDs
+				for (int j = qIndexInGroup; j < children.length; j++) { // start at 2 because skip the category
+					// title+type
+					Qbox qEd = (Qbox) children[j];
+
+					// doing this to make sure there's at least 2 daily doubles
+					/*
+					 * outputDD=qEd.getDD(); if(outputDD=='Y') { ddCount ++; }else if(i==5) { //if
+					 * its the last category (6) if((j-ddCount==3+qIndexInGroup) &&
+					 * (j>2+qIndexInGroup)) {//and we don't have enough DDs outputDD='Y'; ddCount++;
+					 * } }
+					 */
+
+					fileOut.println(qEd.getText().replaceAll("[\\n\\r]", " "));
+					fileOut.println(" " + qEd.exportAnswer().replaceAll("\\n", " "));
+					fileOut.println(qEd.getDD());
+					if (qEd.getTypeDetails().contains("T")) {
+						fileOut.println(qEd.getTypeDetails() + textStyle);
+					} else {
+						fileOut.println(qEd.getTypeDetails());
+					}
+
+				}
 			}
 			// after all the loops are done at the very end add the FINAL QUESTION
 			fileOut.println(fQtextBox.getText().replaceAll("\\n", " ") + " ");
@@ -436,7 +560,7 @@ return newBoardToggle;
 		((GridData) fQanswerBox.getLayoutData()).heightHint = fQtextBox.getLineHeight() + 5;
 	}
 
-	private Group pathHead(Board board) {
+	private Group pathHead(BoardOLD board) {
 		Group pathingHeader = new Group(board, SWT.NONE);
 		pathingHeader.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
 		GridLayout pathingSectionLayout = new GridLayout(3, false);
@@ -453,10 +577,7 @@ return newBoardToggle;
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				useRelativePaths = !useRelativePaths;
-				for (CGroup c:catGroups) {
-					c.togglePathViewType();
-				}
-
+				togglePathViewType();
 				if (useRelativePaths)
 					rpButton.setText("Show full paths?");
 				else
@@ -471,8 +592,14 @@ return newBoardToggle;
 		catDependent.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Button w=(Button)e.widget;
-				togglePathingIsCatDependent(w.getSelection());
+				pathingIsCatDependent=((Button)e.widget).getSelection();
+				for (Group g:catGroups) {
+					g.getLayout();
+					g.redraw();
+				}
+				((Button) e.widget).getShell().redraw();
+
+
 			}
 		});
 		// CHILD 1
@@ -499,25 +626,10 @@ return newBoardToggle;
 		replacePathsButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				pathToHome = pathToInput.getText();
-				for (CGroup c:catGroups) {
-					c.swapPathFronts();
-
-				}
+				replacePath(pathToInput.getText());
 			}
 		});
 		return pathingHeader;
-	}
-
-	private void togglePathingIsCatDependent(boolean value) {
-		pathingIsCatDependent=value;
-		for (CGroup c:catGroups) {
-			c.toggleCommonsView();
-			c.setHomeFolder();
-			c.layout();
-		}
-		getShell().layout();
-		getShell().pack();
 	}
 
 	private void entireHeaders(Category[] catObjs){

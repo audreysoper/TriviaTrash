@@ -253,9 +253,9 @@ public class AppBoard {
 
 			for (int j = 0; j < qs.length; j++) {
 				if(mc) {
-					qs[j] = new Question(" ", "^ ^ ^ ^", 'N', "text", "", j);
+					qs[j] = new Question(" ", "^ ^ ^ ^", 'N',  "", j);
 				}else {
-					qs[j] = new Question(" ", "", 'N', "text", "", j);
+					qs[j] = new Question(" ", "", 'N',  "", j);
 				}
 				
 			}
@@ -338,7 +338,7 @@ public class AppBoard {
 								sameType = questions[qNum - 1].getFormat().contains(format);
 							}
 
-							questions[qNum] = new Question(question.trim(), answer.trim(), dd.charAt(0), "", format, qNum);
+							questions[qNum] = new Question(question.trim(), answer.trim(), dd.charAt(0), format, qNum);
 
 							qNum++;
 						} catch (Exception e1) {
@@ -403,7 +403,7 @@ public class AppBoard {
 				answer = "so this is here instead";
 			}
 
-			Question finQ = new Question(text.trim(), answer.trim(), 'N', "text", textStyle, 0);
+			Question finQ = new Question(text.trim(), answer.trim(), 'N', textStyle, 0);
 			cats[catNum] = new Category("final", new Question[] { finQ }, 7);
 
 			scanner.close();
@@ -471,9 +471,9 @@ public class AppBoard {
 
 				for (int j = 0; j < qs.length; j++) {
 					if (mc) {
-						qs[j] = new Question(" ", "^ ^ ^ ^", 'N', "text", "", j);
+						qs[j] = new Question(" ", "^ ^ ^ ^", 'N',  "", j);
 					} else {
-						qs[j] = new Question(" ", "", 'N', "text", "", j);
+						qs[j] = new Question(" ", "", 'N',  "", j);
 					}
 				}
 				try{

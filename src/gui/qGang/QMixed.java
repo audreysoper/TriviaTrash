@@ -2,32 +2,26 @@ package gui.qGang;
 
 import java.util.Arrays;
 
+import Resources.Colors;
+import gui.cGang.CGroup;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import gui.Board;
 import orgObjects.Question;
 
 public class QMixed extends QMedia {
-
-	private String fileName;
-	private String fullPath;
-	private Board grandparent;
 	private String qType;
 
 	/**
 	 * Create the composite.
 	 * 
 	 * @param parent
-	 * @param style
 	 */
-	public QMixed(Composite parent, int style, Question q) {
-		super(parent, style, q);
-		Board grandparent = (Board) parent.getParent().getParent().getParent();
+	public QMixed(CGroup parent, Question q, int index) {
+		super(parent, q,index);
 		//chooser = new FileDialog(parent.getShell());
 		if (qType == null && q.getFormat().length() > 0) {
 			switch (q.getFormat().charAt(0)) {
@@ -47,7 +41,7 @@ public class QMixed extends QMedia {
 
 		// Category types
 		typeSelect.setVisible(true);
-		typeSelect.setItems(Arrays.copyOfRange(Board.typeNames, 0, 3));
+		typeSelect.setItems(Arrays.copyOfRange(catDad.typeNames, 0, 3));
 		typeSelect.setText(qType);
 		typeSelect.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 3, 1));
 		((GridData) typeSelect.getLayoutData()).exclude = false;
@@ -58,8 +52,7 @@ public class QMixed extends QMedia {
 				// TODO Auto-generated method stub
 				Combo w = (Combo) e.widget;
 				QMixed parent = (QMixed) w.getParent();
-				parent.qType = w.getText();
-				parent.q.setType(w.getText());
+				parent.qType = w.getText();;
 				setupForType();
 
 			}
@@ -93,7 +86,7 @@ public class QMixed extends QMedia {
 	public void setupForType() {
 		switch (qType) {
 		case "picture":
-			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Zoom16.gif"));
+			viewButton.setImage(SWTResourceManager.getImage(Colors.class, "Zoom16.gif"));
 			openButton.setVisible(true);
 			viewButton.setVisible(true);
 			((GridData) openButton.getLayoutData()).exclude = false;
@@ -104,7 +97,7 @@ public class QMixed extends QMedia {
 			break;
 
 		case "audio":
-			viewButton.setImage(SWTResourceManager.getImage(Qbox.class, "Volume16.gif"));
+			viewButton.setImage(SWTResourceManager.getImage(Colors.class, "Volume16.gif"));
 			openButton.setVisible(true);
 			viewButton.setVisible(true);
 			((GridData) openButton.getLayoutData()).exclude = false;
@@ -126,23 +119,23 @@ public class QMixed extends QMedia {
 		if (qType.contains("audio") || qType.contains("pic")) {
 
 			// SIZE QUESTION BOX TO ACCOMIDATE MEDIA BUTTON
-			((GridData) qEdit.getLayoutData()).heightHint = editHeightDefault
+			((GridData) qEdit.getLayoutData()).heightHint = boardFather.qBoxEditHeightDefault
 					- (openButton.getBounds().height + typeSelect.getBounds().height +vSpace)/2;
 
 			// SIZE ANSWER BOX TO ACCOMIDATE TYPE SELECT
 			if(!isMC) {
-			((GridData) qAnswer.getLayoutData()).heightHint = openAnsHeightDefault
+			((GridData) qAnswer.getLayoutData()).heightHint = boardFather.qBoxAnsHeightDefault
 					- (openButton.getBounds().height + typeSelect.getBounds().height +vSpace)/2;
 			}
 
 		
 		} else if (qType.contains("text")) {
 			// SIZE QUESTION BOX TO ACCOMIDATE TYPE SELECT
-			((GridData) qEdit.getLayoutData()).heightHint = editHeightDefault
+			((GridData) qEdit.getLayoutData()).heightHint = boardFather.qBoxEditHeightDefault
 					- (typeSelect.getBounds().height/2+vSpace);
 
 			// SIZE ANSWER BOX TO DEFAULT
-			((GridData) qAnswer.getLayoutData()).heightHint = openAnsHeightDefault- (typeSelect.getBounds().height/2);
+			((GridData) qAnswer.getLayoutData()).heightHint = boardFather.qBoxAnsHeightDefault- (typeSelect.getBounds().height/2);
 			
 		}
 		
@@ -159,18 +152,8 @@ public class QMixed extends QMedia {
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-	
-<<<<<<< Updated upstream
-=======
-	@Override
-	public Question getQobject(boolean forceUpdate) {
-		if(forceUpdate) {
-			q.setType(typeSelect.getText());
-			q.updateQobj(qEdit.getText(), qAnswer.getAnswer());
-		}
-		q.setDD(qDD.getSelection());
-		return this.q;
-	}
+
+
 	
 	@Override
 	public void setNewQObject(Question newQ) {
@@ -188,24 +171,21 @@ public class QMixed extends QMedia {
 	}
 	
 	@Override
-	public QMedia setRelativePath(String homeFolder) {
+	public void setRelativePath(String homeFolder) {
 		if(!qType.contains("text")){
 			super.setRelativePath(homeFolder);
 		}
-		return null;
 	}
 	
 	@Override
-	public void viewRelativePath() {
+	public void togglePathView(boolean viewFull){
 		if(!qType.contains("text")){
-			super.viewRelativePath();
-		}
-	}
-	
-	@Override
-	public void viewFullPath() {
-		if(!qType.contains("text")){
-			super.viewFullPath();
+			if (viewFull){
+				qEdit.setText(fullPath);
+			}else{
+				setRelativePath(boardFather.homeFolder);
+				qEdit.setText(relativePath);
+			}
 		}
 	}
 	
@@ -215,5 +195,11 @@ public class QMixed extends QMedia {
 			super.swapPathFront(pathToHome);
 		}
 	}
->>>>>>> Stashed changes
+
+	@Override
+	public boolean hasPath(){
+		if (qType.contains("text")) return false;
+		else return true;
+	}
+
 }

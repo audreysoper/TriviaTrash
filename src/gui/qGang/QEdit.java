@@ -1,5 +1,6 @@
 package gui.qGang;
 
+import gui.cGang.CGroup;
 import org.eclipse.swt.widgets.Composite;
 
 import orgObjects.Question;
@@ -10,10 +11,9 @@ public class QEdit extends Qbox {
 	/**
 	 * Create the composite.
 	 * @param parent
-	 * @param style
 	 */
-	public QEdit(Composite parent, int style,Question q) {
-		super(parent, style,q);
+	public QEdit(CGroup parent, Question q, int index) {
+		super(parent,q,index);
 		
 	
 		

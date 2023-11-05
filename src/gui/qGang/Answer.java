@@ -1,6 +1,11 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package gui.qGang;
 
-import org.eclipse.swt.SWT;
+import gui.qGang.Qbox;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -8,13 +13,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-
-<<<<<<< Updated upstream:src/gui/answers/Answer.java
-import gui.AppBoard;
-=======
-import gui.Board;
->>>>>>> Stashed changes:src/gui/qGang/Answer.java
-import gui.qGang.Qbox;
+import orgObjects.Question;
 
 public class Answer extends Composite {
 	public final boolean multipleChoice;
@@ -22,178 +21,133 @@ public class Answer extends Composite {
 	private Button[] correctSelector;
 	private String correctAnswer;
 	private String answerFormatted;
-<<<<<<< Updated upstream:src/gui/answers/Answer.java
-	
-	
-	
-	public Answer(Qbox parent,boolean multipleChoice) {
-		super(parent,SWT.NONE);
-		
-		this.multipleChoice=multipleChoice;
-=======
-	private Qbox parent;
 
-
-	public Answer(Qbox p, boolean multipleChoice) {
-		super(p, SWT.NONE);
-		parent = p;
+	public Answer(Qbox parent, Question q,boolean multipleChoice) {
+		super(parent, 0);
 		this.multipleChoice = multipleChoice;
->>>>>>> Stashed changes:src/gui/qGang/Answer.java
+
 		try {
-			answerFormatted=parent.getQobject(false).getAnswer();
-			
-			/*
-			 * if(answerFormatted==null) { answerFormatted="^^^^";}
-			 */
+			this.answerFormatted = q.getAnswer();
+		} catch (Exception var5) {
+			var5.printStackTrace();
+			this.correctAnswer = "";
+			this.answerFormatted = "";
 		}
-			catch(Exception e) {
-				e.printStackTrace();
-				correctAnswer="";
-				answerFormatted="";}
-		GridLayout lay=new GridLayout(2,false);
-		lay.marginHeight=0;
-		lay.marginWidth=0;
-		setLayout(lay);
-		
-		if(multipleChoice) {
-			//first make the text boxes & buttons
-			answerBoxes= new Text[4];
-			correctSelector= new Button[4];
-			for(int i=0;i<answerBoxes.length;i++) {
-				answerBoxes[i]= new Text(this,SWT.SINGLE|SWT.BORDER);
-				answerBoxes[i].setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,true)); //grab vertical space because you'll match parent
-				//((GridData)answerBoxes[i].getLayoutData()).widthHint=parent.width;
-				
-				correctSelector[i]=new Button(this,SWT.RADIO);
-				correctSelector[i].setData(answerBoxes[i]);
-				correctSelector[i].setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false)); //don't want it grabbing extra horizontal
-				correctSelector[i].addSelectionListener(new SelectionAdapter() {
-					@Override
+
+		GridLayout lay = new GridLayout(2, false);
+		lay.marginHeight = 0;
+		lay.marginWidth = 0;
+		this.setLayout(lay);
+		if (multipleChoice) {
+			this.answerBoxes = new Text[4];
+			this.correctSelector = new Button[4];
+
+			for(int i = 0; i < this.answerBoxes.length; ++i) {
+				this.answerBoxes[i] = new Text(this, 2052);
+				this.answerBoxes[i].setLayoutData(new GridData(4, 4, true, true));
+				this.correctSelector[i] = new Button(this, 16);
+				this.correctSelector[i].setData(this.answerBoxes[i]);
+				this.correctSelector[i].setLayoutData(new GridData(4, 4, false, false));
+				this.correctSelector[i].addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
-						Button correct=(Button) e.widget;
-						correctAnswer=((Text)correct.getData()).getText();
-						if(correctAnswer == null) {
-							correctAnswer=" ";
+						Button correct = (Button)e.widget;
+						Answer.this.correctAnswer = ((Text)correct.getData()).getText();
+						if (Answer.this.correctAnswer == null) {
+							Answer.this.correctAnswer = " ";
 						}
-					
+
 					}
 				});
 			}
-			//then add content if we are importing an actual answer
-			if(!answerFormatted.contains("^^^^")&&answerFormatted.length()>2) { //check if we ARE importing an answer
-			parseMCAnsString(answerFormatted);
-			
+
+			if (!this.answerFormatted.contains("^^^^") && this.answerFormatted.length() > 2) {
+				this.parseMCAnsString(this.answerFormatted);
 			}
-<<<<<<< Updated upstream:src/gui/answers/Answer.java
-			
-			
-		}else {
-			correctAnswer=answerFormatted;
-			answerBoxes=new Text[]{new Text(this, SWT.MULTI|SWT.WRAP|SWT.V_SCROLL |SWT.BORDER)};
-			GridData qAnswerLayoutDetails=new GridData(GridData.FILL,GridData.FILL,true,true,2,1);
-			//qAnswerLayoutDetails.heightHint=answerBoxes[0].getLineHeight()*3;
-			answerBoxes[0].setMessage("Answer");
-			answerBoxes[0].setLayoutData(qAnswerLayoutDetails);
-			answerBoxes[0].setText(correctAnswer);
-			//((GridData)answerBoxes[0].getLayoutData()).widthHint=parent.width;
-			
-			
-=======
-
+		} else {
+			this.correctAnswer = this.answerFormatted;
+			this.answerBoxes = new Text[]{new Text(this, 2626)};
+			GridData qAnswerLayoutDetails = new GridData(4, 4, true, true, 2, 1);
+			this.answerBoxes[0].setMessage("Answer");
+			this.answerBoxes[0].setLayoutData(qAnswerLayoutDetails);
+			this.answerBoxes[0].setText(this.correctAnswer);
 		}
-		else {
-			correctAnswer = answerFormatted;
-			answerBoxes = new Text[] { new Text(this, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER) };
-			GridData qAnswerLayoutDetails = new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1);
-			// qAnswerLayoutDetails.heightHint=answerBoxes[0].getLineHeight()*3;
-			answerBoxes[0].setMessage("Answer");
-			answerBoxes[0].setLayoutData(qAnswerLayoutDetails);
-			answerBoxes[0].setText(correctAnswer);
-			answerBoxes[0].addTraverseListener(parent.boardFather.tabLister);
-			// ((GridData)answerBoxes[0].getLayoutData()).widthHint=parent.width;
 
->>>>>>> Stashed changes:src/gui/qGang/Answer.java
-		}
-		//pack();
-		layout();
-		//System.out.println("AnswerBox ACTUAL Height: "+answerBoxes[0].getSize());
+		this.layout();
 	}
-	
+
 	private void parseMCAnsString(String importedAnsText) {
-		boolean answerFound=false;
-		String[] answers=importedAnsText.split("\\^");
+		boolean answerFound = false;
+		String[] answers = importedAnsText.split("\\^");
 		System.out.println(importedAnsText);
-<<<<<<< Updated upstream:src/gui/answers/Answer.java
-		correctAnswer=answers[0].trim();
-		for(int i=0;(i<answerBoxes.length)&&(i+1<answers.length);i++) {
-			answerBoxes[i].setText(answers[i+1].trim());
-			if(answers[i+1].trim().matches(answers[0].trim())&& (!answerFound)) {
-=======
-		correctAnswer = answers[0].trim();
-		for (int i = 0; (i < answerBoxes.length) && (i + 1 < answers.length); i++) {
-			answerBoxes[i].setText(answers[i + 1].trim());
-			if (answers[i + 1].trim().contentEquals(answers[0].trim()) && (!answerFound)) {
->>>>>>> Stashed changes:src/gui/qGang/Answer.java
-				correctSelector[i].setSelection(true);
-				answerFound=true;
+		this.correctAnswer = answers[0].trim();
+
+		for(int i = 0; i < this.answerBoxes.length && i + 1 < answers.length; ++i) {
+			this.answerBoxes[i].setText(answers[i + 1].trim());
+			if (answers[i + 1].trim().matches(answers[0].trim()) && !answerFound) {
+				this.correctSelector[i].setSelection(true);
+				answerFound = true;
 			}
 		}
-		
-		
+
 	}
 
 	public void clear() {
-		for(int i=0;i<answerBoxes.length;i++) {
-			answerBoxes[i].setText("");
-			if(multipleChoice) {
-				correctSelector[i].setSelection(false);
+		for(int i = 0; i < this.answerBoxes.length; ++i) {
+			this.answerBoxes[i].setText("");
+			if (this.multipleChoice) {
+				this.correctSelector[i].setSelection(false);
 			}
 		}
-		correctAnswer="";
-		answerFormatted="";
-		
+
+		this.correctAnswer = "";
+		this.answerFormatted = "";
 	}
-	
-	public String ansExport(){
-		correctAnswer=answerBoxes[0].getText().trim();
-		
-		
-		if(multipleChoice) {
-			answerFormatted="^ "+correctAnswer;
-			for(Text a:answerBoxes) {
-				answerFormatted +=("^ "+a.getText());
+
+	public String ansExport() {
+		this.correctAnswer = this.answerBoxes[0].getText().trim();
+		if (this.multipleChoice) {
+			this.answerFormatted = "^ " + this.correctAnswer;
+			Text[] var4;
+			int var3 = (var4 = this.answerBoxes).length;
+
+			for(int var2 = 0; var2 < var3; ++var2) {
+				Text a = var4[var2];
+				this.answerFormatted = this.answerFormatted + "^ " + a.getText();
 			}
-			answerFormatted+="^^^^";
-		}else {
-			answerFormatted = correctAnswer+" ^^^^";
+
+			this.answerFormatted = this.answerFormatted + "^^^^";
+		} else {
+			this.answerFormatted = this.correctAnswer + " ^^^^";
 		}
-		
-		return answerFormatted;
+
+		return this.answerFormatted;
 	}
 
 	public void changeQ(String answer) {
-		if(multipleChoice) {
-			parseMCAnsString(answer);
-		}else {
-			correctAnswer=answer;
-			answerBoxes[0].setText(correctAnswer);
+		if (this.multipleChoice) {
+			this.parseMCAnsString(answer);
+		} else {
+			this.correctAnswer = answer;
+			this.answerBoxes[0].setText(this.correctAnswer);
 		}
-		
-	}
-	public String getAnswer(){
-		correctAnswer=answerBoxes[0].getText().trim();
-		
-		
-		if(multipleChoice) {
-			answerFormatted="^ "+correctAnswer;
-			for(Text a:answerBoxes) {
-				answerFormatted +=("^ "+a.getText());
-			}
-			return answerFormatted;
-		}else {
-			 return correctAnswer;
-		}
-		
+
 	}
 
+	public String getAnswer() {
+		this.correctAnswer = this.answerBoxes[0].getText().trim();
+		if (!this.multipleChoice) {
+			return this.correctAnswer;
+		} else {
+			this.answerFormatted = "^ " + this.correctAnswer;
+			Text[] var4;
+			int var3 = (var4 = this.answerBoxes).length;
+
+			for(int var2 = 0; var2 < var3; ++var2) {
+				Text a = var4[var2];
+				this.answerFormatted = this.answerFormatted + "^ " + a.getText();
+			}
+
+			return this.answerFormatted;
+		}
+	}
 }

@@ -16,11 +16,12 @@ public class Question {
 
 	
 	//Constructor
-	public Question(String q, String a, char dailyDouble,String type,String format,int lvlIndex) {
+	public Question(String q, String a, char dailyDouble,String format,int lvlIndex) {
 		this.q=q;
 		this.a=a;
 		this.dailyDouble=dailyDouble;
-		if(type.length()<1){
+		this.type="text";
+		if(format.length()>0){
 			switch (format.charAt(0)) {
 				case 'P':
 					this.type="picture";
@@ -31,9 +32,9 @@ public class Question {
 					//pathParts.addAll(List.of(questions[0].getQuestion().split(String.valueOf(source.separatorChar))));
 					break;
 				default:
-					this.type="text";
 					break;
 			}
+
 		}
 
 		this.lvlIndex=lvlIndex;
